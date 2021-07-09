@@ -37,17 +37,15 @@ class PermissionsTableSeeder extends Seeder
         Permission::create(['key' => 'edit_seguimiento','table_name' => null]);
 
         Permission::generateFor('menus');
-
         Permission::generateFor('roles');
-
         Permission::generateFor('users');
-
         Permission::generateFor('entities');
-
         Permission::generateFor('entradas');
-
         Permission::generateFor('certificates');
-
         Permission::generateFor('settings');
+        Permission::generateFor('acctions');
+        Permission::generateFor('departamentos');
+        Permission::generateFor('estados');
+        Permission::generateFor('tipos');
     }
 }

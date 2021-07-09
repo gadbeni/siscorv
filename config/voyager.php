@@ -181,7 +181,7 @@ return [
     |
     */
 
-    'primary_color' => env('APP_COLOR', '#22A7F0'),
+    'primary_color' => env('APP_PRIMARY_COLOR', '#22A7F0'),
 
     'show_dev_tips' => true, // Show development tip "How To Use:" in Menu and Settings
 

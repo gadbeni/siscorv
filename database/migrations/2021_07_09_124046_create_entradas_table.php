@@ -51,6 +51,7 @@ class CreateEntradasTable extends Migration
                     ->constrained()
                     ->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

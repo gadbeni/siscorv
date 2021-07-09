@@ -39,6 +39,7 @@ class CreateDerivationsTable extends Migration
                   ->constrained()
                   ->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
