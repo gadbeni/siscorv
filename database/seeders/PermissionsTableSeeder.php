@@ -27,11 +27,26 @@ class PermissionsTableSeeder extends Seeder
             ]);
         }
 
+        Permission::create(['key' => 'index_bandeja','table_name' => null]);
+        Permission::create(['key' => 'edit_bandeja','table_name' => null]);
+        Permission::create(['key' => 'show_bandeja','table_name' => null]);
+        Permission::create(['key' => 'create_bandeja','table_name' => null]);
+        Permission::create(['key' => 'delete_bandeja','table_name' => null]);
+
+        Permission::create(['key' => 'index_seguimiento','table_name' => null]);
+        Permission::create(['key' => 'edit_seguimiento','table_name' => null]);
+
         Permission::generateFor('menus');
 
         Permission::generateFor('roles');
 
         Permission::generateFor('users');
+
+        Permission::generateFor('entities');
+
+        Permission::generateFor('entradas');
+
+        Permission::generateFor('certificates');
 
         Permission::generateFor('settings');
     }
