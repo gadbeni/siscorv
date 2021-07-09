@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Cotrollers
+use App\Http\Controllers\EntradasController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -24,6 +27,10 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    // Entradas
+    Route::resource('entradas', EntradasController::class);
+    Route::get('entradas/ajax/list', [EntradasController::class, 'list']);
 });
 
 // Clear cache
