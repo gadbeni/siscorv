@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,8 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+    Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
+    Route::get('search/{name}', [UsersController::class, 'getFuncionario']);
 });
 
 // Clear cache
