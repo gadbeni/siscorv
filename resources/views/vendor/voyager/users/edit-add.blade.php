@@ -17,7 +17,7 @@
 @section('content')
     <div class="page-content container-fluid">
         <form class="form-edit-add" role="form"
-              action="@if(!is_null($dataTypeContent->getKey())){{ route('voyager.'.$dataType->slug.'.update', $dataTypeContent->getKey()) }}@else{{ route('voyager.'.$dataType->slug.'.store') }}@endif"
+              action="@if(!is_null($dataTypeContent->getKey())){{ route('update.users', $dataTypeContent->getKey()) }}@else{{ route('store.users') }}@endif"
               method="POST" enctype="multipart/form-data" autocomplete="off">
             <!-- PUT Method if we are editing -->
             @if(isset($dataTypeContent->id))
@@ -48,31 +48,15 @@
                                     class="form-control">
                                 </select>
                             </div>
-                            <div class="form-group col-md-4">
-                                <label for="nombre">Nombre</label>
-                                <input type="text" class="form-control" name="nombre">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="ap_paterno">Ap Paterno</label>
-                                <input type="text" class="form-control" name="ap_paterno">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="ap_materno">Ap Materno</label>
-                                <input type="text" class="form-control" name="ap_materno">
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="ci">CI</label>
-                                <input type="text" class="form-control" name="ci">
-                            </div>
+                            <input type="hidden" id="nombre" name="nombre">
+                            <input type="hidden" id="ap_paterno" name="ap_paterno">
+                            <input type="hidden" id="ap_materno" name="ap_materno">
+                            <input type="hidden" id="ci" name="ci">
+                            <input type="hidden" id="alfanum" name="alfanum">
+                            <input type="hidden" name="departamento_id" id="departamento_id">
                             <div class="form-group">
-                                <label for="name">{{ __('voyager::generic.name') }}</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="{{ __('voyager::generic.name') }}"
-                                       value="{{ old('name', $dataTypeContent->name ?? '') }}">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="email">{{ __('voyager::generic.email') }}</label>
-                                <input type="email" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}"
+                                <label for="email">{{ __('Usuario') }}</label>
+                                <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}"
                                        value="{{ old('email', $dataTypeContent->email ?? '') }}">
                             </div>
 
@@ -181,27 +165,17 @@
             templateSelection: (opt) => opt.text
         });
 
-        $('#selUser').on('select2:select', function (e) {
+        $('#getfuncionario').on('select2:select', function (e) {
+           
 				var data = e.params.data;
+                 console.log(data)
 				if (data) {
 					document.getElementById("nombre").value = data.nombre;
-					document.getElementById("nombre").readOnly = true;
 					document.getElementById("ap_paterno").value = data.ap_paterno;
-					document.getElementById("ap_paterno").readOnly = true;
 					document.getElementById("ap_materno").value = data.ap_materno;
-					document.getElementById("ap_materno").readOnly = true;
 					document.getElementById("ci").value = data.ci;
-					document.getElementById("ci").readOnly = true;
-					document.getElementById("alfanum").value = data.alfanum;
-					document.getElementById("alfanum").readOnly = true;
-					
-					$("#departamento_id option").each(function(){
-						if ($(this).val() == data.departamento_id){        
-						  $dep.val($(this).val()).trigger("change");
-						} 
-					});
-					
-					
+                    document.getElementById("alfanum").value = data.alfanum;
+                    document.getElementById("departamento_id").value = data.departamento_id;
 				}					
 			});
     });
