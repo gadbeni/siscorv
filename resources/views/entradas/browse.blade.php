@@ -9,7 +9,7 @@
                 <h1 class="page-title">
                     <i class="voyager-credit-cards"></i> Ingresos
                 </h1>
-                <a href="#" class="btn btn-success btn-add-new">
+                <a href="{{ route('entradas.create') }}" class="btn btn-success btn-add-new">
                     <i class="voyager-plus"></i> <span>Crear</span>
                 </a>
             </div>
@@ -50,18 +50,20 @@
     <script>
         $(document).ready(function() {
             let columns = [
-                { data: 'id', title: 'id' },
-                // { data: 'cliente', title: 'Cliente' },
-                // { data: 'detalle', title: 'Detalle' },
-                // { data: 'fecha', title: 'Fecha' },
-                // { data: 'total', title: 'Total' },
+                { data: 'hr', title: 'HR' },
+                { data: 'fecha_ingreso', title: 'Fecha de ingreso' },
+                { data: 'cite', title: 'Nro. de cite' },
+                { data: 'nro_hojas', title: 'Nro. de hojas' },
+                { data: 'origen', title: 'origen' },
+                { data: 'remitente', title: 'Remitente' },
+                { data: 'referencia', title: 'Referencia' },
+                { data: 'estado', title: 'Estado' },
                 { data: 'action', title: 'Acciones', orderable: false, searchable: false },
             ]
             customDataTable("{{ url('admin/entradas/ajax/list') }}/", columns);
         });
 
-        function deleteItem(id){
-            let url = '{{ url("admin/entradas") }}/'+id;
+        function deleteItem(url){
             $('#delete_form').attr('action', url);
         }
 

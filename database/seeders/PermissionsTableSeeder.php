@@ -47,6 +47,5 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('departamentos');
         Permission::generateFor('estados');
         Permission::generateFor('tipos');
-        Permission::generateFor('entradas');
     }
 }
