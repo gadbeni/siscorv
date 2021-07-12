@@ -24,7 +24,7 @@ class CreateEntradasTable extends Migration
             $table->string('nro_hojas', 30)->nullable();
             $table->string('funcionario_id_remitente', 10)->nullable();
             $table->string('funcionario_id_responsable', 10)->nullable();
-            $table->string('estado', 20)->nullable();
+            // $table->string('estado', 20)->nullable();
 
             $table->string('registrado_por', 30)->nullable();
             $table->integer('registrado_por_id_direccion')->nullable();
@@ -32,6 +32,7 @@ class CreateEntradasTable extends Migration
             $table->dateTime('fecha_registro')->nullable();
             $table->string('actualizado_por', 30)->nullable();
             $table->dateTime('fecha_actualizacion')->nullable();
+            $table->text('observacion_rechazo')->nullable();
 
             // FK Entity
             $table->foreignId('entity_id')
@@ -51,6 +52,7 @@ class CreateEntradasTable extends Migration
                     ->constrained()
                     ->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
