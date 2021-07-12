@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UsersController;
+use App\Http\Controllers\AjaxController;
+use App\Http\Livewire\CertificateController;
+use App\Http\Livewire\CreateCertificate;
 
 // Cotrollers
 use App\Http\Controllers\EntradasController;
@@ -38,6 +42,15 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
     Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
     Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
+    Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
+    Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
+    Route::get('search/{name}', [UsersController::class, 'getFuncionario']);
+
+    //rutas para los certificados
+    Route::get('certificates', CertificateController::class)->name('list.certificates');
+    Route::get('certificate/create', CreateCertificate::class)->name('certificate.create');
+    Route::get('/certificados/getPersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
+    Route::get('/certificados/getfuncionarios',[AjaxController::class, 'getFuncionario'])->name('certificados.getFuncionario');
 });
 
 // Clear cache
