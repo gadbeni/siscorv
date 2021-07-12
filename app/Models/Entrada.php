@@ -12,7 +12,7 @@ class Entrada extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'gestion', 'tipo', 'remitente', 'cite', 'referencia', 'nro_hojas', 'funcionario_id_remitente', 'funcionario_id_responsable', 'registrado_por', 'registrado_por_id_direccion', 'registrado_por_id_unidad', 'actualizado_por', 'fecha_actualizacion', 'entity_id', 'estado_id', 'tipo_id'
+        'gestion', 'tipo', 'remitente', 'cite', 'referencia', 'nro_hojas', 'funcionario_id_remitente', 'funcionario_id_responsable', 'registrado_por', 'registrado_por_id_direccion', 'registrado_por_id_unidad', 'actualizado_por', 'fecha_actualizacion', 'observacion_rechazo', 'entity_id', 'estado_id', 'tipo_id'
     ];
 
     function entity(){
@@ -25,5 +25,9 @@ class Entrada extends Model
 
     function archivos(){
         return $this->hasMany(Archivo::class)->withTrashed();
+    }
+
+    function derivaciones(){
+        return $this->hasMany(Derivation::class)->withTrashed();
     }
 }

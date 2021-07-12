@@ -13,6 +13,7 @@ use Storage;
 // Models
 use App\Models\Entrada;
 use App\Models\Archivo;
+use App\Models\Derivation;
 
 class EntradasController extends Controller
 {
@@ -27,11 +28,16 @@ class EntradasController extends Controller
      */
     public function index()
     {
-        return view('entradas.browse');
+        $personas = DB::connection('mysqlgobe')
+                            ->table('contribuyente')
+                            // ->where('id', $id_funcionario)
+                            ->select('*')
+                            ->get();
+        return view('entradas.browse', compact('personas'));
     }
 
     public function list(){
-        $data = Entrada::with(['entity', 'estado'])->where('deleted_at', NULL)->get();
+        $data = Entrada::with(['entity', 'estado', 'derivaciones'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return
@@ -50,8 +56,12 @@ class EntradasController extends Controller
                 return $row->estado->nombre;
             })
             ->addColumn('action', function($row){
+                $derivar_button = ' <button data-toggle="modal" data-target="#derivar_modal" onclick="derivacionItem('.$row->id.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                                        <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
+                                    </button>';
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
+                        '.(count($row->derivaciones->where('deleted_at', NULL)) == 0 ? $derivar_button : '').'
                         <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
@@ -84,6 +94,7 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {
+        DB::beginTransaction();
         try {
             $entrada = Entrada::create([
                 'gestion' => date('Y'),
@@ -112,7 +123,8 @@ class EntradasController extends Controller
                     Archivo::create([
                         'nombre_origen' => $nombre_origen,
                         'entrada_id' => $entrada->id,
-                        'ruta' => 'entradas/'.$newFileName
+                        'ruta' => $dir.'/'.$newFileName,
+                        'user_id' => Auth::user()->id
                     ]);
                 }
             }
@@ -120,7 +132,7 @@ class EntradasController extends Controller
             DB::commit();
             return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
+            DB::rollback();
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
 
@@ -134,7 +146,7 @@ class EntradasController extends Controller
      */
     public function show($id)
     {
-        $data = Entrada::with(['entity', 'estado', 'archivos'])->where('id', $id)->where('deleted_at', NULL)->first();
+        $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])->where('id', $id)->where('deleted_at', NULL)->first();
         return view('entradas.read', compact('data'));
     }
 
@@ -170,5 +182,122 @@ class EntradasController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function store_file(Request $request){
+        try {
+            $file = $request->file('file');
+            if ($file) {
+                $nombre_origen = $file->getClientOriginalName();
+                $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
+                $dir = "entradas/".date('F').date('Y');
+                Storage::makeDirectory($dir);
+                Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file));
+                Archivo::create([
+                    'nombre_origen' => $nombre_origen,
+                    'entrada_id' => $request->id,
+                    'ruta' => $dir.'/'.$newFileName,
+                    'user_id' => Auth::user()->id
+                ]);
+            }
+            return response()->json(['data'=>'Archivo agregado correctamente.']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error'=>'Ocurrió un error al subir el archivo.']);
+        }
+    }
+
+    public function store_derivacion(Request $request){
+        try {
+            $funcionario = $this->getFuncionario($request->destinatario);
+            if($funcionario){
+                $this->add_derivacion($funcionario, $request);
+            }else{
+                return redirect()->route('entradas.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            }
+            
+
+            return redirect()->route('entradas.index')->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            // dd($th);
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function derivacion_index(){
+        $ingresos = Derivation::with(['entrada.entity'])->where('deleted_at', NULL)->get();
+        return view('bandeja.browse', compact('ingresos'));
+    }
+
+    public function derivacion_show($id)
+    {
+        try {
+            $derivacion =  Derivation::findOrFail($id);
+            $derivacion->visto = Carbon::now();
+            $derivacion->save();
+            $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])->where('id', $derivacion->entrada_id)->where('deleted_at', NULL)->first();
+            $personas = DB::connection('mysqlgobe')
+                            ->table('contribuyente')
+                            // ->where('id', $id_funcionario)
+                            ->select('*')
+                            ->get();
+
+            return view('bandeja.read', compact('data', 'personas'));
+        } catch (\Throwable $th) {
+            // dd($th);
+            return redirect()->route('voyager.dashboard');
+        }
+    }
+
+    public function derivacion_rechazar($id, Request $request)
+    {
+        try {
+            // Obtener la lista de derivaciones en ordern descendente
+            $derivaciones = Derivation::where('entrada_id', $id)->where('deleted_at', NULL)->where('rechazo', NULL)->orderBy('id', 'DESC')->get();
+            // Si solo ha habido una sola dewrivación se anula, sino se deriva al último remitente
+            
+            if(count($derivaciones) == 1){
+                Derivation::where('id', $derivaciones[0]->id)->update([
+                    'deleted_at' => Carbon::now()
+                ]);
+                Entrada::where('id', $id)->update([
+                    'observacion_rechazo' => $request->observacion
+                ]);
+                return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+            }else{
+                $funcionario = $this->getFuncionario($derivaciones[0]->funcionario_id_de);
+                if($funcionario){
+                    $this->add_derivacion($funcionario, $request);
+                }else{
+                    return redirect()->route('bandeja.show', ['id' => $derivaciones[0]->id])->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+                }   
+            }
+
+            return redirect()->route('bandeja.show', ['id' => $derivaciones[0]->id])->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            dd($th);
+            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+
+    // =============================================================
+
+    public function add_derivacion($funcionario, $request){
+        return Derivation::create([
+            'entrada_id' => $request->id,
+            'funcionario_id_de' => 26,
+            'funcionario_id_para' => $funcionario->id_funcionario,
+            'funcionario_nombre_para' => $funcionario->nombre,
+            'funcionario_cargo_para' => $funcionario->cargo,
+            'funcionario_direccion_id_para' => $funcionario->id_direccion,
+            'funcionario_direccion_para' => $funcionario->direccion,
+            'funcionario_unidad_id_para' => $funcionario->id_unidad,
+            'funcionario_unidad_para' => $funcionario->unidad,
+            'responsable_actual' => 1,
+            'estado' => 'activo',
+            'registro_por' => Auth::user()->email,
+            'observacion' => $request->observacion
+        ]);
     }
 }

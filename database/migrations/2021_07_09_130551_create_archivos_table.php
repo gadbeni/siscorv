@@ -24,6 +24,8 @@ class CreateArchivosTable extends Migration
                   ->nullable()
                   ->constrained()
                   ->onDelete('cascade');
+
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->timestamps();
             $table->softDeletes();
         });

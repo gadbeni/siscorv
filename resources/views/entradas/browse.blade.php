@@ -27,7 +27,6 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        
                         <div class="table-responsive">
                             <table id="dataTable" class="table table-hover">
                             </table>
@@ -39,6 +38,9 @@
     </div>
 
     @include('partials.modal-delete')
+
+    {{-- Personas modal --}}
+    @include('partials.modal-derivar', ['personas' => $personas])
 @stop
 
 @section('css')
@@ -62,6 +64,10 @@
             ]
             customDataTable("{{ url('admin/entradas/ajax/list') }}/", columns);
         });
+
+        function derivacionItem(id){
+            $('#form-derivacion input[name="id"]').val(id);
+        }
 
         function deleteItem(url){
             $('#delete_form').attr('action', url);
