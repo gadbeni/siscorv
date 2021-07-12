@@ -163,7 +163,7 @@
                                                     @if ( property_exists($row->details, 'format') && !is_null($data->{$row->field}) )
                                                         {{ \Carbon\Carbon::parse($data->{$row->field})->formatLocalized($row->details->format) }}
                                                     @else
-                                                        {{ $data->{$row->field} }}
+                                                        {{ $data->{$row->field} }} <br> <small>{{ \Carbon\Carbon::parse($data->{$row->field})->diffForHumans() }}</small>
                                                     @endif
                                                 @elseif($row->type == 'checkbox')
                                                     @if(property_exists($row->details, 'on') && property_exists($row->details, 'off'))
