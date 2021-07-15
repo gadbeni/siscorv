@@ -14,4 +14,5 @@ class Certificate extends Model
         'price','codigo','type','descripcion','deuda','monto_deuda','user_id',
         'persona_id'
     ];
+
 }

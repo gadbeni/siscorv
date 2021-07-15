@@ -6,6 +6,9 @@ use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
 use App\Http\Livewire\CreateCertificate;
 
+// Cotrollers
+use App\Http\Controllers\EntradasController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,6 +31,17 @@ Route::get('/', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    // Entradas
+    Route::resource('entradas', EntradasController::class);
+    Route::get('entradas/ajax/list', [EntradasController::class, 'list']);
+    Route::post('entradas/store/file', [EntradasController::class, 'store_file']);
+    Route::post('entradas/store/derivacion', [EntradasController::class, 'store_derivacion'])->name('store.derivacion');
+    
+    // Bandeja
+    Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
+    Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
+    Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
     Route::get('search/{name}', [UsersController::class, 'getFuncionario']);
@@ -37,8 +51,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('certificates/create', CreateCertificate::class)->name('certificate.create');
     Route::get('/certificados/getPersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
     Route::get('/certificados/getfuncionarios',[AjaxController::class, 'getFuncionario'])->name('certificados.getFuncionario');
-    Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
 
+    Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
 });
 
 // Clear cache

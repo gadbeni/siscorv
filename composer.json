@@ -20,7 +20,8 @@
         "luecano/numero-a-letras": "^3.0",
         "orangehill/iseed": "^3.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "tcg/voyager": "^1.4"
+        "tcg/voyager": "^1.4",
+        "yajra/laravel-datatables-oracle": "^9.18"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

@@ -34,11 +34,13 @@ class CreateDerivationsTable extends Migration
             $table->dateTime('fecha_registro')->nullable();
             $table->string('actualizado_por', 30)->nullable();
             $table->dateTime('fecha_actualizacion')->nullable();
-
+            $table->dateTime('visto')->nullable();
+            $table->integer('rechazo')->nullable();
             $table->foreignId('entrada_id')
                   ->constrained()
                   ->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

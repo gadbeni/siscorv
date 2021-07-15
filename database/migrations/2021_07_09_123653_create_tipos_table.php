@@ -20,6 +20,7 @@ class CreateTiposTable extends Migration
             $table->char('salida', 1)->nullable();
             $table->string('estado', 10)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

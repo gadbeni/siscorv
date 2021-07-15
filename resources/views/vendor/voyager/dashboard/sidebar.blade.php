@@ -2,7 +2,7 @@
     <nav class="navbar navbar-default" role="navigation">
         <div class="side-menu-container">
             <div class="navbar-header">
-                <a class="navbar-brand" href="{{ route('voyager.profile') }}">
+                <a class="navbar-brand" href="{{ route('voyager.dashboard') }}">
                     <div class="logo-icon-container">
                         <?php $admin_logo_img = Voyager::setting('admin.icon_image', ''); ?>
                         @if($admin_logo_img == '')
@@ -16,7 +16,7 @@
             </div><!-- .navbar-header -->
 
             <div class="panel widget center bgimage"
-                 style="background-image:url({{ Voyager::image( Voyager::setting('admin.bg_image'), asset('images/banner.jpg') ) }}); background-size: cover; background-position: 0px;">
+                 style="background-image:url({{ Voyager::image( Voyager::setting('admin.bg_image'), asset('images/banner.png') ) }}); background-size: cover; background-position: 0px;">
                 <div class="dimmer"></div>
                 <div class="panel-content">
                     <img src="{{ $user_avatar }}" class="avatar" alt="{{ Auth::user()->name }} avatar">

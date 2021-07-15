@@ -19,6 +19,7 @@ class CreateEntitiesTable extends Migration
             $table->string('nombre', 150)->nullable();
             $table->string('estado', 10)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
