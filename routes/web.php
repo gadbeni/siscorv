@@ -34,9 +34,10 @@ Route::group(['prefix' => 'admin'], function () {
 
     //rutas para los certificados
     Route::get('certificates', CertificateController::class)->name('list.certificates');
-    Route::get('certificate/create', CreateCertificate::class)->name('certificate.create');
+    Route::get('certificates/create', CreateCertificate::class)->name('certificate.create');
     Route::get('/certificados/getPersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
     Route::get('/certificados/getfuncionarios',[AjaxController::class, 'getFuncionario'])->name('certificados.getFuncionario');
+    Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
 
 });
 
