@@ -16,7 +16,7 @@ class CreateCertificatesTable extends Migration
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
             $table->decimal('price', 8, 2);
-            $table->string('codigo');
+            $table->string('codigo')->nullable();
             $table->enum('type', ['interno', 'externo']);
             $table->text('descripcion');
             $table->boolean('deuda');

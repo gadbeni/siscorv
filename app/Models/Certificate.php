@@ -8,6 +8,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Certificate extends Model
 {
-    use HasFactory, SoftDeletes;
-    protected $dates = ['deleted_at'];
+    use HasFactory,SoftDeletes;
+
+    protected $fillable = [
+        'price','codigo','type','descripcion','deuda','monto_deuda','user_id',
+        'persona_id'
+    ];
+
 }
