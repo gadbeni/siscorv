@@ -18,6 +18,7 @@ class CreateEstadosTable extends Migration
             $table->string('key', 10)->nullable();
             $table->string('nombre', 30)->nullable();
             $table->string('estado', 10)->nullable();
+            $table->string('color')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
