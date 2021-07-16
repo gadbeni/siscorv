@@ -220,13 +220,13 @@ class EntradasController extends Controller
             $redirect = $request->redirect ?? 'entradas.index';
             $rde = $request->redirect ? null : 1;
             $funcionario = $this->getFuncionario($request->destinatario);
-            // if($funcionario){
-            //     // Actualizar estado de la correspondencia
-            //     Entrada::where('id', $request->id)->update(['estado_id' => 3]);
-            //     $this->add_derivacion($funcionario, $request, null, $rde);
-            // }else{
-            //     return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
-            // }
+            if($funcionario){
+                // Actualizar estado de la correspondencia
+                Entrada::where('id', $request->id)->update(['estado_id' => 3]);
+                $this->add_derivacion($funcionario, $request, null, $rde);
+            }else{
+                return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            }
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             // dd($th);

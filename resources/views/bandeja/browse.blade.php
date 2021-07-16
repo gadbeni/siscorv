@@ -115,6 +115,7 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function(){
             $('.dataTable').DataTable({
@@ -145,6 +146,22 @@
                     }
                 }
             })
+
+
+            // Socket.io
+            let ip_address = '127.0.0.1';
+            let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
+            let socket = io(ip_address + ':' + socket_port);
+            socket.on('sendChatToClient', (id) => {
+                let user_id = "{{ Auth::user()->id }}";
+                if(user_id == id){
+                    location.reload();
+                }
+            });
+
+            @if (session('alert-type'))
+            socket.emit('sendChatToServer', "{{ session('funcionario_id') }}");
+            @endif
         });
 
         function read(id){
