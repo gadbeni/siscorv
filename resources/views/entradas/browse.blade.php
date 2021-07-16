@@ -51,8 +51,10 @@
     </style>
 @stop
 
-@section('javascript')
+@push('javascript')
     <script src="{{ url('js/main.js') }}"></script>
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+
     <script>
         $(document).ready(function() {
             $('#select-destinatario').select2({ dropdownParent: "#modal-derivar" });
@@ -78,5 +80,14 @@
             $('#delete_form').attr('action', url);
         }
 
+        $(function() {
+            let ip_address = '127.0.0.1';
+            let socket_port = '3000';
+            let socket = io(ip_address + ':' + socket_port);
+            @if (session('alert-type'))
+            socket.emit('sendChatToServer', "{{ session('funcionario_id') }}");
+            @endif
+        });
+
     </script>
-@stop
+@endpush
