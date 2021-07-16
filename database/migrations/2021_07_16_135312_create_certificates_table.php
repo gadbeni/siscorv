@@ -25,6 +25,9 @@ class CreateCertificatesTable extends Migration
             $table->foreignId('user_id')
                 ->constrained()
                 ->onDelete('cascade');
+            $table->foreignId('warehouse_id')
+                ->constrained()
+                ->onDelete('cascade');
             $table->foreignId('persona_id')
                    ->constrained()
                    ->onDelete('cascade');

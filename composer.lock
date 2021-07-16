@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00236c78fc5440224603212a17233fe0",
+    "content-hash": "e0f3cd0a0014bebeb212192d86dab763",
     "packages": [
         {
             "name": "arrilot/laravel-widgets",
@@ -1978,7 +1978,7 @@
         },
         {
             "name": "intervention/image",
-            "version": "dev-master",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Intervention/image.git",
@@ -2004,7 +2004,6 @@
                 "ext-imagick": "to use Imagick based image processing.",
                 "intervention/imagecache": "Caching extension for the Intervention Image library"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -2047,7 +2046,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Intervention/image/issues",
-                "source": "https://github.com/Intervention/image/tree/master"
+                "source": "https://github.com/Intervention/image/tree/2.6.0"
             },
             "funding": [
                 {
@@ -7689,16 +7688,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.8.5",
+            "version": "v1.8.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "cab38edc00804700518e110df2677ef34c3dbb2e"
+                "reference": "51ecfe0f048f8f8e6c5617e02a1f67ca22817c98"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/cab38edc00804700518e110df2677ef34c3dbb2e",
-                "reference": "cab38edc00804700518e110df2677ef34c3dbb2e",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/51ecfe0f048f8f8e6c5617e02a1f67ca22817c98",
+                "reference": "51ecfe0f048f8f8e6c5617e02a1f67ca22817c98",
                 "shasum": ""
             },
             "require": {
@@ -7745,7 +7744,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2021-07-13T14:20:58+00:00"
+            "time": "2021-07-15T07:35:41+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -9746,5 +9745,5 @@
         "php": "^7.3|^8.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

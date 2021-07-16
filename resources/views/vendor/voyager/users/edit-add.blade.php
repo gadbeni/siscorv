@@ -81,6 +81,24 @@
                                     @include('voyager::formfields.relationship')
                                 </div>
                                 <div class="form-group">
+                                    @php
+                                        if($dataTypeContent->getKey()){
+                                            $user = \App\Models\User::find($dataTypeContent->id);
+                                        }
+                                    @endphp
+                                    <label for="default_role">{{ __('Almacen') }}</label>
+                                    <select name="warehouses[]" class="form-control select2">
+                                        <option value="" selected>Seleccione</option>
+                                        @foreach (\App\Models\Warehouse::orderBy('name')->pluck('name','id') as $id => $warehouse)
+                                        @if(!is_null($dataTypeContent->getKey()))
+                                            <option {{collect(old('warehouses', $user->warehouses->pluck('id')))->contains($id) ? 'selected' : ''  }} value="{{ $id }}">{{ $warehouse }} </option>
+                                        @else
+                                         <option value="{{ $id }}">{{ $warehouse }} </option>
+                                        @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="additional_roles">{{ __('voyager::profile.roles_additional') }}</label>
                                     @php
                                         $row     = $dataTypeRows->where('field', 'user_belongstomany_role_relationship')->first();
@@ -95,8 +113,8 @@
                             } else {
                                 $selected_locale = config('app.locale', 'en');
                             }
-
                             @endphp
+                            
                         </div>
                     </div>
                 </div>

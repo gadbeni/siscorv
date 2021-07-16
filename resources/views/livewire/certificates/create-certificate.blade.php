@@ -10,7 +10,18 @@
 <div class="page-content container-fluid">
     <div class="row">
         <div class="panel panel-bordered">
-            @if ($printcertificate)
+            @if (is_null($warehouse_id))
+                <div class="panel-body">
+                    <div class="text-center">
+                        <h3 style="color: green">
+                            <span >
+                                No estas asignado a una Sucursal contacta con los administradores Gracias..
+                            </span>
+                        </h3>
+                        
+                    </div>
+                </div>
+            @elseif ($printcertificate)
             <div class="panel-body">
                 <div class="text-center">
                     <a href="{{route('certificates.imprimir',$certId)}}"
@@ -110,6 +121,18 @@
                         @endforeach
                     </select>
                 </div>
+                @if ($almacenes->count() > 1)
+                    <div class="col-sm-12 col-md-6">
+                        <label>Almacen:</label>
+                        <select wire:model="warehouse_id" class="form-control">
+                            <option value='0'>-- Select Almacen --</option>
+                            @foreach($almacenes as $almacen)
+                            <option value='{{$almacen->id}}'>{{$almacen->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                
                 <div class="col-sm-12 col-md-12">
                     <label class="custom-file-label">Descripcion</label>
                     <textarea class="form-control" wire:model="descripcion" rows="4" value="{{$descripcion}}"></textarea>
