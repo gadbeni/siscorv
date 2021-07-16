@@ -8,10 +8,13 @@
     </div>
     <div class="col-md-6 text-right" style="margin-top: 40px;">
         <div class="btn-group" role="group" aria-label="...">
-            <button type="button" data-toggle="modal" data-target="#derivar_modal" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
-            <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
-            <button type="button" title="Anterio" class="btn btn-default"><i class="voyager-angle-left"></i></button>
-            <button type="button" title="Siguiente" class="btn btn-default"><i class="voyager-angle-right"></i></button>
+            @if ($data->estado_id != 4)
+                <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
+                <button type="button" data-toggle="modal" data-target="#modal-derivar" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
+                <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
+            @endif
+            {{-- <button type="button" title="Anterio" class="btn btn-default"><i class="voyager-angle-left"></i> &nbsp;</button>
+            <button type="button" title="Siguiente" class="btn btn-default"><i class="voyager-angle-right"></i> &nbsp;</button> --}}
         </div>
     </div>
 @stop
@@ -97,10 +100,12 @@
                                         <h3 class="panel-title">Archivos</h3>
                                     </div>
                                     <div class="col-md-3 text-right">
+                                        @if ($data->estado_id != 4)
                                         <a href="#" data-toggle="modal" data-target="#modal-upload" class="btn btn-success" style="margin: 15px;">
                                             <span class="voyager-plus"></span>&nbsp;
                                             Agregar nuevo
                                         </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -146,8 +151,30 @@
 
     @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
 
+    {{-- rechazar modal --}}
+    <form action="{{ route('bandeja.archivar', ['id' => $data->id]) }}" method="post">
+        <div class="modal modal-success fade" tabindex="-1" id="modal-archivar" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-categories"></i> Archivar correspondencia</h4>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        <input type="hidden" name="id" value="{{ $data->id }}">
+                    </div>
+                    <div class="modal-footer text-right">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Archivar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    
     {{-- Personas modal --}}
-    @include('partials.modal-derivar', ['personas' => $personas])
+    @include('partials.modal-derivar', ['personas' => $personas, 'id' => $data->id, 'redirect' => 'bandeja.index'])
 
     {{-- rechazar modal --}}
     <form action="{{ route('bandeja.rechazar', ['id' => $data->id]) }}" method="post">
@@ -178,13 +205,17 @@
 
 @section('css')
     <link rel="stylesheet" href="{{ asset('vendor/dropzone/dropzone.min.css') }}">
-@endsection
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
 
 @section('javascript')
 <script src="{{ asset('vendor/dropzone/dropzone.min.js') }}"></script>
     <script>
         $(document).ready(function () {
-
+            $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
         });
     </script>
 @stop

@@ -44,13 +44,18 @@
 @stop
 
 @section('css')
-
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
 @stop
 
 @section('javascript')
     <script src="{{ url('js/main.js') }}"></script>
     <script>
         $(document).ready(function() {
+            $('#select-destinatario').select2({ dropdownParent: "#modal-derivar" });
             let columns = [
                 { data: 'hr', title: 'HR' },
                 { data: 'fecha_ingreso', title: 'Fecha de ingreso' },

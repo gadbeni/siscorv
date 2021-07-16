@@ -64,7 +64,7 @@ class UsersController extends Controller
 
         $input = $request->all();
         $input['estado'] = 'ACTIVO';
-        $input['name'] = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
+        $input['name'] = $input['nombre'];
         $input['registrado_por'] = $request->user()->email;
 
         DB::beginTransaction();
@@ -79,7 +79,7 @@ class UsersController extends Controller
             ]);
             $input['user_id'] = $user->id;
             $input['tipo'] = 'user';
-            $input['full_name'] = $input['name'];
+            $input['full_name'] = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
             Persona::create($input);
             DB::commit();
         } catch (\Exception $e) {
@@ -93,7 +93,7 @@ class UsersController extends Controller
         ->route('voyager.users.index')
         ->with([
                 'message' => "El usuario, se registro con exito.",
-                'alert-type' => 'info'
+                'alert-type' => 'success'
             ]);
     }
 
@@ -111,7 +111,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->update([
-                'role_id' => $request->role_id,
+                // 'role_id' => $request->role_id,
                 'email' => $request->email,
             ]);
             if ($request->password != '') {
@@ -139,7 +139,7 @@ class UsersController extends Controller
         ->route('voyager.users.index')
         ->with([
                 'message' => "El usuario, se actualizo con exito.",
-                'alert-type' => 'info'
+                'alert-type' => 'success'
             ]);
     }
 }

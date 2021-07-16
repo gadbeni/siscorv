@@ -13,4 +13,8 @@ class Archivo extends Model
     protected $fillable = [
         'nombre_origen', 'entrada_id', 'ruta', 'user_id'
     ];
+
+    function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

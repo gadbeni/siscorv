@@ -14,6 +14,7 @@ use Storage;
 use App\Models\Entrada;
 use App\Models\Archivo;
 use App\Models\Derivation;
+use App\Models\Persona;
 
 class EntradasController extends Controller
 {
@@ -56,12 +57,12 @@ class EntradasController extends Controller
                 return $row->estado->nombre;
             })
             ->addColumn('action', function($row){
-                $derivar_button = ' <button data-toggle="modal" data-target="#derivar_modal" onclick="derivacionItem('.$row->id.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                $derivar_button = ' <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem('.$row->id.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
                                         <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
                                     </button>';
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
-                        '.(count($row->derivaciones->where('deleted_at', NULL)) == 0 ? $derivar_button : '').'
+                        '.($row->estado->id == 6 ? $derivar_button : '').'
                         <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
@@ -146,7 +147,12 @@ class EntradasController extends Controller
      */
     public function show($id)
     {
-        $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])->where('id', $id)->where('deleted_at', NULL)->first();
+        $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
+                    $q->where('deleted_at', NULL);
+                }, 'archivos' => function($q){
+                    $q->where('deleted_at', NULL);
+                }])->where('id', $id)
+                ->where('deleted_at', NULL)->first();
         return view('entradas.read', compact('data'));
     }
 
@@ -200,33 +206,48 @@ class EntradasController extends Controller
                     'user_id' => Auth::user()->id
                 ]);
             }
-            return response()->json(['data'=>'Archivo agregado correctamente.']);
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Archivo agregado correctamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(['error'=>'Ocurrió un error al subir el archivo.']);
+            // dd($th);
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 
     public function store_derivacion(Request $request){
         try {
+            $redirect = $request->redirect ?? 'entradas.index';
+            $rde = $request->redirect ? null : 1;
             $funcionario = $this->getFuncionario($request->destinatario);
             if($funcionario){
-                $this->add_derivacion($funcionario, $request);
+                // Actualizar estado de la correspondencia
+                Entrada::where('id', $request->id)->update(['estado_id' => 3]);
+                $this->add_derivacion($funcionario, $request, null, $rde);
             }else{
-                return redirect()->route('entradas.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+                return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
             }
-            
-
-            return redirect()->route('entradas.index')->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
-            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 
     public function derivacion_index(){
-        $ingresos = Derivation::with(['entrada.entity'])->where('deleted_at', NULL)->get();
-        return view('bandeja.browse', compact('ingresos'));
+        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        $ingresos = [];
+        $funcionario_id = null;
+        if ($funcionario) {
+            $funcionario_id = $funcionario->funcionario_id;
+            $ingresos = Entrada::with(['entity', 'derivaciones'])
+                        ->whereHas('derivaciones', function($q) use($funcionario_id){
+                            $q->where('funcionario_id_para', $funcionario_id)->where('deleted_at', NULL);
+                        })
+                        ->where('deleted_at', NULL)->get();
+        }
+
+        // dd($ingresos);
+
+        return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
     }
 
     public function derivacion_show($id)
@@ -249,44 +270,83 @@ class EntradasController extends Controller
         }
     }
 
+    public function derivacion_archivar(Request $request){
+        // dd($request);
+        try {
+            /* CAmbiar el estado de la entrada a finalizada */
+            Entrada::where('id', $request->id)->update(['estado_id' => 4]);
+            return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            dd($th);
+            return redirect()->route('bandeja.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
     public function derivacion_rechazar($id, Request $request)
     {
         try {
-            // Obtener la lista de derivaciones en ordern descendente
-            $derivaciones = Derivation::where('entrada_id', $id)->where('deleted_at', NULL)->where('rechazo', NULL)->orderBy('id', 'DESC')->get();
-            // Si solo ha habido una sola dewrivación se anula, sino se deriva al último remitente
-            
-            if(count($derivaciones) == 1){
-                Derivation::where('id', $derivaciones[0]->id)->update([
-                    'deleted_at' => Carbon::now()
-                ]);
-                Entrada::where('id', $id)->update([
-                    'observacion_rechazo' => $request->observacion
-                ]);
-                return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
-            }else{
-                $funcionario = $this->getFuncionario($derivaciones[0]->funcionario_id_de);
+            $persona = Persona::where('user_id', Auth::user()->id)->first();
+            // Obtener la última derivación que se realizo al usuario actual
+            $derivacion = Derivation::where('entrada_id', $id)
+                                ->where('funcionario_id_para', $persona->funcionario_id)
+                                ->where('deleted_at', NULL)->where('rechazo', NULL)->orderBy('id', 'DESC')->first();
+            // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
+
+            if ($derivacion->funcionario_id_de) {
+                $funcionario = $this->getFuncionario($derivacion->funcionario_id_de);
                 if($funcionario){
-                    $this->add_derivacion($funcionario, $request);
+                    $this->add_derivacion($funcionario, $request, 1);
                 }else{
-                    return redirect()->route('bandeja.show', ['id' => $derivaciones[0]->id])->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
-                }   
+                    return redirect()->route('bandeja.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+                }
+            } else {
+                Entrada::where('id', $derivacion->entrada_id)->update(['estado_id' => 6, 'referencia' => $request->observacion]);
             }
 
-            return redirect()->route('bandeja.show', ['id' => $derivaciones[0]->id])->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            // dd($th);
+            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function delete_derivacion(Request $request){
+        // dd($request);
+        try {
+            Derivation::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             dd($th);
-            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function delete_derivacion_file(Request $request){
+        // dd($request);
+        try {
+            Archivo::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Archivo eliminado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            // dd($th);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 
 
     // =============================================================
 
-    public function add_derivacion($funcionario, $request){
+    public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
+        /*Si la derivación viene del RDE no se registra al funcionario de origen*/
+        if(!$rde){
+            $persona = Persona::where('user_id', Auth::user()->id)->first();
+            if(!$persona){
+                return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
+            }
+        }
+
         return Derivation::create([
             'entrada_id' => $request->id,
-            'funcionario_id_de' => 26,
+            'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
             'funcionario_id_para' => $funcionario->id_funcionario,
             'funcionario_nombre_para' => $funcionario->nombre,
             'funcionario_cargo_para' => $funcionario->cargo,
@@ -296,6 +356,7 @@ class EntradasController extends Controller
             'funcionario_unidad_para' => $funcionario->unidad,
             'responsable_actual' => 1,
             'estado' => 'activo',
+            'rechazo' => $rechazo,
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion
         ]);
