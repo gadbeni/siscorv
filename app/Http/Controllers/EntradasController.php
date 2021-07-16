@@ -214,18 +214,20 @@ class EntradasController extends Controller
     }
 
     public function store_derivacion(Request $request){
+        $user = Persona::where('funcionario_id', $request->destinatario)->first();
+        // dd($funcionario->user_id);
         try {
             $redirect = $request->redirect ?? 'entradas.index';
             $rde = $request->redirect ? null : 1;
             $funcionario = $this->getFuncionario($request->destinatario);
-            if($funcionario){
-                // Actualizar estado de la correspondencia
-                Entrada::where('id', $request->id)->update(['estado_id' => 3]);
-                $this->add_derivacion($funcionario, $request, null, $rde);
-            }else{
-                return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
-            }
-            return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success']);
+            // if($funcionario){
+            //     // Actualizar estado de la correspondencia
+            //     Entrada::where('id', $request->id)->update(['estado_id' => 3]);
+            //     $this->add_derivacion($funcionario, $request, null, $rde);
+            // }else{
+            //     return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            // }
+            return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             // dd($th);
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);

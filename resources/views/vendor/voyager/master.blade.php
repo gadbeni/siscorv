@@ -149,14 +149,36 @@
     @if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
         @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
     @endif
-@include('voyager::media.manager')
+    @livewireScripts
 
-@yield('javascript')
-@stack('javascript')
-@if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
-    @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
-@endif
+    {{-- Socket.io --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> --}}
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 
-@livewireScripts
+
+    <script>
+        $(function() {
+            // Pedir autorización para mostrar notificaciones
+            Notification.requestPermission().then(function (permission) {
+                console.log(permission)
+                var notification = new Notification("Hi there!");
+            });
+
+            let ip_address = '127.0.0.1';
+            let socket_port = '3000';
+            let socket = io(ip_address + ':' + socket_port);
+            socket.on('sendChatToClient', (id) => {
+                let user_id = "{{ Auth::user()->id }}";
+                if(user_id == id){
+                    if(Notification.permission=='granted'){
+                        let notificacion = new Notification('Nueva derivación',{
+                            body: 'Tienes un trámite nuevo',
+                            icon: '{{ url("images/icon.png") }}'
+                        });
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
