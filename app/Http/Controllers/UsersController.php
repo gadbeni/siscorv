@@ -65,6 +65,8 @@ class UsersController extends Controller
 
         $input = $request->all();
         $input['estado'] = 'ACTIVO';
+
+        $input['name'] = $input['nombre'];
         $input['registrado_por'] = $request->user()->email;
 
         DB::beginTransaction();
@@ -97,7 +99,7 @@ class UsersController extends Controller
         ->route('voyager.users.index')
         ->with([
                 'message' => "El usuario, se registro con exito.",
-                'alert-type' => 'info'
+                'alert-type' => 'success'
             ]);
     }
 
@@ -116,7 +118,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->update([
-                'role_id' => $request->role_id,
+                // 'role_id' => $request->role_id,
                 'email' => $request->email,
             ]);
             if ($request->warehouses[0]) {
@@ -147,7 +149,7 @@ class UsersController extends Controller
         ->route('voyager.users.index')
         ->with([
                 'message' => "El usuario, se actualizo con exito.",
-                'alert-type' => 'info'
+                'alert-type' => 'success'
             ]);
     }
 }

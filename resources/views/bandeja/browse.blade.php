@@ -7,37 +7,93 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        <div class="table-responsive">
-                            <table id="dataTable" class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>HR</th>
-                                        <th>Nro. de cite</th>
-                                        <th>Fecha de ingreso</th>
-                                        <th>Origen</th>
-                                        <th>Remitente</th>
-                                        <th>Referencia</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($ingresos as $item)
-                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
-                                            <td></td>
-                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}</small></td>
-                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                            <td>{{ $item->entrada->cite }}</td>
-                                            <td>{{ $item->entrada->entity->nombre }}</td>
-                                            <td>{{ $item->entrada->remitente }}</td>
-                                            <td>{{ $item->entrada->referencia }}</td>
-                                            <td></td>
-                                        </tr>
-                                    @empty
-                                        
-                                    @endforelse
-                                </tbody>
-                            </table>
+
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#home">Pendientes</a></li>
+                            <li><a data-toggle="tab" href="#menu1">Archivados</a></li>
+                        </ul>
+                        
+                        <div class="tab-content">
+                            <div id="home" class="tab-pane fade in active">
+                                <div class="table-responsive">
+                                    <table class="dataTable table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Fecha de derivación</th>
+                                                <th>HR</th>
+                                                <th>Nro. de cite</th>
+                                                <th>Origen</th>
+                                                <th>Remitente</th>
+                                                <th>Referencia</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($ingresos as $item)
+                                                @php
+                                                    $derivacion = $item->derivaciones[count($item->derivaciones)-1];
+                                                    // dd($derivacion);
+                                                @endphp
+                                                @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && $item->estado_id != 4)
+                                                    <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                        <td></td>
+                                                        <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
+                                                        <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                        <td>{{ $item->cite }}</td>
+                                                        <td>{{ $item->entity->nombre }}</td>
+                                                        <td>{{ $item->remitente }}</td>
+                                                        <td>{{ $item->referencia }}</td>
+                                                        <td></td>
+                                                    </tr>
+                                                @endif
+                                            @empty
+                                                
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="menu1" class="tab-pane fade">
+                                <div class="table-responsive">
+                                    <table class="dataTable table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>Fecha de derivación</th>
+                                                <th>HR</th>
+                                                <th>Nro. de cite</th>
+                                                <th>Origen</th>
+                                                <th>Remitente</th>
+                                                <th>Referencia</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @forelse ($ingresos as $item)
+                                                @php
+                                                    $derivacion = $item->derivaciones[count($item->derivaciones)-1];
+                                                    // dd($derivacion);
+                                                @endphp
+                                                @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
+                                                    <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                        <td></td>
+                                                        <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
+                                                        <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                        <td>{{ $item->cite }}</td>
+                                                        <td>{{ $item->entity->nombre }}</td>
+                                                        <td>{{ $item->remitente }}</td>
+                                                        <td>{{ $item->referencia }}</td>
+                                                        <td></td>
+                                                    </tr>
+                                                @endif
+                                            @empty
+                                                
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -59,9 +115,10 @@
 @endsection
 
 @section('javascript')
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
     <script>
         $(document).ready(function(){
-            $('#dataTable').DataTable({
+            $('.dataTable').DataTable({
                 language: {
                     sProcessing: "Procesando...",
                     sLengthMenu: "Mostrar _MENU_ registros",
@@ -89,6 +146,22 @@
                     }
                 }
             })
+
+
+            // Socket.io
+            let ip_address = '127.0.0.1';
+            let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
+            let socket = io(ip_address + ':' + socket_port);
+            socket.on('sendChatToClient', (id) => {
+                let user_id = "{{ Auth::user()->id }}";
+                if(user_id == id){
+                    location.reload();
+                }
+            });
+
+            @if (session('alert-type'))
+            socket.emit('sendChatToServer', "{{ session('funcionario_id') }}");
+            @endif
         });
 
         function read(id){

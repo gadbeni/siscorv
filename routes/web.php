@@ -1,13 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// Cotrollers
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\EntradasController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
 use App\Http\Livewire\CreateCertificate;
-
-// Cotrollers
-use App\Http\Controllers\EntradasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,10 +25,8 @@ Route::get('login', function () {
     return redirect('admin/login');
 })->name('login');
 
-Route::get('/', function () {
-    return redirect('admin');
-});
-
+Route::get('/', [HomeController::class, 'index']);
+Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
@@ -37,11 +36,15 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('entradas/ajax/list', [EntradasController::class, 'list']);
     Route::post('entradas/store/file', [EntradasController::class, 'store_file']);
     Route::post('entradas/store/derivacion', [EntradasController::class, 'store_derivacion'])->name('store.derivacion');
+    Route::post('entradas/delete/derivacion', [EntradasController::class, 'delete_derivacion'])->name('delete.derivacion');
+    Route::post('entradas/delete/derivacion/file', [EntradasController::class, 'delete_derivacion_file'])->name('delete.derivacion.file');
     
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
     Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
     Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
+    Route::post('bandeja/{id}/archivar', [EntradasController::class, 'derivacion_archivar'])->name('bandeja.archivar');
+    
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
     Route::get('search/{name}', [UsersController::class, 'getFuncionario']);
