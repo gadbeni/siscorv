@@ -42,7 +42,7 @@ class AjaxController extends Controller
         return response()->json($response);
     }
 
-    public function getFuncionario(Request $request){
+    public function getFuncionarios(Request $request){
         $search = $request->search;
 
         if($search == ''){

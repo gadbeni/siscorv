@@ -13,7 +13,7 @@ class CreateCertificate extends Component
 {
     public $pageTitle, $componentName,$selected_id, $deuda, $checkdeuda,$printcertificate,
            $price, $descripcion,$type, $funcionarioId, $departamento_id, $alfanum,
-           $ap_paterno, $ap_materno, $ci, $nombre, $certId;
+           $ap_paterno, $ap_materno, $ci, $nombre, $certId, $warehouse_id;
 
     public function mount(){
         $this->pageTitle = 'Listado';
@@ -26,12 +26,16 @@ class CreateCertificate extends Component
         $this->price = 0;
         $this->departamento_id = 0;
         $this->funcionarioId = 0;
+        if (auth()->user()->warehouses->count()) {
+            $this->warehouse_id = auth()->user()->warehouses[0]->id;
+        }
     }
 
     public function render()
     {
         return view('livewire.certificates.create-certificate',[
-                    'departamentos' => Departamento::all()
+                    'departamentos' => Departamento::all(),
+                    'almacenes' => auth()->user()->warehouses
                 ])
                ->extends('vendor.voyager.master')
                ->section('content');
@@ -108,7 +112,7 @@ class CreateCertificate extends Component
                 $persona_id = $customer->id;
                 $cod = $customer->nombre[0].''.$customer->ap_paterno[0].''.$customer->ap_materno[0];
             }
-            if ($this->funcionarioId == 0) {
+            if ($this->funcionarioId === 0) {
                 $persona = new Persona;
                 $persona->nombre = $this->getNameattribute($this->nombre);
                 $persona->ap_paterno = $this->getNameattribute($this->ap_paterno);
@@ -131,7 +135,8 @@ class CreateCertificate extends Component
             'deuda'         => ($this->checkdeuda) ? true : false,
             'monto_deuda'   => $this->deuda,
             'user_id'       => auth()->user()->id,
-            'persona_id'    => $persona_id
+            'persona_id'    => $persona_id,
+            'warehouse_id'  => $this->warehouse_id
         ]);
         $cert->codigo = $cod.''.$cert->id;
         $cert->update();

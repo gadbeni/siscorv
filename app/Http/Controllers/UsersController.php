@@ -44,6 +44,7 @@ class UsersController extends Controller
         return response()->json($response);
     }
     public function create_user(Request $request){
+        
         $rules = [
             'nombre' => 'required|max:100',
             'ap_paterno' => 'required|max:75',
@@ -64,6 +65,7 @@ class UsersController extends Controller
 
         $input = $request->all();
         $input['estado'] = 'ACTIVO';
+
         $input['name'] = $input['nombre'];
         $input['registrado_por'] = $request->user()->email;
 
@@ -71,7 +73,7 @@ class UsersController extends Controller
         try {
             
             $user = User::create([
-                'name' =>  $input['name'],
+                'name' =>  $input['nombre'],
                 'role_id' => $request->role_id,
                 'email' => $request->email,
                 'avatar' => 'users/default.png',
@@ -81,6 +83,10 @@ class UsersController extends Controller
             $input['tipo'] = 'user';
             $input['full_name'] = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
             Persona::create($input);
+
+            if ($request->warehouses[0]) {
+                $user->warehouses()->attach($request->warehouses);
+            } 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -98,6 +104,7 @@ class UsersController extends Controller
     }
 
     public function update_user(Request $request, User $user){
+       
         $rules = [
             'email' => "required|max:255|unique:users,email,{$user->id}",
         ];
@@ -114,6 +121,9 @@ class UsersController extends Controller
                 // 'role_id' => $request->role_id,
                 'email' => $request->email,
             ]);
+            if ($request->warehouses[0]) {
+                $user->warehouses()->sync($request->warehouses);
+            } 
             if ($request->password != '') {
                 $user->password = bcrypt($request->password);
                 $user->save();
@@ -122,8 +132,8 @@ class UsersController extends Controller
             }
             $input['user_id'] = $user->id;
             if ($request->funcionario_id != '') {
-                $user->name = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
-                $input['full_name'] = $user->name;
+                $user->name = $input['nombre'];
+                $input['full_name'] = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
                 $user->update();
                 Persona::update($input);
             }
