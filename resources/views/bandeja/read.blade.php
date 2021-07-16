@@ -204,7 +204,6 @@
 @stop
 
 @section('css')
-    <link rel="stylesheet" href="{{ asset('vendor/dropzone/dropzone.min.css') }}">
     <style>
         .select2-container {
             width: 100% !important;
@@ -212,7 +211,6 @@
     </style>
 
 @section('javascript')
-<script src="{{ asset('vendor/dropzone/dropzone.min.js') }}"></script>
     <script>
         $(document).ready(function () {
             $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });

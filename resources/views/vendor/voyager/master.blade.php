@@ -159,13 +159,10 @@
     <script>
         $(function() {
             // Pedir autorización para mostrar notificaciones
-            Notification.requestPermission().then(function (permission) {
-                console.log(permission)
-                var notification = new Notification("Hi there!");
-            });
+            Notification.requestPermission();
 
             let ip_address = '127.0.0.1';
-            let socket_port = '3000';
+            let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
             let socket = io(ip_address + ':' + socket_port);
             socket.on('sendChatToClient', (id) => {
                 let user_id = "{{ Auth::user()->id }}";
@@ -175,6 +172,11 @@
                             body: 'Tienes un trámite nuevo',
                             icon: '{{ url("images/icon.png") }}'
                         });
+
+                        notificacion.onclick = function(event) {
+                            event.preventDefault(); // Previene al buscador de mover el foco a la pestaña del Notification
+                            window.location = "{{ route('bandeja.index') }}";
+                        }
                     }
                 }
             });
