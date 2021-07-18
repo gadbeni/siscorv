@@ -6,10 +6,18 @@ use Illuminate\Http\Request;
 
 // Models
 use App\Models\Entrada;
+use App\Models\RequestsClient;
 
 class HomeController extends Controller
 {
     public function index(){
+        /* Capturar datos de la petición del cliente */
+        try {
+            RequestsClient::create([
+                'ip' => $_SERVER['REMOTE_ADDR'],
+                'user_agent' => $_SERVER['HTTP_USER_AGENT']
+            ]);
+        } catch (\Throwable $th) {}
         return view('welcome');
     }
 
