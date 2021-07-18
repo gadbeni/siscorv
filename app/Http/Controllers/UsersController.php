@@ -118,7 +118,7 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->update([
-                // 'role_id' => $request->role_id,
+                'role_id' => $request->role_id,
                 'email' => $request->email,
             ]);
             if ($request->warehouses[0]) {
