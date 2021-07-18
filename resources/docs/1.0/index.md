@@ -1,2 +1,4 @@
-- ## Get Started
-    - [Overview](/{{route}}/{{version}}/overview)
+- ## Inicio
+    - [Introduccion](/{{route}}/{{version}}/overview)
+    - [Funcionalidades](/{{route}}/{{version}}/funcionalidades)
+    - [Acceso al Sistema](/{{route}}/{{version}}/login)
