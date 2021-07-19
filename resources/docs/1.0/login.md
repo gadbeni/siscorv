@@ -13,8 +13,8 @@ SISCOR, sistema de correspondencia es una aplicación web que puede ser accedida
 
 
 <a name="auth-pass"></a>
-## Autenticacion de usuarios
-Tanto el nombre de usuario como la contraseña de acceso son asignadas por un administrador del sistema las cuales serian las credenciales para acceso al sistema:
+## Autenticación de usuarios
+Tanto el nombre de usuario como la contraseña de acceso son asignadas por un administrador del sistema las cuales serían las credenciales para acceso al sistema:
 + Nombre de Usuario.
 + Contraseña.
 

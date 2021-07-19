@@ -5,7 +5,7 @@
 @if(auth()->user()->hasPermission('browse_entradas'))
 
     @section('page_header')
-        <div class="container-fluid">
+        <div class="container-fluid div-phone">
             <div class="row">
                 <div class="col-md-8">
                     <h1 class="page-title">
@@ -26,7 +26,7 @@
         <div class="page-content browse container-fluid">
             @include('voyager::alerts')
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 div-phone">
                     <div class="panel panel-bordered">
                         <div class="panel-body">
                             <div class="table-responsive">
@@ -87,7 +87,7 @@
                 let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
                 let socket = io(ip_address + ':' + socket_port);
                 @if (session('alert-type'))
-                socket.emit('sendChatToServer', "{{ session('funcionario_id') }}");
+                socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
             });
 
