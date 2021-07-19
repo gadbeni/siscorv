@@ -47,6 +47,17 @@
         }
     </style>
 
+    <style>
+        @media screen and (max-width: 768px) {
+            .div-phone{
+                padding: 0px !important
+            }
+            .div-phone-main{
+                padding-left: 0px !important
+            }
+        }
+    </style>
+
     @if(!empty(config('voyager.additional_css')))<!-- Additional CSS -->
         @foreach(config('voyager.additional_css') as $css)<link rel="stylesheet" type="text/css" href="{{ asset($css) }}">@endforeach
     @endif
@@ -107,7 +118,7 @@
                 })();
             </script>
             <!-- Main Content -->
-            <div class="container-fluid">
+            <div class="container-fluid div-phone-main">
                 <div class="side-body padding-top">
                     @yield('page_header')
                     <div id="voyager-notifications"></div>
@@ -164,7 +175,7 @@
             let ip_address = '127.0.0.1';
             let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
             let socket = io(ip_address + ':' + socket_port);
-            socket.on('sendChatToClient', (id) => {
+            socket.on('sendNotificationToClient', (id) => {
                 let user_id = "{{ Auth::user()->id }}";
                 if(user_id == id){
                     if(Notification.permission=='granted'){

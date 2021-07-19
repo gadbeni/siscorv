@@ -22,7 +22,7 @@
     @stop
 
     @section('content')
-        <div class="page-content read container-fluid">
+        <div class="page-content read container-fluid div-phone">
             <div class="row">
                 <div class="col-md-12">
 

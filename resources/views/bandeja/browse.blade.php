@@ -8,7 +8,7 @@
         <div class="page-content browse container-fluid">
             @include('voyager::alerts')
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 div-phone">
                     <div class="panel panel-bordered">
                         <div class="panel-body">
 
@@ -156,7 +156,7 @@
                 let ip_address = '127.0.0.1';
                 let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
                 let socket = io(ip_address + ':' + socket_port);
-                socket.on('sendChatToClient', (id) => {
+                socket.on('sendNotificationToClient', (id) => {
                     let user_id = "{{ Auth::user()->id }}";
                     if(user_id == id){
                         location.reload();
@@ -164,7 +164,7 @@
                 });
 
                 @if (session('alert-type'))
-                socket.emit('sendChatToServer', "{{ session('funcionario_id') }}");
+                socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
             });
 
