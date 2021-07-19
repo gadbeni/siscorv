@@ -24,7 +24,7 @@ class CreateEntradasTable extends Migration
             $table->string('nro_hojas', 30)->nullable();
             $table->string('funcionario_id_remitente', 10)->nullable();
             $table->string('funcionario_id_responsable', 10)->nullable();
-            $table->string('estado', 20)->nullable();
+            //$table->string('estado', 20)->nullable();
 
             $table->string('registrado_por', 30)->nullable();
             $table->integer('registrado_por_id_direccion')->nullable();

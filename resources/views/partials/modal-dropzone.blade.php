@@ -10,7 +10,7 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" name="id" value="{{ isset($id) ? $id : 0 }}">
-                    <input type="file" name="file" id="">
+                    <input type="file" name="file" id="" accept="application/pdf">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

@@ -32,11 +32,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-21 10:01:44',
                 'updated_at' => '2021-01-11 12:07:31',
+                'deleted_at' => NULL,
             ),
             1 => 
             array (
                 'id' => 2,
-                'role_id' => NULL,
+                'role_id' => 2,
                 'name' => 'Jimena Jimenez',
                 'email' => 'jimena.jimenez',
                 'avatar' => 'users/default.png',
@@ -46,6 +47,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-21 10:01:44',
                 'updated_at' => '2020-12-21 10:01:44',
+                'deleted_at' => NULL,
             ),
             2 => 
             array (
@@ -60,11 +62,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-22 10:58:31',
                 'updated_at' => '2020-12-28 16:04:44',
+                'deleted_at' => NULL,
             ),
             3 => 
             array (
                 'id' => 4,
-                'role_id' => NULL,
+                'role_id' => 2,
                 'name' => 'CARLOS  COCARICO RAPU',
                 'email' => 'carlos.cocarico',
                 'avatar' => 'users/default.png',
@@ -74,11 +77,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-22 11:10:26',
                 'updated_at' => '2021-03-15 08:32:34',
+                'deleted_at' => NULL,
             ),
             4 => 
             array (
                 'id' => 5,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'FANOR  AMAPO YUBANERA',
                 'email' => 'fanor.amapo',
                 'avatar' => 'users/default.png',
@@ -88,6 +92,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-22 11:11:10',
                 'updated_at' => '2021-01-07 11:14:55',
+                'deleted_at' => NULL,
             ),
             5 => 
             array (
@@ -102,11 +107,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-22 15:47:36',
                 'updated_at' => '2020-12-28 08:55:31',
+                'deleted_at' => NULL,
             ),
             6 => 
             array (
                 'id' => 7,
-                'role_id' => NULL,
+                'role_id' => 2,
                 'name' => 'YRMA LUZ BANEGAS NOE',
                 'email' => 'yrma.luz',
                 'avatar' => 'users/default.png',
@@ -116,11 +122,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-28 12:09:27',
                 'updated_at' => '2021-01-11 19:09:33',
+                'deleted_at' => NULL,
             ),
             7 => 
             array (
                 'id' => 8,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'MESIAS MESAC ZABALA PALMA',
                 'email' => 'mesias.mesac',
                 'avatar' => 'users/default.png',
@@ -130,11 +137,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-28 12:43:30',
                 'updated_at' => '2020-12-29 10:08:14',
+                'deleted_at' => NULL,
             ),
             8 => 
             array (
                 'id' => 9,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'MARITA  NOE RODRIGUEZ',
                 'email' => 'marita.noe',
                 'avatar' => 'users/default.png',
@@ -144,11 +152,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:44:40',
                 'updated_at' => '2020-12-29 09:44:40',
+                'deleted_at' => NULL,
             ),
             9 => 
             array (
                 'id' => 10,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'LAUREANO  PEDRIEL  EGUEZ',
                 'email' => 'laureano.pedriel',
                 'avatar' => 'users/default.png',
@@ -158,11 +167,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:45:39',
                 'updated_at' => '2020-12-29 09:45:39',
+                'deleted_at' => NULL,
             ),
             10 => 
             array (
                 'id' => 11,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'SANTIAGO  ARRAZOLA  VACA',
                 'email' => 'santiago.arrazola',
                 'avatar' => 'users/default.png',
@@ -172,6 +182,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:46:43',
                 'updated_at' => '2020-12-29 09:46:43',
+                'deleted_at' => NULL,
             ),
             11 => 
             array (
@@ -186,11 +197,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:52:07',
                 'updated_at' => '2020-12-29 09:52:07',
+                'deleted_at' => NULL,
             ),
             12 => 
             array (
                 'id' => 13,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'ALEXANDER  FRANCO DIEZ',
                 'email' => 'alexander.franco',
                 'avatar' => 'users/default.png',
@@ -200,11 +212,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:53:53',
                 'updated_at' => '2020-12-29 11:14:41',
+                'deleted_at' => NULL,
             ),
             13 => 
             array (
                 'id' => 14,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'MARLENY  TEREBA ESCALANTE',
                 'email' => 'marleny.tereba',
                 'avatar' => 'users/default.png',
@@ -214,11 +227,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:55:24',
                 'updated_at' => '2020-12-29 09:55:24',
+                'deleted_at' => NULL,
             ),
             14 => 
             array (
                 'id' => 15,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'INGRID JAZMÍN CHURIPUY SALOMÓN',
                 'email' => 'ingrid.churipuy',
                 'avatar' => 'users/default.png',
@@ -228,11 +242,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 09:56:57',
                 'updated_at' => '2020-12-29 09:56:57',
+                'deleted_at' => NULL,
             ),
             15 => 
             array (
                 'id' => 16,
-                'role_id' => NULL,
+                'role_id' => 3,
                 'name' => 'CHRISTIAN  NOTO SAAVEDRA',
                 'email' => 'christian.noto',
                 'avatar' => 'users/default.png',
@@ -242,6 +257,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2020-12-29 10:13:45',
                 'updated_at' => '2020-12-29 10:13:45',
+                'deleted_at' => NULL,
             ),
             16 => 
             array (
@@ -256,11 +272,12 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2021-01-06 10:07:44',
                 'updated_at' => '2021-06-28 10:20:27',
+                'deleted_at' => NULL,
             ),
             17 => 
             array (
                 'id' => 19,
-                'role_id' => NULL,
+                'role_id' => 2,
                 'name' => 'CAROLINA  CARBALHO SUAREZ',
                 'email' => 'carolina',
                 'avatar' => 'users/default.png',
@@ -270,6 +287,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2021-02-10 10:41:23',
                 'updated_at' => '2021-07-14 09:06:44',
+                'deleted_at' => NULL,
             ),
             18 => 
             array (
@@ -284,6 +302,7 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2021-05-25 08:27:03',
                 'updated_at' => '2021-05-25 08:27:03',
+                'deleted_at' => NULL,
             ),
             19 => 
             array (
@@ -298,7 +317,8 @@ class UsersTableSeeder extends Seeder
                 'settings' => NULL,
                 'created_at' => '2021-06-01 21:05:11',
                 'updated_at' => '2021-06-01 21:05:11',
-            )
+                'deleted_at' => NULL,
+            ),
         ));
         
         
