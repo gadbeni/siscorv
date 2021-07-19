@@ -14,7 +14,7 @@ return [
     */
 
     'docs'        => [
-        'route'   => '/docs',
+        'route'   => env('LARECIPE_ROUTE','/docs'),
         'path'    => '/resources/docs',
         'landing' => 'overview',
         'middleware' => ['web'],
