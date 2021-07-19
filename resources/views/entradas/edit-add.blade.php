@@ -18,7 +18,7 @@
     @section('content')
         <div class="page-content edit-add container-fluid">
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-12 div-phone">
                     <form action="{{ route('entradas.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="panel panel-bordered">

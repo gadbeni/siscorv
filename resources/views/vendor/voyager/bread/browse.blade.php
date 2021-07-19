@@ -3,7 +3,7 @@
 @section('page_title', __('voyager::generic.viewing').' '.$dataType->getTranslatedAttribute('display_name_plural'))
 
 @section('page_header')
-    <div class="container-fluid">
+    <div class="container-fluid div-phone">
         <h1 class="page-title">
             <i class="{{ $dataType->icon }}"></i> {{ $dataType->getTranslatedAttribute('display_name_plural') }}
         </h1>
@@ -40,7 +40,7 @@
     <div class="page-content browse container-fluid">
         @include('voyager::alerts')
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12 div-phone">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
                         @if ($isServerSide)

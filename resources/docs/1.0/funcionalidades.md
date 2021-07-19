@@ -35,9 +35,9 @@ Le mostrara todas las correspondencias derivadas al usuario autenticado donde po
 
 <a name="ingresos"></a>
 ## Ingresos
-En esta opcion es donde podra realizar los registros todas las correspondencias, adjuntar el escaneado del documento y proceder a la derivacion.
+En esta opcion es donde podra realizar los registros todas las correspondencias, adjuntar el escaneado del documento y proceder a la derivación.
 
 <a name="certificados"></a>
 ## Certificados
-Esta opcion es donde podra emitir los certificados de no adeudo a los funcionarios de la gobernacion como tambien a Ex-funcionarios.
+Esta opción es donde podra emitir los certificados de no adeudo a los funcionarios de la gobernacion como también a Ex-funcionarios.
 

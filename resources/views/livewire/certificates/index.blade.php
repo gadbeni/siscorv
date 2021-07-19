@@ -10,8 +10,8 @@
 }
 </style>
 @endpush
-<div class="page-content browse container-fluid">
-    <div class="container-fluid">
+<div class="page-content browse container-fluid div-phone">
+    <div class="container-fluid div-phone">
         <div class="row">
             <div class="col-md-8">
                 <h1 class="page-title">
