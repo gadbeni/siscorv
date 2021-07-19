@@ -138,7 +138,7 @@ return [
                 'target_blank' => true,
             ],
             'Documentación' => [
-                'route'        => '/docs/1.0/overview',
+                'route'        => env('APP_URL').'/docs/1.0/overview',
                 'icon_class'   => 'voyager-book',
                 'target_blank' => true,
             ],
