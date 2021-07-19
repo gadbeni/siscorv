@@ -1,37 +1,51 @@
-@section('page_title', 'Viendo Registros')
 @push('css')
-<link rel="stylesheet" href="{{ asset('css/select2.min.css')}}" type="text/css">
+<link rel="stylesheet" href="{{ asset('css/sweetalert2.min.css')}}">
 <style>
-    .select2-search__field{
-        z-index: 100002 !important
-    }
+.swal-height {
+    height: 70vh;
+}
+.swal2-icon {
+    width: 1em !important;
+    height: 1em !important;
+}
 </style>
 @endpush
-@section('page_header')
+<div class="page-content browse container-fluid">
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-8">
                 <h1 class="page-title">
                     <i class="voyager-basket"></i> Registros
                 </h1>
-                <a href="{{route('certificate.create')}}"
+                <a href="javascript:;"
                     class="btn btn-success"
+                    wire:click="nuevo"
                 >
                     <i class="voyager-plus"></i> <span>Crear</span>
                 </a>
             </div>
             <div class="col-md-4">
-
+               
             </div>
         </div>
     </div>
-@stop
-<div class="page-content browse container-fluid">
-    @include('voyager::alerts')
     <div class="row">
         <div class="col-md-12">
             <div class="panel panel-bordered">
                 <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-12">
+                            <div class="input-group mb-4" >
+                                <div class="input-group-prepend">
+                                    <span">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                </div>
+                                <input type="text" wire:model="buscar" placeholder="Buscar..." class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    {{$buscar}}
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -48,18 +62,25 @@
                             <tbody>
                                 @forelse ($certificates as $certificate)
                                     <tr>
-                                        <td>{{$certificate->id}}</td>
                                         <td>{{$certificate->codigo}}</td>
+                                        <td>{{$certificate->type}}</td>
                                         <td>{{$certificate->price}}</td>
                                         <td>{{$certificate->ci}}</td>
                                         <td>{{$certificate->nombre}}</td>
-                                        <td>{{$certificate->fecha_registro}}</td>
+                                        <td>{{$certificate->usuario}}</td>
                                         <td>
+                                            <a 
+                                                href="{{route('certificates.imprimir', $certificate->id)}}" 
+                                                class="btn btn-sm btn-primary" 
+                                                target="_blank"
+                                                title="Certificado">
+                                                <i class="voyager-treasure-open"></i> 
+                                            </a>
                                             <a href="javascript:void(0)" 
-                                                onclick="Confirm('{{$certificate->id}}')"
-                                                class="btn btn-dark mtmobile" 
+                                                onclick="Confirm('{{$certificate->id}}', 'deleteItem','Confirmas Eliminar el Registro?')"
+                                                class="btn btn-sm btn-danger" 
                                                 title="Delete">
-                                                    <i class="fas fa-trash"></i>
+                                                <i class="voyager-trash"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -74,30 +95,19 @@
             </div>
         </div>
     </div>
-    @include('livewire.certificates.form')
 </div>
 @push('javascript')
-<script src="{{ asset('js/select2.min.js') }}"></script>
+<script src="{{ asset('js/sweetalert2.min.js')}}"></script>
 @endpush
 <script ype="text/javascript">
-
-    document.addEventListener('livewire:load', function () {
-    })
     document.addEventListener('DOMContentLoaded', function () {
-        window.livewire.on('show-modal', msg => {
-            $('#theModal').modal('show')
-        });
-
-        window.livewire.on('hability-getpersons', Msg => {
-          ShowPrice(Msg);
-        });
-
-        window.livewire.on('show-deuda', Msg => {
-            console.log(Msg)
-          document.getElementById("deuda").readOnly = false;
-          ShowPrice(Msg);
-        });
+      
+        window.livewire.on('modal-eliminar', Msg => {
+            $('#confirm_delete_modal').modal('hide')
+            toastr.info(Msg);
+        })
     })
+  
     function habilitar() {
         limpiar();
         ruta = "{{route('certificados.getFuncionario')}}";
@@ -181,24 +191,29 @@
             }					
         });
     }
-    function Confirm(id)
+
+    function Confirm(id,eventName,text)
     {
+        // $('#confirm_delete_modal').modal('show')
+        // window.livewire.emit(eventName,id)
         let me = this
         swal({
             title: 'CONFIRMAR',
-            text: '¿DESEAS ELIMINAR EL REGISTRO?',
+            text: text,
             type: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3B3F5C',//#3B3F5C
             cancelButtonColor: '#fff',
             confirmButtonText: 'Aceptar',
             cancelButtonText: 'Cancelar',
-            closeOnConfirm: false
+            closeOnConfirm: false,
+            customClass: 'swal-height'
         }).then(function(result) {
             if (result.value) {
-                window.livewire.emit('deleteRow',id)
+                window.livewire.emit(eventName,id)
                 swal.close()
             }
         })
     }
+    
 </script>

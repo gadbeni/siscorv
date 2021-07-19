@@ -1,0 +1,16 @@
+//terminar la Documentación
+// agregar google analitic
+
+
+// Volcado de la base de datos
+
+1.- copiar y ejecutar script insert de entidades
+
+2.- copiar script entradas de y cambiar parametros 
+    entidad_id => entity_id
+3.- Reemplazar valor en los insert 
+    'P' => 
+4 .- copiar y ejecutar script insert de Archivos
+5.- copiar y ejecutar script insert de derivaciones
+    modificar nombre de tabla a derivations
+    quitar derivacion con id 746 ya que todos los datos son null

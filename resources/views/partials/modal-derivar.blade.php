@@ -1,6 +1,6 @@
 {{-- Derivación modal --}}
 <form id="form-derivacion" action="{{ route('store.derivacion') }}" method="post">
-    <div class="modal modal-dark fade" tabindex="-1" id="derivar_modal" role="dialog">
+    <div class="modal modal-primary fade" tabindex="-1" id="modal-derivar" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -9,10 +9,13 @@
                 </div>
                 <div class="modal-body">
                     @csrf
-                    <input type="hidden" name="id">
+                    <input type="hidden" name="id" value="{{ isset($id) ? $id : '' }}">
+                    @if (isset($redirect))
+                        <input type="hidden" name="redirect" value="{{ $redirect }}">
+                    @endif
                     <div class="form-group">
                         <label class="">Destinatario</label>
-                        <select name="destinatario" class="form-control select2" id="select-destinatario">
+                        <select name="destinatario" class="form-control" id="select-destinatario">
                             @foreach ($personas as $item)
                                 <option value="{{ $item->ID }}">{{ $item->PNombre }} {{ $item->APaterno }} {{ $item->AMaterno }} - CI: {{ $item->N_Carnet }}</option>
                             @endforeach

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Persona;
+use Luecano\NumeroALetras\NumeroALetras;
 use DB;
 
 class AjaxController extends Controller
@@ -41,7 +42,7 @@ class AjaxController extends Controller
         return response()->json($response);
     }
 
-    public function getFuncionario(Request $request){
+    public function getFuncionarios(Request $request){
         $search = $request->search;
 
         if($search == ''){
@@ -88,5 +89,21 @@ class AjaxController extends Controller
         );
         }
         return response()->json($response);
+    }
+
+    public function imprimir($id){
+        $certificado = DB::table('certificates as cer')
+            ->join('personas as per', 'cer.persona_id', '=', 'per.id')
+            ->join('departamentos as dep', 'per.departamento_id', '=', 'dep.id')
+            ->select([
+                'cer.id','cer.codigo','cer.type','cer.price', 'per.full_name', 'per.ci','dep.sigla',
+                'cer.descripcion','cer.deuda','cer.monto_deuda','per.alfanum',
+                DB::raw("DATE_FORMAT(cer.created_at, '%d/%m/%Y') as fecha"),
+                DB::raw("DATE_FORMAT(cer.created_at, '%H:%i:%S') as hora")
+            ])
+            ->where('cer.id',$id)
+            ->first();
+            $monto_literal = (new NumeroALetras())->toInvoice($certificado->deuda, 2, 'BOLIVIANOS', 'CENTAVOS');
+        return view('livewire.certificates.certif', compact('certificado','monto_literal'));
     }
 }

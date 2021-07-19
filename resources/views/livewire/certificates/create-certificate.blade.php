@@ -4,19 +4,55 @@
         {{$componentName}} | {{ $selected_id > 0 ? 'EDITAR' : 'CREAR'}}
     </h1>
 @stop
+@push('css')
+<link rel="stylesheet" href="{{ asset('css/select2.min.css')}}" type="text/css">
+@endpush
 <div class="page-content container-fluid">
     <div class="row">
         <div class="panel panel-bordered">
+            @if (is_null($warehouse_id))
+                <div class="panel-body">
+                    <div class="text-center">
+                        <h3 style="color: green">
+                            <span >
+                                No estas asignado a una Sucursal contacta con los administradores Gracias..
+                            </span>
+                        </h3>
+                        
+                    </div>
+                </div>
+            @elseif ($printcertificate)
+            <div class="panel-body">
+                <div class="text-center">
+                    <a href="{{route('certificates.imprimir',$certId)}}"
+                        class="btn btn-info"
+                        target="_blank"
+                    >
+                        <i class="voyager-receipt"></i> <span>IMPRIMIR</span>
+                    </a>
+                </div>
+            </div>
+            @else
             <div class="panel-body">
                 <div class="col-sm-6">
                     <div class="radio" id="miradio">
                         <label>
-                            <input type="radio" wire:model="type" value="interno" wire:click="calcularprecio"/>
+                            <input 
+                                type="radio" 
+                                wire:model="type" 
+                                value="interno" 
+                                wire:click="calcularprecio"
+                            />
                             Interno
                         </label>
                         &nbsp;
                         <label>
-                        <input type="radio" wire:model="type" value="externo" wire:click="calcularprecio"/>
+                        <input 
+                            type="radio" 
+                            wire:model="type" 
+                            value="externo" 
+                            wire:click="calcularprecio"
+                        />
                             Externo
                         </label>
                     </div>
@@ -35,7 +71,7 @@
                 </div>
                 <div class="col-sm-12 col-md-2">
                     <label>Deuda</label>
-                    <input type="text" id="deuda" class="form-control" wire:model.lazy="deuda" readonly/>
+                    <input type="number" id="deuda" class="form-control" wire:model.lazy="deuda" wire:keyup.enter="agregardeuda" readonly/>
                 </div>
                 <div class="col-sm-12 col-md-8">
                     <label>Beneficiario</label>
@@ -49,33 +85,54 @@
                 <div class="col-sm-12 col-md-6">
                     <div class="form-group">
                         <label>Nombre</label>
-                        <input type="text" class="form-control" wire:model="nombre" readonly>
+                        <input type="text" class="form-control" id="nombre" wire:model="nombre">
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <div class="form-group">
                         <label>Apellido Paterno</label>
-                        <input type="text" class="form-control" wire:model="ap_paterno" readonly>
+                        <input type="text" class="form-control" id="ap_paterno" wire:model="ap_paterno">
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-6">
                     <div class="form-group">
                         <label>Apellido Materno</label>
-                        <input type="text" class="form-control" wire:model="ap_materno" readonly>
+                        <input type="text" class="form-control" id="ap_materno" wire:model="ap_materno">
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-3">
                     <div class="form-group">
                         <label>CI</label>
-                        <input type="text" class="form-control" wire:model="ci" readonly>
+                        <input type="text" class="form-control" id="ci" wire:model="ci">
                     </div>
                 </div>
                 <div class="col-sm-12 col-md-3">
                     <div class="form-group">
                         <label>AlfaNum</label>
-                        <input type="text" class="form-control" wire:model="alfanum" readonly>
+                        <input type="text" class="form-control" id="alfanum" wire:model="alfanum">
                     </div>
                 </div>
+                <div class="col-sm-12 col-md-6">
+                    <label>Expedido:</label>
+                    <select wire:model="departamento_id" id="departamento_id" name="departamento_id" class="form-control">
+                        <option value='0'>-- Select Depto --</option>
+                        @foreach($departamentos as $dep)
+                        <option value='{{$dep->id}}'>{{$dep->name}}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @if ($almacenes->count() > 1)
+                    <div class="col-sm-12 col-md-6">
+                        <label>Almacen:</label>
+                        <select wire:model="warehouse_id" class="form-control">
+                            <option value='0'>-- Select Almacen --</option>
+                            @foreach($almacenes as $almacen)
+                            <option value='{{$almacen->id}}'>{{$almacen->name}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                @endif
+                
                 <div class="col-sm-12 col-md-12">
                     <label class="custom-file-label">Descripcion</label>
                     <textarea class="form-control" wire:model="descripcion" rows="4" value="{{$descripcion}}"></textarea>
@@ -85,7 +142,7 @@
                 </div>
                 <div class="col-sm-12 col-md-12">
                     <button type="button" wire:click.prevent="resetUI()" class="btn btn-dark close-btn text-info" data-dismiss="modal">
-                        CERRAR
+                        LIMPIAR
                     </button>
                     @if($selected_id < 1)
                     <button type="button" wire:click.prevent="Store()" class="btn btn-success">
@@ -98,19 +155,44 @@
                     @endif
                 </div>
             </div>
+            @endif
         </div>
     </div>
 </div>
+@push('javascript')
+<script src="{{ asset('js/select2.min.js') }}"></script>
+@endpush
 <script>
     var tipo = '';
 document.addEventListener('livewire:load', function () {
     tipo = @this.get('type');
     ShowPrice(tipo);
+    var $dep = $("#departamento_id").select2();
+    $('#selUser').on('select2:select', function (e) {
+        var data = e.params.data;
+        console.log(data)
+        if (data) {
+            @this.set('nombre', data.nombre);
+            @this.set('ap_paterno', data.ap_paterno);
+            @this.set('ap_materno', data.ap_materno);
+            @this.set('ci', data.ci);
+            @this.set('alfanum', data.alfanum);
+
+            $("#departamento_id option").each(function(){
+                if ($(this).val() == data.departamento_id){    
+                    @this.set('departamento_id', data.departamento_id); 
+                    @this.set('funcionarioId' ,data.id);   
+                    //$dep.val($(this).val()).trigger("change");
+                } 
+            }); 
+            
+        }					
+    });
 })
 document.addEventListener('DOMContentLoaded', function () {
         
-        window.livewire.on('show-modal', msg => {
-            $('#theModal').modal('show')
+        window.livewire.on('certificate-added', msg => {
+            toastr.info(msg)
         });
 
         window.livewire.on('hability-getpersons', Msg => {
@@ -118,52 +200,21 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         window.livewire.on('show-deuda', checkd => {
-            if (checkd) {
+            if (checkd == true) {
                  document.getElementById("deuda").readOnly = false;
             } else{
                 document.getElementById("deuda").readOnly = true;
             }                     
         });
+        
 })
-    function habilitar() {
-        limpiar();
-        ruta = "{{route('certificados.getFuncionario')}}";
-        $('#selUser').select2({
-            placeholder: '<i class="fa fa-search"></i> Buscar...',
-            escapeMarkup : function(markup) {
-                return markup;
-            },
-            language: {
-                inputTooShort: function (data) {
-                    return `Por favor ingrese ${data.minimum - data.input.length} o más caracteres`;
-                },
-                noResults: function () {
-                    return `<i class="far fa-frown"></i> No hay resultados encontrados`;
-                }
-            },
-            quietMillis: 250,
-            minimumInputLength: 4,
-            ajax: {
-                url: function (params) {
-                    return `/admin/search/${escape(params.term)}`;
-                },        
-                processResults: function (data) {
-                    return {
-                        results: data
-                    };
-                },
-                cache: true
-            },
-            // templateResult: formatResultLandingPage,
-            templateSelection: (opt) => opt.text
-        });
-    }
-
+    
     function  limpiar() {
-        $("#selUser").val(0).trigger('change');
+        $('#selUser').val(0).trigger('change');
+		$('#departamento_id').val(0).trigger('change');
     }
     function ShowPrice(msg) {
-        
+        limpiar();
         let ruta = '';
         if (msg == "externo") {
             ruta = "{{route('certificados.getPersonas')}}";
@@ -188,24 +239,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     };
                 }
             }
-        });
-        var $dep = $("#departamento_id").select2();
-        $('#selUser').on('select2:select', function (e) {
-            var data = e.params.data;
-            console.log(data)
-            if (data) {
-                @this.set('nombre', data.nombre);
-                @this.set('ap_paterno', data.ap_paterno);
-                @this.set('ap_materno', data.ap_materno);
-                @this.set('ci', data.ci);
-                @this.set('alfanum', data.alfanum);
-                
-                $("#departamento_id option").each(function(){
-                    if ($(this).val() == data.departamento_id){        
-                        $dep.val($(this).val()).trigger("change");
-                    } 
-                });   
-            }					
-        });
+        });       
     }
 </script>
