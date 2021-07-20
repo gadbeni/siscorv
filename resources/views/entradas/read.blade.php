@@ -11,6 +11,10 @@
                 <span class="glyphicon glyphicon-list"></span>&nbsp;
                 Volver a la lista
             </a>
+            <a href="#" class="btn btn-danger">
+                <span class="glyphicon glyphicon-print"></span>&nbsp;
+                Imprimir
+            </a>
         </h1>
     @stop
 

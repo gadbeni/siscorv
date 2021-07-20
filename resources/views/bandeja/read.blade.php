@@ -6,7 +6,8 @@
 
     @section('page_header')
         <div class="col-md-6" style="margin: 20px 0px;">
-            <h3 class="text-muted"> <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a> &nbsp; {{ $data->referencia }}</h3>
+            <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+            <h3 class="text-muted" style="padding-left: 20px">{{ $data->referencia }}</h3>
         </div>
         <div class="col-md-6 text-right" style="margin-top: 40px;">
             <div class="btn-group" role="group" aria-label="...">
@@ -215,7 +216,7 @@
     @section('javascript')
         <script>
             $(document).ready(function () {
-                $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
+                // $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
             });
         </script>
     @stop
