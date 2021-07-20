@@ -59,7 +59,7 @@
 
         <script>
             $(document).ready(function() {
-                $('#select-destinatario').select2({ dropdownParent: "#modal-derivar" });
+                // $('#select-destinatario').select2({ dropdownParent: "#modal-derivar" });
                 let columns = [
                     { data: 'hr', title: 'HR' },
                     { data: 'fecha_ingreso', title: 'Fecha de ingreso' },

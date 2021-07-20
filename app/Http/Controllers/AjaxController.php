@@ -73,7 +73,7 @@ class AjaxController extends Controller
                             DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
                             'c.N_carnet as ci',
                             'c.Estado as estado',
-                        ])->where('c.N_carnet', 'like', '%' .$search . '%')->limit(5)->get();
+                        ])->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->limit(5)->get();
         }
         $response = array();
         foreach($personas as $persona){
