@@ -64,7 +64,7 @@
                     { data: 'hr', title: 'HR' },
                     { data: 'fecha_ingreso', title: 'Fecha de ingreso' },
                     { data: 'cite', title: 'Nro. de cite' },
-                    { data: 'nro_hojas', title: 'Nro. de hojas' },
+                    //{ data: 'nro_hojas', title: 'Nro. de hojas' },
                     { data: 'origen', title: 'origen' },
                     { data: 'remitente', title: 'Remitente' },
                     { data: 'referencia', title: 'Referencia' },
