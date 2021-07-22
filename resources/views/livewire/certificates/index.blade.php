@@ -128,7 +128,8 @@
             minimumInputLength: 4,
             ajax: {
                 url: function (params) {
-                    return `/admin/search/${escape(params.term)}`;
+                    let url = '{{ url("admin/search/") }}'
+                    return `${url}/${escape(params.term)}`;
                 },        
                 processResults: function (data) {
                     return {
