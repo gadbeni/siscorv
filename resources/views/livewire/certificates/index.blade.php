@@ -77,9 +77,9 @@
                                                 <i class="voyager-treasure-open"></i> 
                                             </a>
                                             <a href="javascript:void(0)" 
-                                                onclick="Confirm('{{$certificate->id}}', 'deleteItem','Confirmas Eliminar el Registro?')"
+                                                onclick="Confirm('{{$certificate->id}}', 'deleteItem','Confirmas Anular el Certificado?')"
                                                 class="btn btn-sm btn-danger" 
-                                                title="Delete">
+                                                title="Anular">
                                                 <i class="voyager-trash"></i>
                                             </a>
                                         </td>
