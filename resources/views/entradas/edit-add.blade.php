@@ -28,7 +28,7 @@
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="I">Interno</option>
-                                            <option value="E">Externo</option>
+                                            <option value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
@@ -46,7 +46,7 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
-                                        <input type="number" step="1" min="1" name="nro_hojas" class="form-control" required>
+                                        <input type="number" step="1" min="0" name="nro_hojas" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-6" id="div-entity_id" style="display: none">
                                         <label class="control-label">Origen</label>

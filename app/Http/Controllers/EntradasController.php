@@ -273,10 +273,10 @@ class EntradasController extends Controller
                     'user_id' => Auth::user()->id
                 ]);
             }
-            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Archivo agregado correctamente.', 'alert-type' => 'success']);
+            return redirect()->back()->with(['message' => 'Archivo agregado correctamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
-            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->back()->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 
@@ -289,8 +289,10 @@ class EntradasController extends Controller
             $funcionario = $this->getFuncionario($request->destinatario);
             if($funcionario){
                 // Actualizar estado de la correspondencia
-                Entrada::where('id', $request->id)->update(['estado_id' => 3]);
-                $this->add_derivacion($funcionario, $request, null, $rde);
+                $entrada = Entrada::findOrFail($request->id);
+                $entrada->estado_id = 3;
+                $entrada->save();
+                $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
             }else{
                 return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
             }
@@ -322,7 +324,7 @@ class EntradasController extends Controller
             $derivacion =  Derivation::findOrFail($id);
             $derivacion->visto = Carbon::now();
             $derivacion->save();
-            $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])->where('id', $derivacion->entrada_id)->where('deleted_at', NULL)->first();
+            $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones'])->where('id', $derivacion->entrada_id)->where('deleted_at', NULL)->first();
 
             $origen = '';
             $destino = NULL;
@@ -365,8 +367,12 @@ class EntradasController extends Controller
             $derivacion = Derivation::where('entrada_id', $id)
                                 ->where('funcionario_id_para', $persona->funcionario_id)
                                 ->where('deleted_at', NULL)->where('rechazo', NULL)->orderBy('id', 'DESC')->first();
-            // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
 
+            if(!$derivacion){
+                return redirect()->route('bandeja.index')->with(['message' => 'No puedes rechazr un un tramite creado por ti mismo.', 'alert-type' => 'error']);
+            }            
+
+            // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
             if ($derivacion->funcionario_id_de) {
                 $funcionario = $this->getFuncionario($derivacion->funcionario_id_de);
                 if($funcionario){
@@ -430,7 +436,6 @@ class EntradasController extends Controller
             'funcionario_unidad_id_para' => $funcionario->id_unidad,
             'funcionario_unidad_para' => $funcionario->unidad,
             'responsable_actual' => 1,
-            'estado' => 'activo',
             'rechazo' => $rechazo,
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion

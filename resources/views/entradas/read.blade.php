@@ -134,9 +134,9 @@
                                             <tr>
                                                 <th>N&deg;</th>
                                                 <th>Título</th>
+                                                <th>Adjuntado por</th>
                                                 <th>Fecha de registro</th>
                                                 <th>Archivo</th>
-                                                <th>Subido por</th>
                                                 <th>Acciones</th>
                                             </tr>
                                         </thead>
@@ -182,9 +182,9 @@
                                                 <th>Dirección</th>
                                                 <th>Unidad</th>
                                                 <th>Funcionario</th>
-                                                <th>Acciones</th>
+                                                <th>Observaciones</th>
                                                 <th>Fecha de derivación</th>
-                                                <th>Fecha de recepción</th>
+                                                {{-- <th>Fecha de recepción</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -192,18 +192,18 @@
                                                 $cont = 1;
                                             @endphp
                                             @forelse ($data->derivaciones as $item)
-                                                <tr>
+                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->funcionario_direccion_para }}</td>
                                                     <td>{{ $item->funcionario_unidad_para }}</td>
                                                     <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
                                                     <td>{{ $item->observacion }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    <td>
+                                                    {{-- <td>
                                                         @if ($cont == count($data->derivaciones))
                                                             <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
                                                         @endif
-                                                    </td>
+                                                    </td> --}}
                                                 </tr>
                                                 @php
                                                     $cont++;
