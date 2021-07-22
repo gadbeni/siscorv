@@ -31,7 +31,7 @@ class PermissionRoleTableSeeder extends Seeder
 
         // Roles de funcionario
         $role = Role::where('name', 'funcionario')->firstOrFail();
-        $permissions = Permission::whereRaw('table_name = "bandeja" or id = 1')->get();
+        $permissions = Permission::whereRaw('table_name = "entradas" or table_name = "bandeja" or id = 1')->get();
         $role->permissions()->sync(
             $permissions->pluck('id')->all()
         );

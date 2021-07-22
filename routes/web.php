@@ -38,7 +38,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/store/derivacion', [EntradasController::class, 'store_derivacion'])->name('store.derivacion');
     Route::post('entradas/delete/derivacion', [EntradasController::class, 'delete_derivacion'])->name('delete.derivacion');
     Route::post('entradas/delete/derivacion/file', [EntradasController::class, 'delete_derivacion_file'])->name('delete.derivacion.file');
-    
+    Route::get('entradas/{entrada}/print', [EntradasController::class, 'print'])->name('entradas.print');
+
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
     Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
@@ -55,6 +56,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('certificates/create', CreateCertificate::class)->name('certificate.create');
         Route::get('/certificados/getpersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
         Route::get('/certificados/getfuncionarios/',[AjaxController::class, 'getFuncionarios'])->name('certificados.getFuncionario');
+        Route::get('/certificados/getfuncionariosderivacion/',[AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion');
 
         Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
     });

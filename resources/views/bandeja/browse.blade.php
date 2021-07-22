@@ -23,14 +23,11 @@
                                         <table class="dataTable table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
-                                                    <th>Fecha de derivación</th>
                                                     <th>HR</th>
+                                                    <th>Fecha de derivación</th>
                                                     <th>Nro. de cite</th>
-                                                    <th>Origen</th>
                                                     <th>Remitente</th>
                                                     <th>Referencia</th>
-                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -41,14 +38,11 @@
                                                     @endphp
                                                     @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && $item->estado_id != 4)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
-                                                            <td></td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->cite }}</td>
-                                                            <td>{{ $item->entity->nombre }}</td>
                                                             <td>{{ $item->remitente }}</td>
                                                             <td>{{ $item->referencia }}</td>
-                                                            <td></td>
                                                         </tr>
                                                     @endif
                                                 @empty
@@ -63,14 +57,11 @@
                                         <table class="dataTable table table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th></th>
-                                                    <th>Fecha de derivación</th>
                                                     <th>HR</th>
+                                                    <th>Fecha de derivación</th>
                                                     <th>Nro. de cite</th>
-                                                    <th>Origen</th>
                                                     <th>Remitente</th>
                                                     <th>Referencia</th>
-                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -81,14 +72,11 @@
                                                     @endphp
                                                     @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
-                                                            <td></td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->cite }}</td>
-                                                            <td>{{ $item->entity->nombre }}</td>
                                                             <td>{{ $item->remitente }}</td>
                                                             <td>{{ $item->referencia }}</td>
-                                                            <td></td>
                                                         </tr>
                                                     @endif
                                                 @empty
