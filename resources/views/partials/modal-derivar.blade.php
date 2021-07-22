@@ -34,14 +34,14 @@
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script>
     $(document).ready(function () {
-        ruta = "{{ route('certificados.getFuncionario') }}";
+        ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
         $("#select-destinatario").select2({
             ajax: { 
                 allowClear: true,
                 url: ruta,
                 type: "get",
                 dataType: 'json',
-                delay: 250,
+                delay: 500,
                 data: function (params) {
                     return {
                         search: params.term // search term

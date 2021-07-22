@@ -55,14 +55,14 @@
   <section id="topbar" class="d-flex align-items-center">
     <div class="container d-flex justify-content-center justify-content-md-between">
       <div class="contact-info d-flex align-items-center">
-        <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">contact@example.com</a></i>
-        <i class="bi bi-telephone-fill d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
+        <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:{{ setting('site.email') }}">{{ setting('site.email') }}</a></i>
+        <i class="bi bi-telephone-fill d-flex align-items-center ms-4"><span><a href="{{ setting('site.telefono') }}">{{ setting('site.telefono') }}</a></span></i>
       </div>
       <div class="social-links d-none d-md-flex align-items-center">
-        <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-        <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-        <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-        <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></i></a>
+        <a href="{{ setting('redes-sociales.twitter') }}" target="_blank" class="twitter"><i class="bi bi-twitter"></i></a>
+        <a href="{{ setting('redes-sociales.facebook') }}" target="_blank" class="facebook"><i class="bi bi-facebook"></i></a>
+        <a href="{{ setting('redes-sociales.instagram') }}" target="_blank" class="instagram"><i class="bi bi-instagram"></i></a>
+        <a href="{{ setting('redes-sociales.linkedin') }}" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></i></a>
       </div>
     </div>
   </section>
@@ -91,22 +91,22 @@
     <section id="hero" class="d-flex align-items-center">
         <div class="container" data-aos="zoom-out" data-aos-delay="100">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-7">
                     <h1>SIS<span>COR</span></h1>
-                    <h2>Sistema para la administración de correspondencias del Gobierno Autónomo Departamental del Beni</h2>
+                    <h2>{{ setting('site.description') }}</h2>
                     <div class="d-flex">
                         <a href="#counts" class="btn-get-started scrollto btn-more">Conoce más</a>
                         {{-- <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="glightbox btn-watch-video"><i class="bi bi-play-circle"></i><span>Watch Video</span></a> --}}
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <div class="input-group mt-5 input-group-lg">
                         <input type="text" class="form-control" id="input-search" placeholder="Número de cite o HR" aria-label="" aria-describedby="basic-addon1">
                         <div class="input-group-prepend">
                             <button class="btn btn-get-started" id="btn-search" type="button" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
                         </div>
                     </div>
-                    <p style="margin: 10px">Para hacer seguimiento de su tramite ingrese el <b>Númnero de Cite o el HR</b> y presion el botón <b>Buscar</b>.</p>
+                    <p style="margin: 10px">Para hacer seguimiento de su trámite ingrese el <b>Número de Cite o el HR</b> y presion el botón <b>Buscar</b>.</p>
                 </div>
 
                 <form id="form-search" action="{{ route('home.search') }}" method="post">
@@ -193,7 +193,7 @@
                                 <div class="info-box mb-4">
                                 <i class="bx bx-map"></i>
                                 <h3>Nuestra Dirección</h3>
-                                <p>A108 Adam Street, New York, NY 535022</p>
+                                <p>{{ setting('site.direccion') }}</p>
                                 </div>
                             </div>
         
@@ -201,7 +201,7 @@
                                 <div class="info-box  mb-4">
                                 <i class="bx bx-envelope"></i>
                                 <h3>Nuestros Email</h3>
-                                <p>contact@example.com</p>
+                                <p>{{ setting('site.email') }}</p>
                                 </div>
                             </div>
         
@@ -209,7 +209,7 @@
                                 <div class="info-box  mb-4">
                                 <i class="bx bx-phone-call"></i>
                                 <h3>Llámanos</h3>
-                                <p>+1 5589 55488 55</p>
+                                <p>{{ setting('site.telefono') }}</p>
                                 </div>
                             </div>
                         </div>

@@ -70,7 +70,11 @@
                                     <h3 class="panel-title">Origen</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
+                                    @if ($data->tipo == 'E')
                                     <p>{{ $data->entity->nombre }}</p>
+                                    @else
+                                    <p>{{ $origen }}</p>
+                                    @endif
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -83,6 +87,23 @@
                                 </div>
                                 <hr style="margin:0;">
                             </div>
+                            @if ($data->tipo == 'I')
+                            <div class="col-md-12">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Destino</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    @if ($destino)
+                                        <p>
+                                            {{ $destino->nombre }} <br>
+                                            <b style="font-weight: bold">{{ $destino->cargo }}</b> <br>
+                                            <b style="font-weight: bold">{{ $destino->unidad }} {{ $destino->direccion ? ' - '.$destino->direccion : '' }}</b>
+                                        </p>
+                                    @endif
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            @endif
                             <div class="col-md-12">
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Referencia</h3>
@@ -177,7 +198,7 @@
         </form>
         
         {{-- Personas modal --}}
-        @include('partials.modal-derivar', ['personas' => $personas, 'id' => $data->id, 'redirect' => 'bandeja.index'])
+        @include('partials.modal-derivar', ['id' => $data->id, 'redirect' => 'bandeja.index'])
 
         {{-- rechazar modal --}}
         <form action="{{ route('bandeja.rechazar', ['id' => $data->id]) }}" method="post">

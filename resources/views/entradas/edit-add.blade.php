@@ -26,7 +26,7 @@
                                 <div class="row">
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Tipo</label>
-                                        <select name="tipo" class="form-control select2" required>
+                                        <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="I">Interno</option>
                                             <option value="E">Externo</option>
                                         </select>
@@ -36,21 +36,30 @@
                                         <input type="text" name="cite" maxlength="50" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-6">
+                                        <label class="control-label">Remitente</label>
+                                        <div id="div-remitente">
+                                            <select name="funcionario_id_remitente" class="form-control select2">
+                                                <option value="{{ $funcionario ? $funcionario->funcionario_id : 844 }}">{{ $funcionario ? $funcionario->full_name : 'Admin' }}</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" name="remitente" id="input-remitente" maxlength="150" style="display: none" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
                                         <input type="number" step="1" min="1" name="nro_hojas" class="form-control" required>
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-6" id="div-entity_id" style="display: none">
                                         <label class="control-label">Origen</label>
-                                        <select name="entity_id" class="form-control select2" required>
+                                        <select name="entity_id" class="form-control select2">
                                             <option value="">Selecciona el origen</option>
                                             @foreach (\App\Models\Entity::where('estado', 'activo')->where('deleted_at', NULL)->get() as $item)
                                             <option value="{{ $item->id }}">{{ $item->sigla ? $item->sigla.' -' : '' }} {{ $item->nombre }}</option> 
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6">
-                                        <label class="control-label">Remitente</label>
-                                        <input type="text" name="remitente" maxlength="150" class="form-control" required>
+                                    <div class="form-group col-md-6" id="div-destinatario">
+                                        <label class="control-label">Destinatario</label>
+                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
@@ -59,6 +68,10 @@
                                     <div class="form-group col-md-12">
                                         <label class="control-label">Referencia</label>
                                         <textarea name="referencia" class="form-control" rows="3" required></textarea>
+                                    </div>
+                                    <div class="form-group col-md-12" id="div-detalle">
+                                        {{-- <label class="control-label">Referencia</label> --}}
+                                        <textarea class="form-control richTextBox" name="detalle"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -75,7 +88,48 @@
     @section('javascript')
         <script>
             $(document).ready(function(){
+                ruta = "{{ route('certificados.getFuncionario') }}";
+                $("#select-funcionario_id_destino").select2({
+                    ajax: { 
+                        allowClear: true,
+                        url: ruta,
+                        type: "get",
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                search: params.term // search term
+                            };
+                        },
+                        processResults: function (response) {
+                            return {
+                                results: response
+                            };
+                        }
+                    }
+                });
 
+                var additionalConfig = {
+                    selector: 'textarea.richTextBox[name="detalle"]',
+                }
+                tinymce.init(window.voyagerTinyMCE.getConfig(additionalConfig));
+
+                $('#select-tipo').change(function(){
+                    let tipo = $('#select-tipo option:selected').val();
+                    if(tipo == 'E'){
+                        $('#div-remitente').fadeOut();
+                        $('#input-remitente').fadeIn();
+                        $('#div-detalle').fadeOut();
+                        $('#div-entity_id').fadeIn();
+                        $('#div-destinatario').fadeOut();
+                    }else{
+                        $('#div-remitente').fadeIn();
+                        $('#input-remitente').fadeOut();
+                        $('#div-detalle').fadeIn();
+                        $('#div-entity_id').fadeOut();
+                        $('#div-destinatario').fadeIn();
+                    }
+                });
             });
         </script>
     @stop
