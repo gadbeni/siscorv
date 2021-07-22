@@ -139,6 +139,7 @@
                                             <tr>
                                                 <th>N&deg;</th>
                                                 <th>Título</th>
+                                                <th>Adjuntado por</th>
                                                 <th>Fecha de registro</th>
                                                 <th>Archivo</th>
                                             </tr>
@@ -151,6 +152,7 @@
                                                 <tr>
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->nombre_origen }}</td>
+                                                    <td>{{ $item->user->name }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td><a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a></td>
                                                 </tr>
@@ -160,6 +162,58 @@
                                             @empty
                                                 <tr>
                                                     <td colspan="4"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-bordered" style="padding-bottom:5px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Historial de derivaciones</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <table class="table table-bordered-table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>N&deg;</th>
+                                                <th>Dirección</th>
+                                                <th>Unidad</th>
+                                                <th>Funcionario</th>
+                                                <th>Observaciones</th>
+                                                <th>Fecha de derivación</th>
+                                                {{-- <th>Fecha de recepción</th> --}}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $cont = 1;
+                                            @endphp
+                                            @forelse ($data->derivaciones as $item)
+                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                                    <td>{{ $cont }}</td>
+                                                    <td>{{ $item->funcionario_direccion_para }}</td>
+                                                    <td>{{ $item->funcionario_unidad_para }}</td>
+                                                    <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
+                                                    <td>{{ $item->observacion }}</td>
+                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                    {{-- <td>
+                                                        @if ($cont == count($data->derivaciones))
+                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
+                                                        @endif
+                                                    </td> --}}
+                                                </tr>
+                                                @php
+                                                    $cont++;
+                                                @endphp
+                                            @empty
+                                                <tr>
+                                                    <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

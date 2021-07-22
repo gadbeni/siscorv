@@ -73,7 +73,7 @@ class UsersController extends Controller
         try {
             
             $user = User::create([
-                'name' =>  $input['nombre'],
+                'name' =>  $input['nombre'].' '.$input['ap_paterno'],
                 'role_id' => $request->role_id,
                 'email' => $request->email,
                 'avatar' => 'users/default.png',
@@ -132,7 +132,7 @@ class UsersController extends Controller
             }
             $input['user_id'] = $user->id;
             if ($request->funcionario_id != '') {
-                $user->name = $input['nombre'];
+                $user->name = $input['nombre'].' '.$input['ap_paterno'];
                 $input['full_name'] = $input['nombre'] . ' ' . $input['ap_paterno'] . ' ' . $input['ap_materno'];
                 $user->update();
                 Persona::update($input);
