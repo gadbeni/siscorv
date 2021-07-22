@@ -13,10 +13,36 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public function getIdDireccionFuncionario($id_funcionario) {
-        return DB::connection('mysqlgobe')->table('contribuyente')
-                ->where('id', $id_funcionario)
-                ->select('DA', 'idDependencia')
-                ->first();
+        try {
+            return DB::connection('mysqlgobe')->table('contribuyente')
+                        ->where('id', $id_funcionario)
+                        ->select('DA', 'idDependencia')
+                        ->first();
+        } catch (\Throwable $th) {
+            return null;
+        }
+    }
+
+    public function getIdDireccionInfo($direccion_id) {
+        try {
+            return DB::connection('mysqlgobe')->table('direccionadministrativa')
+                        ->where('id', $direccion_id)
+                        ->select('*')
+                        ->first();
+        } catch (\Throwable $th) {
+            return null;
+        }
+    }
+
+    public function getIdUnidadInfo($unidad_id) {
+        try {
+            return DB::connection('mysqlgobe')->table('unidadadminstrativa')
+                        ->where('id', $unidad_id)
+                        ->select('*')
+                        ->first();
+        } catch (\Throwable $th) {
+            return null;
+        }
     }
 
     public function getFuncionario($id){

@@ -47,7 +47,7 @@
                 @forelse ($data->derivaciones as $item)
                     @php
                         $pendiente = false;
-                        if(count($data->derivaciones) == $cont){
+                        if(count($data->derivaciones) == $cont && $data->estado_id == 6){
                             $pendiente = true;
                         }
                     @endphp

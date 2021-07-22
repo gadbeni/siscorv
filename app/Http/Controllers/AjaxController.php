@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Persona;
 use Luecano\NumeroALetras\NumeroALetras;
+use Illuminate\Support\Facades\Auth;
 use DB;
 
 class AjaxController extends Controller
@@ -44,51 +45,56 @@ class AjaxController extends Controller
 
     public function getFuncionarios(Request $request){
         $search = $request->search;
+        $personas = [];
+        if($search) {
+            $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
+                                ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
+                                ->where('c.Estado',1)
+                                ->where('cont.Estado',1)
+                                ->select([
+                                    'c.ID as id',
+                                    'c.NombreCompleto as text',
+                                    'c.APaterno as ap_paterno','c.alfanu as alfanum',
+                                    'c.AMaterno as ap_materno','c.Expedido as departamento_id',
+                                    DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
+                                    'c.N_carnet as ci',
+                                ])
+                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->limit(10)->get();
+        }
+        return response()->json($personas);
+    }
 
-        if($search == ''){
-        $personas =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                        ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
-                        ->where('c.Estado',1)
-                        ->where('cont.Estado',1)
-                        ->select([
-    						'c.ID as id_funcionario',
-    						'c.NombreCompleto as nombre_completo',
-                            'c.APaterno as paterno','c.alfanu',
-                            'c.AMaterno as materno','c.Expedido',
-                            DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
-                            'c.N_carnet as ci',
-    						'c.Estado as estado',
-    					])
-                        ->limit(5)->get();
-        }else{
-        $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
-                        ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
-                        ->where('c.Estado',1)
-                        ->where('cont.Estado',1)
-                        ->select([
-                            'c.ID as id_funcionario',
-                            'c.NombreCompleto as nombre_completo',
-                            'c.APaterno as paterno','c.alfanu',
-                            'c.AMaterno as materno','c.Expedido',
-                            DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
-                            'c.N_carnet as ci',
-                            'c.Estado as estado',
-                        ])->where('c.N_carnet', 'like', '%' .$search . '%')->limit(5)->get();
+    public function getFuncionariosDerivacion(Request $request){
+        $persona = Persona::where('user_id', Auth::user()->id)->first();
+        $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
+                            ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                            ->join('cargo as ca', 'ca.ID', 'co.idCargo')
+                            ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
+                            ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')->first();
+        if(!$funcionario){
+            return response()->json([]);
         }
-        $response = array();
-        foreach($personas as $persona){
-            $response[] = array(
-                    "id"=>$persona->id_funcionario,
-                    "text"=>$persona->nombre_completo,
-                    "nombre" => $persona->nombre,
-                    "ap_paterno" => $persona->paterno,
-                    "ap_materno" => $persona->materno,
-                    "ci" => $persona->ci,
-                    "alfanum" => $persona->alfanu,
-                    "departamento_id" => $persona->Expedido
-        );
+        $search = $request->search;
+        $funcionarios = [];
+        if($search) {
+            /*
+                Si el funcionario no es director (idCargo=4) solo puede derivar
+                a los funcionarios de su misma dirección 
+            */
+            $query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
+            $query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
+            $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
+                                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                                ->where('c.id', '<>', $persona->funcionario_id)
+                                ->whereRaw($query_filter_cargo)
+                                // ->whereRaw($query_filter_rol)
+                                ->select('c.id', 'c.NombreCompleto as text')
+                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
         }
-        return response()->json($response);
+        return response()->json($funcionarios);
     }
 
     public function imprimir($id){

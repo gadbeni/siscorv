@@ -6,7 +6,8 @@
 
     @section('page_header')
         <div class="col-md-6" style="margin: 20px 0px;">
-            <h3 class="text-muted"> <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a> &nbsp; {{ $data->referencia }}</h3>
+            <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+            <h3 class="text-muted" style="padding-left: 20px">{{ $data->referencia }}</h3>
         </div>
         <div class="col-md-6 text-right" style="margin-top: 40px;">
             <div class="btn-group" role="group" aria-label="...">
@@ -69,7 +70,11 @@
                                     <h3 class="panel-title">Origen</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
+                                    @if ($data->tipo == 'E')
                                     <p>{{ $data->entity->nombre }}</p>
+                                    @else
+                                    <p>{{ $origen }}</p>
+                                    @endif
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -82,6 +87,23 @@
                                 </div>
                                 <hr style="margin:0;">
                             </div>
+                            @if ($data->tipo == 'I')
+                            <div class="col-md-12">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Destino</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    @if ($destino)
+                                        <p>
+                                            {{ $destino->nombre }} <br>
+                                            <b style="font-weight: bold">{{ $destino->cargo }}</b> <br>
+                                            <b style="font-weight: bold">{{ $destino->unidad }} {{ $destino->direccion ? ' - '.$destino->direccion : '' }}</b>
+                                        </p>
+                                    @endif
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            @endif
                             <div class="col-md-12">
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Referencia</h3>
@@ -176,7 +198,7 @@
         </form>
         
         {{-- Personas modal --}}
-        @include('partials.modal-derivar', ['personas' => $personas, 'id' => $data->id, 'redirect' => 'bandeja.index'])
+        @include('partials.modal-derivar', ['id' => $data->id, 'redirect' => 'bandeja.index'])
 
         {{-- rechazar modal --}}
         <form action="{{ route('bandeja.rechazar', ['id' => $data->id]) }}" method="post">
@@ -215,7 +237,7 @@
     @section('javascript')
         <script>
             $(document).ready(function () {
-                $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
+                // $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
             });
         </script>
     @stop
