@@ -17,7 +17,7 @@ Muestra el listado de todas las entidades registradas en el sistema.
 ## Filtro
 .El sistema realiza el filtro por cualquier atributo disponible de la vista
 
-![screenshot](/docs/1.0/search.png)
+![screenshot](/siscorv/docs/1.0/search.png)
 
 + Sigla
 + Nombre

@@ -1,6 +1,6 @@
 - ## Inicio
     - [Introduccion](/siscorv/{{route}}/{{version}}/overview)
-    - [Funcionalidades](/siscor/{{route}}/{{version}}/funcionalidades)
+    - [Funcionalidades](/siscorv/{{route}}/{{version}}/funcionalidades)
     - [Acceso al Sistema](/siscorv/{{route}}/{{version}}/login)
 
 - ## Usuario Normal
