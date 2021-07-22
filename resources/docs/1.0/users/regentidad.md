@@ -9,7 +9,7 @@
 ## Acceso al listado de Entidades
 En el menu izquierdo desplegar el menú de Parámetros y seleccionar Entidades.
 
-![screenshot](/docs/1.0/indexentidades.png)
+![screenshot](/siscorv/docs/1.0/indexentidades.png)
 
 Muestra el listado de todas las entidades registradas en el sistema.
 
