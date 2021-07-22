@@ -22,7 +22,12 @@ class CreateEntradasTable extends Migration
             $table->string('cite', 50)->nullable();
             $table->string('referencia')->nullable();
             $table->string('nro_hojas', 30)->nullable();
+            
             $table->string('funcionario_id_remitente', 10)->nullable();
+            $table->integer('unidad_id_remitente')->nullable();
+            $table->integer('direccion_id_remitente')->nullable();
+            $table->integer('funcionario_id_destino')->nullable();
+
             $table->string('funcionario_id_responsable', 10)->nullable();
             //$table->string('estado', 20)->nullable();
 
@@ -33,6 +38,7 @@ class CreateEntradasTable extends Migration
             $table->string('actualizado_por', 30)->nullable();
             $table->dateTime('fecha_actualizacion')->nullable();
             $table->text('observacion_rechazo')->nullable();
+            $table->text('detalles')->nullable();
 
             // FK Entity
             $table->foreignId('entity_id')

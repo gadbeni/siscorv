@@ -42,7 +42,7 @@
         @include('partials.modal-delete')
 
         {{-- Personas modal --}}
-        @include('partials.modal-derivar', ['personas' => $personas])
+        @include('partials.modal-derivar')
     @stop
 
     @section('css')
@@ -59,12 +59,12 @@
 
         <script>
             $(document).ready(function() {
-                // $('#select-destinatario').select2({ dropdownParent: "#modal-derivar" });
                 let columns = [
+                    { data: 'id', title: 'ID' },
                     { data: 'hr', title: 'HR' },
                     { data: 'fecha_ingreso', title: 'Fecha de ingreso' },
-                    { data: 'cite', title: 'Nro. de cite' },
-                    { data: 'nro_hojas', title: 'Nro. de hojas' },
+                    // { data: 'cite', title: 'Nro. cite' },
+                    // { data: 'nro_hojas', title: 'Nro. de hojas' },
                     { data: 'origen', title: 'origen' },
                     { data: 'remitente', title: 'Remitente' },
                     { data: 'referencia', title: 'Referencia' },
