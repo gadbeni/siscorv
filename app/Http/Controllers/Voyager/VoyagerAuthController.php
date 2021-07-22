@@ -13,6 +13,9 @@ use App\Models\User;
 class VoyagerAuthController extends BaseVoyagerAuthController
 {
     public function redirectTo(){
+        if(Auth::user()->role_id == 1){
+            return 'admin';
+        }
         $persona = Persona::where('user_id', Auth::user()->id)->first();
         $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
                             ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
