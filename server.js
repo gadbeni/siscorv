@@ -1,9 +1,11 @@
-const express = require('express');
+const fs = require("fs");
 
-const app = express();
+// const server = require('https').createServer({
+//   key: fs.readFileSync("/etc/letsencrypt/live/siscor.ml/privkey.pem"),
+//   cert: fs.readFileSync("/etc/letsencrypt/live/siscor.ml/fullchain.pem")
+// });
 
-
-const server = require('http').createServer(app);
+const server = require('http').createServer();
 
 
 const io = require('socket.io')(server, {

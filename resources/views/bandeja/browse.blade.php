@@ -12,6 +12,14 @@
                     <div class="panel panel-bordered">
                         <div class="panel-body">
 
+                            <div class="alert alert-info" style="padding: 5px 10px; display: none" role="alert" id="alert-new">
+                                <div class="row">
+                                    <div class="col-md-8" style="margin: 0px">
+                                    <p style="margin-top: 10px"><b>Atención!</b> Tienes una nueva derivación, refresca la página para actualizar la lista.</p></div>
+                                    <div class="col-md-4 text-right" style="margin: 0px"><button class="btn btn-default" onclick="location.reload()">Refrescar <i class="voyager-refresh"></i></button></div>
+                                </div>
+                            </div>
+
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pendientes</a></li>
                                 <li><a data-toggle="tab" href="#menu1">Archivados</a></li>
@@ -141,13 +149,11 @@
 
 
                 // Socket.io
-                let ip_address = '127.0.0.1';
-                let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
-                let socket = io(ip_address + ':' + socket_port);
+                let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
                 socket.on('sendNotificationToClient', (id) => {
                     let user_id = "{{ Auth::user()->id }}";
                     if(user_id == id){
-                        location.reload();
+                        $('#alert-new').fadeIn();
                     }
                 });
 
@@ -155,10 +161,6 @@
                 socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
             });
-
-            function read(id){
-                window.location = "{{ url('admin/bandeja') }}/"+id;
-            }
         </script>
     @stop
     

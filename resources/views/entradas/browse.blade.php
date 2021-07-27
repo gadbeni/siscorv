@@ -83,9 +83,7 @@
             }
 
             $(function() {
-                let ip_address = '127.0.0.1';
-                let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
-                let socket = io(ip_address + ':' + socket_port);
+                let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
                 @if (session('alert-type'))
                 socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
