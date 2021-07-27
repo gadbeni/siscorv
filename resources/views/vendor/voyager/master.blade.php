@@ -155,26 +155,16 @@
         @endif
     </script>
     @include('voyager::media.manager')
-    @yield('javascript')
-    @stack('javascript')
-    @if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
-        @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
-    @endif
-    @livewireScripts
-
-    {{-- Socket.io --}}
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> --}}
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-
 
     <script>
+        const IP_ADDRESS = "{{ env('APP_URL', '127.0.0.1') }}";
+        const SOCKET_PORT = "{{ env('SOCKET_PORT', '3000') }}";
+
         $(function() {
             // Pedir autorización para mostrar notificaciones
             Notification.requestPermission();
 
-            let ip_address = '127.0.0.1';
-            let socket_port = "{{ env('SOCKET_PORT', '3000') }}";
-            let socket = io(ip_address + ':' + socket_port);
+            let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
             socket.on('sendNotificationToClient', (id) => {
                 let user_id = "{{ Auth::user()->id }}";
                 if(user_id == id){
@@ -189,9 +179,28 @@
                             window.location = "{{ route('bandeja.index') }}";
                         }
                     }
+
+                    let cont = $('#badge-notification .badge').text();
+                    if(!cont){
+                        let url = "{{ route('bandeja.index') }}";
+                        $('#badge-notification').html(`<a href="${url}"> <span class="voyager-bell text-danger" style="font-size: 25px"></span> <span class="badge" style="margin-left: -10px">1</span> </a>`);
+                    }else{
+                        $('#badge-notification .badge').text(parseFloat(cont)+1);
+                    }
                 }
             });
         });
     </script>
+
+    @yield('javascript')
+    @stack('javascript')
+    @if(!empty(config('voyager.additional_js')))<!-- Additional Javascript -->
+        @foreach(config('voyager.additional_js') as $js)<script type="text/javascript" src="{{ asset($js) }}"></script>@endforeach
+    @endif
+    @livewireScripts
+
+    {{-- Socket.io --}}
+    {{-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> --}}
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 </body>
 </html>

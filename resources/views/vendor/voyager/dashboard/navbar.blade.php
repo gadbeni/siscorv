@@ -33,7 +33,7 @@
             @show
         </div>
         <ul class="nav navbar-nav @if (__('voyager::generic.is_rtl') == 'true') navbar-left @else navbar-right @endif">
-            <li>
+            <li id="badge-notification">
                 @php
                     $funcionario = \App\Models\Persona::where('user_id', Auth::user()->id)->first();
                     $ingresos = [];
