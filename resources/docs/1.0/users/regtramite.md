@@ -9,7 +9,7 @@
 ## Acceso al listado de Trámites
 En el menu izquierdo seleccionar la opcion de entradas como se ve en la site. img.
 
-![screenshot](/siscorv/docs/1.0/entradasindex.png)
+![screenshot](/{{route}}/1.0/entradasindex.png)
 
 Muestra el listado de todas las entradas registradas en el sistema.
 
@@ -17,7 +17,7 @@ Muestra el listado de todas las entradas registradas en el sistema.
 ## Filtro
 .El sistema realiza el filtro por cualquier atributo disponible de la vista
 
-![screenshot](/siscorv/docs/1.0/search.png)
+![screenshot](/{{route}}/1.0/search.png)
 
 + Nro de Cite
 + Origen

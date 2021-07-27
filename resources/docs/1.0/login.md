@@ -5,9 +5,9 @@
 
 <a name="login"></a>
 
-SISCOR, sistema de correspondencia es una aplicación web que puede ser accedida desde cualquier navegador, celular, tablet con acceso a internet o red. (http://192.168.192.20/siscorv/admin/login)
+SISCOR, sistema de correspondencia es una aplicación web que puede ser accedida desde cualquier navegador, celular, tablet con acceso a internet o red. (https://siscor.ml/admin/login)
 
-![screenshot](/siscorv/docs/1.0/login.png)
+![screenshot](/{{route}}/1.0/login.png)
 
 
 

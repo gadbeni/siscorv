@@ -9,7 +9,7 @@
 ## Acceso al listado de Certificados no Adeudo
 En el menu izquierdo seleccionar la opcion de certificados como se ve en la site. img.
 
-![screenshot](/siscorv/docs/1.0/indexcertificates.png)
+![screenshot](/{{route}}/1.0/indexcertificates.png)
 
 Muestra el listado de los certificados registrados solo de la sucursal a la que pertenece el usuario, 
 solo los administradores pueden ver los certificados registrados en todas las sucursales.
@@ -18,7 +18,7 @@ solo los administradores pueden ver los certificados registrados en todas las su
 ## Filtro
 .El sistema realiza el filtro por cualquier atributo disponible de la vista
 
-![screenshot](/siscorv/docs/1.0/search.png)
+![screenshot](/{{route}}//1.0/search.png)
 
 + Codigo
 + Tipo
@@ -30,7 +30,7 @@ solo los administradores pueden ver los certificados registrados en todas las su
 ## Registro de Certificado.
 Dar Click en el boton color verde <larecipe-badge type="success" icon="fa fa-plus" rounded>Crear</larecipe-badge> el cual le mostrara una vista donde pondra la informacion necesaria para el registro del mismo 
 
-![screenshot](/siscorv/docs/1.0/createcertificate.png)
+![screenshot](/{{route}}/1.0/createcertificate.png)
 
 A continuacion un listado de los campos requeridos y opcionales para su registro.
 
@@ -50,7 +50,7 @@ Una vez introducido todos los datos necesarios para el registro del tomo presion
 Luego de haber registrado el certificado le motrara un boton donde podra imprimirlo.
 <larecipe-badge type="info" rounded>Imprimir</larecipe-badge>
 
-![screenshot](/siscorv/docs/1.0/certificate.png)
+![screenshot](/{{route}}/1.0/certificate.png)
 
 <a name="view-certificate"></a>
 ## Vista Certificado.

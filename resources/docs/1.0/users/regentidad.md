@@ -9,7 +9,7 @@
 ## Acceso al listado de Entidades
 En el menu izquierdo desplegar el menú de Parámetros y seleccionar Entidades.
 
-![screenshot](/siscorv/docs/1.0/indexentidades.png)
+![screenshot](/{{route}}/1.0/indexentidades.png)
 
 Muestra el listado de todas las entidades registradas en el sistema.
 
@@ -17,7 +17,7 @@ Muestra el listado de todas las entidades registradas en el sistema.
 ## Filtro
 .El sistema realiza el filtro por cualquier atributo disponible de la vista
 
-![screenshot](/siscorv/docs/1.0/search.png)
+![screenshot](/{{route}}/1.0/search.png)
 
 + Sigla
 + Nombre

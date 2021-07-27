@@ -1,13 +1,13 @@
 - ## Inicio
-    - [Introduccion](/siscorv/{{route}}/{{version}}/overview)
-    - [Funcionalidades](/siscorv/{{route}}/{{version}}/funcionalidades)
-    - [Acceso al Sistema](/siscorv/{{route}}/{{version}}/login)
+    - [Introduccion](/{{route}}/{{version}}/overview)
+    - [Funcionalidades](/{{route}}/{{version}}/funcionalidades)
+    - [Acceso al Sistema](/{{route}}/{{version}}/login)
 
 - ## Usuario Normal
-    - [Introduccion](/siscorv/{{route}}/{{version}}/users/overview)
-    - [Registro de Trámites](/siscorv/{{route}}/{{version}}/users/regtramite)
-    - [Registro de Entidades](/siscorv/{{route}}/{{version}}/users/regentidad)
-    - [Certificados no Adeudo](/siscorv/{{route}}/{{version}}/users/regcertificado)
+    - [Introduccion](/{{route}}/{{version}}/users/overview)
+    - [Registro de Trámites](/{{route}}/{{version}}/users/regtramite)
+    - [Registro de Entidades](/{{route}}/{{version}}/users/regentidad)
+    - [Certificados no Adeudo](/{{route}}/{{version}}/users/regcertificado)
 
 - ## Usuario Administradores
-    - [Introduccion](/siscorv/{{route}}/{{version}}/admins/overview)
+    - [Introduccion](/{{route}}/{{version}}/admins/overview)
