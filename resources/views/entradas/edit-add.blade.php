@@ -27,7 +27,7 @@
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
-                                            <option value="I">Interno</option>
+                                            <option value="I" @if (Auth::user()->role_id != 3) disabled @endif>Interno</option>
                                             <option value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
                                     </div>
