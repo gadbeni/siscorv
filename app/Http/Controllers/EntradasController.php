@@ -311,7 +311,7 @@ class EntradasController extends Controller
             $funcionario_id = $funcionario->funcionario_id;
             $ingresos = Entrada::with(['entity', 'derivaciones'])
                         ->whereHas('derivaciones', function($q) use($funcionario_id){
-                            $q->where('funcionario_id_para', $funcionario_id)->where('deleted_at', NULL);
+                            $q->where('funcionario_id_para', $funcionario_id)->whereNull('deleted_at');
                         })
                         ->where('deleted_at', NULL)->get();
         }
