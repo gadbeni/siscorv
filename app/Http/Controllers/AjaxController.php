@@ -76,25 +76,44 @@ class AjaxController extends Controller
         }
         $search = $request->search;
         $funcionarios = [];
-        if($search) {
-            /*
-                Si el funcionario no es director (idCargo=4) solo puede derivar
-                a los funcionarios de su misma dirección 
-            */
-            $query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
-            $query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
+        if (auth()->user()->role_id == 2) {
             $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-                                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
-                                ->where('c.id', '<>', $persona->funcionario_id)
-                                ->whereRaw($query_filter_cargo)
-                                // ->whereRaw($query_filter_rol)
-                                ->select('c.id', 'c.NombreCompleto as text')
-                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
+                                //->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                ->join('contratos as co', function ($join) {
+                                    $join->on('co.idContribuyente', '=', 'c.N_Carnet')
+                                    ->where('co.Estado',1);
+                                })
+                                ->where('c.Estado', 1)
+                                ->where('co.DescripcionCargo', 'Secretario Dptal. de Administración y Finanzas')
+                                ->orWhere('co.DescripcionCargo', 'Gobernador del Dpto. del Beni')
+                                ->select('c.id', 'c.NombreCompleto as text','co.Estado')
+                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
+                                ->groupBy('c.NombreCompleto')
+                                ->limit(5)->get();
+                                
+            return response()->json($funcionarios);
+        }else{
+            if($search) {
+                /*
+                    Si el funcionario no es director (idCargo=4) solo puede derivar
+                    a los funcionarios de su misma dirección 
+                */
+                $query_filter_cargo = $funcionario->idNivel <= 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
+                //$query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
+                $query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
+                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
+                                    ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                                    ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                                    ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                    ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                                    ->where('c.id', '<>', $persona->funcionario_id)
+                                    ->whereRaw($query_filter_cargo)
+                                    // ->whereRaw($query_filter_rol)
+                                    ->select('c.id', 'c.NombreCompleto as text')
+                                    ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
+            }
+            return response()->json($funcionarios);
         }
-        return response()->json($funcionarios);
     }
 
     public function imprimir($id){

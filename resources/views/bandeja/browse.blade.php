@@ -161,6 +161,10 @@
                 socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
             });
+
+            function read(id){
+                window.location = "{{ url('admin/bandeja') }}/"+id;
+            }
         </script>
     @stop
     
