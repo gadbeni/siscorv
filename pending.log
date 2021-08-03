@@ -7,9 +7,9 @@
 1.- copiar y ejecutar script insert de entidades
 
 2.- copiar script entradas de y cambiar parametros 
-    entidad_id => entity_id
+    entidad_id => entity_id con valor 3
 3.- Reemplazar valor en los insert 
-    'P' => 
+    'P' => 3
 4 .- copiar y ejecutar script insert de Archivos
 5.- copiar y ejecutar script insert de derivaciones
     modificar nombre de tabla a derivations
