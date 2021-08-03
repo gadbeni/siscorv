@@ -27,6 +27,7 @@
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
+                                            <option value="" selected>Seleccione el tipo</option>
                                             <option value="I" @if (Auth::user()->role_id != 3) disabled @endif>Interno</option>
                                             <option value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
@@ -69,10 +70,12 @@
                                         <label class="control-label">Referencia</label>
                                         <textarea name="referencia" class="form-control" rows="3" required></textarea>
                                     </div>
+                                   
                                     <div class="form-group col-md-12" id="div-detalle">
                                         {{-- <label class="control-label">Referencia</label> --}}
                                         <textarea class="form-control richTextBox" name="detalle"></textarea>
                                     </div>
+                                   
                                 </div>
                             </div>
                             <div class="panel-footer text-right">
