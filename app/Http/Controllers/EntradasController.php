@@ -313,7 +313,9 @@ class EntradasController extends Controller
                         ->whereHas('derivaciones', function($q) use($funcionario_id){
                             $q->where('funcionario_id_para', $funcionario_id)->whereNull('deleted_at');
                         })
-                        ->where('deleted_at', NULL)->get();
+                        ->where('deleted_at', NULL)
+                        ->orderBy('id','desc')
+                        ->get();
         }
         return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
     }
