@@ -120,6 +120,7 @@
             $(document).ready(function(){
                 $('.dataTable').DataTable({
                     language: {
+                        "order": [[ 1, "desc" ]]
                         sProcessing: "Procesando...",
                         sLengthMenu: "Mostrar _MENU_ registros",
                         sZeroRecords: "No se encontraron resultados",

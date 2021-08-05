@@ -39,6 +39,7 @@ class CreateEntradasTable extends Migration
             $table->dateTime('fecha_actualizacion')->nullable();
             $table->text('observacion_rechazo')->nullable();
             $table->text('detalles')->nullable();
+            $table->json('details')->nullable();
 
             // FK Entity
             $table->foreignId('entity_id')

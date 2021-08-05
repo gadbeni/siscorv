@@ -282,23 +282,40 @@ class EntradasController extends Controller
 
     public function store_derivacion(Request $request){
         $user = Persona::where('funcionario_id', $request->destinatario)->first();
-        // dd($funcionario->user_id);
+         /*Si la derivación viene del RDE no se registra al funcionario de origen*/
+         $rde = $request->redirect ? null : 1;
+
+         if(!$rde){
+            $persona = Persona::where('user_id', Auth::user()->id)->first();
+            if(!$persona){
+                return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
+            }
+        }
+        DB::beginTransaction();
         try {
             $redirect = $request->redirect ?? 'entradas.index';
-            $rde = $request->redirect ? null : 1;
             $funcionario = $this->getFuncionario($request->destinatario);
             if($funcionario){
                 // Actualizar estado de la correspondencia
                 $entrada = Entrada::findOrFail($request->id);
+                $entrada->details = [
+                    'id_origen' => auth()->user()->id, 
+                    'nombre_origen' => $rde ? null : $persona->full_name,
+                    'id_para' => $funcionario->id_funcionario,
+                    'nombre_para' => $funcionario->nombre,
+                    'fecha' => Carbon::now()
+                ];
                 $entrada->estado_id = 3;
                 $entrada->save();
                 $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
+                DB::commit();
             }else{
                 return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
             }
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
-            // dd($th);
+            DB::rollback();
+            //dd($th);
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
@@ -311,11 +328,12 @@ class EntradasController extends Controller
             $funcionario_id = $funcionario->funcionario_id;
             $ingresos = Entrada::with(['entity', 'derivaciones'])
                         ->whereHas('derivaciones', function($q) use($funcionario_id){
-                            $q->where('funcionario_id_para', $funcionario_id)->whereNull('deleted_at');
+                            $q->where('funcionario_id_para', $funcionario_id)
+                            ->whereNull('deleted_at');
                         })
                         ->where('deleted_at', NULL)
                         ->orderBy('id','desc')
-                        ->get();
+                        ->limit(10)->get();
         }
         return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
     }
@@ -419,14 +437,7 @@ class EntradasController extends Controller
     // =============================================================
 
     public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
-        /*Si la derivación viene del RDE no se registra al funcionario de origen*/
-        if(!$rde){
-            $persona = Persona::where('user_id', Auth::user()->id)->first();
-            if(!$persona){
-                return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
-            }
-        }
-
+        
         return Derivation::create([
             'entrada_id' => $request->id,
             'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
