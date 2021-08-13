@@ -248,10 +248,9 @@ class EntradasController extends Controller
         //
     }
 
-    public function print($id){
-        
-        $view = view('entradas.print');
-        return $view;
+    public function print(Entrada $entrada){
+        $view = view('entradas.print',['entrada' => $entrada->load('derivaciones','entity')]);
+        //return $view;
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         return $pdf->stream();
@@ -283,28 +282,40 @@ class EntradasController extends Controller
     public function store_derivacion(Request $request){
         $user = Persona::where('funcionario_id', $request->destinatario)->first();
          /*Si la derivación viene del RDE no se registra al funcionario de origen*/
-         $rde = $request->redirect ? null : 1;
-
-         if(!$rde){
-            $persona = Persona::where('user_id', Auth::user()->id)->first();
-            if(!$persona){
-                return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
-            }
+        
+        $rde = $request->redirect ? null : 1;
+        $persona = Persona::where('user_id', Auth::user()->id)->first();
+        if(!$persona){
+            return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
         }
+       
         DB::beginTransaction();
         try {
             $redirect = $request->redirect ?? 'entradas.index';
+             $entrada = Entrada::findOrFail($request->id);
             $funcionario = $this->getFuncionario($request->destinatario);
             if($funcionario){
                 // Actualizar estado de la correspondencia
-                $entrada = Entrada::findOrFail($request->id);
-                $entrada->details = [
-                    'id_origen' => auth()->user()->id, 
-                    'nombre_origen' => $rde ? null : $persona->full_name,
-                    'id_para' => $funcionario->id_funcionario,
-                    'nombre_para' => $funcionario->nombre,
-                    'fecha' => Carbon::now()
-                ];
+                //$entrada = Entrada::findOrFail($request->id);
+                $detaillast = array();
+                if (isset($entrada->details)) {
+                    $detaillast[] = $entrada->details;
+                }
+                $detalle = [
+                        'id_origen' => auth()->user()->id, 
+                        'nombre_origen' => $persona->full_name,
+                        'id_para' => $funcionario->id_funcionario,
+                        'nombre_para' => $funcionario->nombre,
+                        'fecha' => Carbon::now()
+                    ];
+             
+                if (count($detaillast) == 0) {
+                    $entrada->details = $detalle;
+                } else {
+                   array_push($detaillast,$detalle);
+                   $entrada->details = $detaillast;
+                }
+                //dd($detaillast);
                 $entrada->estado_id = 3;
                 $entrada->save();
                 $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
@@ -315,7 +326,7 @@ class EntradasController extends Controller
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             DB::rollback();
-            //dd($th);
+            dd($th);
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
@@ -437,7 +448,7 @@ class EntradasController extends Controller
     // =============================================================
 
     public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
-        
+        $persona = Persona::where('user_id', Auth::user()->id)->first();
         return Derivation::create([
             'entrada_id' => $request->id,
             'funcionario_id_de' => $rde ? null : $persona->funcionario_id,

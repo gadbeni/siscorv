@@ -5,17 +5,41 @@
 @if(auth()->user()->hasPermission('read_entradas'))
 
     @section('page_header')
-        <h1 class="page-title">
-            <i class="voyager-credit-cards"></i> Viendo Ingresos
-            <a href="{{ route('entradas.index') }}" class="btn btn-warning">
-                <span class="glyphicon glyphicon-list"></span>&nbsp;
-                Volver a la lista
+    <div class="col-md-12" style="padding: 10px;">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="javascript:;">
+                <i class="voyager-credit-cards"></i> Viendo Ingreso
             </a>
-            <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank" class="btn btn-danger">
-                <span class="glyphicon glyphicon-print"></span>&nbsp;
-                Imprimir
-            </a>
-        </h1>
+            <div class="container-fluid">
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{{ route('entradas.index') }}"> <span class="glyphicon glyphicon-list"></span>&nbsp;Volver a la lista</a></li>
+                        @if($data->derivaciones->count() > 0)
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimir <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
+                                        <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                            Imprimir Comprobante
+                                    </a>
+                                </li>
+                                <li role="separator" class="divider"></li>
+                                <li>
+                                    <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
+                                        <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                            Imprimir Hoda de Ruta
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        @endif
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+    </div>    
     @stop
 
     @section('content')

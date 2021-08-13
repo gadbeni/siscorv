@@ -20,8 +20,14 @@
                 <img src="{{ asset('images/logo2021.png') }}" width="100px" alt="logo">
             </td>
             <td align="right">
-                <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br> <small>NOTA DE COMUNICACIÓN INTERNA</small> </h3>
-                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">D.A.A.I. N&deg; 124/2021</h4>
+                <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br> 
+                    @if($entrada->tipo == 'E')
+                    <small>HOJA DE RUTA N°:</small>
+                    @else
+                     <small>NOTA DE COMUNICACIÓN INTERNA</small> 
+                    @endif
+                </h3>
+                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">{{ $entrada->tipo.'-'.$entrada->gestion.'-'.$entrada->id }}</h4>
             </td>
         </tr>
     </table>
@@ -31,30 +37,29 @@
                 <td width="50px">FECHA</td>
                 <td width="20px">:</td>
                 <td class="bordered">
-                    17 de Julio de 2021
+                {{ date('d/m/Y H:i:s', strtotime($entrada->created_at)) }}
                 </td>
             </tr>
             <tr>
                 <td>A</td>
                 <td>:</td>
                 <td class="bordered">
-                    Ing. Mario Silvio Tanaka G. <br>
-                    <b>DIRECTOR DEPARTAMENTAL DE SISTEMAS Y TELECOMUNICACIONES DEL GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI</b>
+                    {{$entrada->derivaciones[0]->funcionario_nombre_para }}. <br>
+                    <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
                 </td>
             </tr>
             <tr>
                 <td>DE</td>
                 <td>:</td>
                 <td class="bordered">
-                    Lic. Gustavo Pedraza B. <br>
-                    <b>DIRECTOR DEPARTAMENTAL DE AUDITORÍA INTERNA</b>
+                    {{$entrada->entity->nombre}}.
                 </td>
             </tr>
             <tr>
                 <td>REF</td>
                 <td>:</td>
                 <td class="bordered">
-                    <b>SOLCITUD DE HABILIATCIÓN DE USUARIO</b>
+                    <b>{{$entrada->referencia}}</b>
                 </td>
             </tr>
         </table>
@@ -62,12 +67,12 @@
         <table width="100%" cellspacing="2">
             <tr>
                 <td style="height: 250px" colspan="6">
-                    <p style="padding: 20px">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore</p>
+                    <p style="padding: 20px"></p>
                 </td>
             </tr>
             <tr>
                 <td width="110px" height="50px">Fecha de salidad</td>
-                <td width="100px">....../....../............</td>
+                <td width="100px">{{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}</td>
                 <td width="50px">Plazo</td>
                 <td width="100px">....../....../............</td>
                 <td width="90px">Firma y sello</td>
@@ -81,7 +86,7 @@
         @php
             $persona = \App\Models\Persona::where('user_id', Auth::user()->id)->first();
         @endphp
-        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br> <small style="font-size: 11px">Por: {{ $persona->full_name }}</small></p>
+        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br> <small style="font-size: 11px">Por: {{ $persona->full_name ?? auth()->user()->name }}</small></p>
     </div>
 
     <style>
