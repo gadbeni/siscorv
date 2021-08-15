@@ -172,9 +172,9 @@
                                                 <tr>
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->nombre_origen }}</td>
+                                                    <td>{{ $item->user->name ?? '' }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td><a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a></td>
-                                                    <td>{{ $item->user->name }}</td>
                                                     <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
                                                 </tr>
                                                 @php
