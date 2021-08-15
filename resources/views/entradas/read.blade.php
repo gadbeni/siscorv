@@ -27,7 +27,7 @@
                                 </li>
                                 <li role="separator" class="divider"></li>
                                 <li>
-                                    <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
+                                    <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;
                                             Imprimir Hoda de Ruta
                                     </a>

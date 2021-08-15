@@ -20,8 +20,14 @@
                 <img src="{{ asset('images/logo2021.png') }}" width="100px" alt="logo">
             </td>
             <td align="right">
-                <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br> <small>NOTA DE COMUNICACIÓN INTERNA</small> </h3>
-                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">D.A.A.I. N&deg; 124/2021</h4>
+                <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br>
+                    @if($entrada->tipo == 'E')
+                    <small>HOJA DE RUTA N°:</small>
+                    @else
+                     <small>NOTA DE COMUNICACIÓN INTERNA</small> 
+                    @endif
+                </h3>
+                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">{{ $entrada->tipo.'-'.$entrada->gestion.'-'.$entrada->id }}</h4>
             </td>
         </tr>
     </table>
@@ -75,7 +81,7 @@
         @php
             $persona = \App\Models\Persona::where('user_id', Auth::user()->id)->first();
         @endphp
-        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br> <small style="font-size: 11px">Por: {{ $persona->full_name }}</small></p>
+        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br> <small style="font-size: 11px">Por: {{ $persona->full_name ?? auth()->user()->name }}</small></p>
     </div>
 
     <style>
