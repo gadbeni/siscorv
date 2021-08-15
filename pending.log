@@ -7,7 +7,8 @@
 1.- copiar y ejecutar script insert de entidades
 
 2.- copiar script entradas de y cambiar parametros 
-    entidad_id => entity_id con valor 3
+    eliminar parametro estado y todos los datos de el 'ACTIVO'
+    entidad_id => entity_id 
 3.- Reemplazar valor en los insert 
     'P' => 3
 4 .- copiar y ejecutar script insert de Archivos

@@ -37,8 +37,7 @@ class CreateDerivationsTable extends Migration
             $table->dateTime('visto')->nullable();
             $table->integer('rechazo')->nullable();
             $table->foreignId('entrada_id')
-                  ->constrained()
-                  ->onDelete('cascade');
+                  ->constrained();
             $table->timestamps();
             $table->softDeletes();
         });
