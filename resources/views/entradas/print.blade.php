@@ -27,7 +27,7 @@
                      <small>NOTA DE COMUNICACIÓN INTERNA</small> 
                     @endif
                 </h3>
-                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">{{ $entrada->tipo.'-'.$entrada->gestion.'-'.$entrada->id }}</h4>
+                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">{{ $entrada->tipo.'-'.$entrada->cite }}</h4>
             </td>
         </tr>
     </table>

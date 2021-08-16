@@ -47,7 +47,7 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
-                                        <input type="number" step="1" min="0" name="nro_hojas" class="form-control" required>
+                                        <input type="text" step="1" min="0" name="nro_hojas" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-6" id="div-entity_id" style="display: none">
                                         <label class="control-label">Origen</label>
