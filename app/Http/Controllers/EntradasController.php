@@ -256,14 +256,6 @@ class EntradasController extends Controller
         return $pdf->stream();
     }
 
-    public function printhr(Entrada $entrada){
-        $view = view('entradas.print-hoja-ruta',['entrada' => $entrada->load('derivaciones','entity')]);
-        //return $view;
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        return $pdf->stream();
-    }
-
     public function store_file(Request $request){
         try {
             $file = $request->file('file');
