@@ -41,7 +41,7 @@
                 <td width="10px">HORA</td>
                 <td width="3px">:</td>
                 <td class="bordered">{{ date('H:i', strtotime($entrada->created_at)) }}</td>
-                <td width="100px">Nº de HOJAS</td>
+                <td width="100px">Nº HOJAS</td>
                 <td width="3px">:</td>
                 <td class="bordered">{{ $entrada->nro_hojas }}</td>
                 @endif
