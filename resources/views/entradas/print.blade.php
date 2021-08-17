@@ -80,7 +80,7 @@
         </table>
         <table width="100%" cellspacing="2">
             <tr>
-                <td style="height: 80px" colspan="6">
+                <td style="height: 70px" colspan="6">
                     <p style="padding: 20px"></p>
                 </td>
             </tr>
