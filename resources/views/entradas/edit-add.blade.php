@@ -19,7 +19,14 @@
         <div class="page-content edit-add container-fluid">
             <div class="row">
                 <div class="col-md-12 div-phone">
-                    <form action="{{ route('entradas.store') }}" method="POST" enctype="multipart/form-data">
+                    <form 
+                        action="{{ ! $entrada->id ? route('entradas.store') : route('entradas.update',$entrada->id) }}" 
+                        method="POST" 
+                        enctype="multipart/form-data"
+                    >
+                        @if($entrada->id)
+                            @method('PUT')
+                        @endif
                         @csrf
                         <div class="panel panel-bordered">
                             <div class="panel-body">
@@ -28,37 +35,44 @@
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="" selected>Seleccione el tipo</option>
-                                            <option value="I" @if (Auth::user()->role_id != 3) disabled @endif>Interno</option>
-                                            <option value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
+                                            <option {{old('tipo') === 'I' || $entrada->tipo === 'I' ? 'selected' : ''}} value="I" @if (Auth::user()->role_id != 3) disabled @endif>Interno</option>
+                                            <option {{old('tipo') === 'E' || $entrada->tipo === 'E' ? 'selected' : ''}} value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" maxlength="50" class="form-control" required>
+                                        <input type="text" name="cite" maxlength="50" class="form-control" value="{{old('cite') ? : $entrada->cite}}" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Remitente</label>
-                                        <div id="div-remitente">
+                                        <div id="div-remitente" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                             <select name="funcionario_id_remitente" class="form-control select2">
                                                 <option value="{{ $funcionario ? $funcionario->funcionario_id : 844 }}">{{ $funcionario ? $funcionario->full_name : 'Admin' }}</option>
                                             </select>
                                         </div>
-                                        <input type="text" name="remitente" id="input-remitente" maxlength="150" style="display: none" class="form-control">
+                                        <input 
+                                            type="text" 
+                                            name="remitente" 
+                                            id="input-remitente" 
+                                            maxlength="150" 
+                                            style="{{$entrada->tipo === 'E' ? 'display: block' : 'display: none' }}" 
+                                            class="form-control"
+                                            value="{{old('remitente') ? :$entrada->remitente}}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
-                                        <input type="text"  name="nro_hojas" class="form-control" required>
+                                        <input type="text" name="nro_hojas" class="form-control" required value="{{old('nro_hojas') ? : $entrada->nro_hojas}}">
                                     </div>
-                                    <div class="form-group col-md-6" id="div-entity_id" style="display: none">
+                                    <div class="form-group col-md-6" id="div-entity_id" style="{{$entrada->tipo === 'E' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Origen</label>
                                         <select name="entity_id" class="form-control select2">
                                             <option value="">Selecciona el origen</option>
                                             @foreach (\App\Models\Entity::where('estado', 'activo')->where('deleted_at', NULL)->get() as $item)
-                                            <option value="{{ $item->id }}">{{ $item->sigla ? $item->sigla.' -' : '' }} {{ $item->nombre }}</option> 
+                                            <option {{(int)old('entity_id') === $item->id ||$entrada->entity_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->sigla ? $item->sigla.' -' : '' }} {{ $item->nombre }}</option> 
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6" id="div-destinatario">
+                                    <div class="form-group col-md-6" id="div-destinatario" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Destinatario</label>
                                         <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
                                     </div>
@@ -68,12 +82,12 @@
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label">Referencia</label>
-                                        <textarea name="referencia" class="form-control" rows="3" required></textarea>
+                                        <textarea name="referencia" class="form-control" rows="3" required>{{old('referencia') ? : $entrada->referencia}}</textarea>
                                     </div>
                                    
-                                    <div class="form-group col-md-12" id="div-detalle">
+                                    <div class="form-group col-md-12" id="div-detalle" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                         {{-- <label class="control-label">Referencia</label> --}}
-                                        <textarea class="form-control richTextBox" name="detalle"></textarea>
+                                        <textarea class="form-control richTextBox" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
                                    
                                 </div>

@@ -21,13 +21,8 @@
             </td>
             <td align="right">
                 <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br>
-                    @if($entrada->tipo == 'E')
-                    <small>HOJA DE RUTA N°:</small>
-                    @else
-                     <small>NOTA DE COMUNICACIÓN INTERNA</small> 
-                    @endif
+                   
                 </h3>
-                <h4 class="bordered" style="padding: 5px; margin: 0px; min-width: 200px; float:right">{{ $entrada->tipo.'-'.$entrada->gestion.'-'.$entrada->id }}</h4>
             </td>
         </tr>
     </table>
