@@ -80,12 +80,18 @@ class EntradasController extends Controller
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
                         '.($row->estado->id == 6 ? $derivar_button : '').'
-                        <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
+                        <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-info view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        <button title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/entradas/".$row->id)."'".')">
-                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                        </button>
+                        '.(($row->derivaciones->count() == 0) ? 
+                            '<a href="'.route('entradas.edit', ['entrada' => $row->id]).'" title="Editar" class="btn btn-sm btn-warning">
+                                <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
+                            </a>' : '').
+                        ''.(($row->derivaciones->count() <= 1) ? 
+                            '<button title="Anular" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/entradas/".$row->id)."'".')">
+                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
+                            </button>' : '').
+                        '
                     </div>
                         ';
                 return $actions;
@@ -101,8 +107,9 @@ class EntradasController extends Controller
      */
     public function create()
     {
+        $entrada = new Entrada;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        return view('entradas.edit-add', compact('funcionario'));
+        return view('entradas.edit-add', compact('entrada','funcionario'));
     }
 
     /**
@@ -220,9 +227,10 @@ class EntradasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Entrada $entrada)
     {
-        //
+        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        return view('entradas.edit-add', compact('entrada','funcionario'));
     }
 
     /**
@@ -232,9 +240,65 @@ class EntradasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Entrada $entrada)
     {
-        //
+        DB::beginTransaction();
+        try {
+
+            $persona = Persona::where('user_id', Auth::user()->id)->first();
+
+            $unidad_id_remitente = NULL;
+            $direccion_id_remitente = null;
+            $funcionario_remitente = NULL;
+            /*
+                Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id) 
+            */
+            if($request->tipo == 'I'){
+                $unidad_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->idDependencia;
+                $direccion_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->DA;
+                $funcionario = Persona::where('funcionario_id', $request->funcionario_id_remitente)->first();
+                $funcionario_remitente = $funcionario->full_name;
+            }
+
+            $entrada->update([
+                'tipo' => $request->tipo,
+                'remitente' => $request->tipo == 'E' ? $request->remitente : $funcionario_remitente,
+                'cite' => $request->cite,
+                'referencia' => $request->referencia,
+                'nro_hojas' => $request->nro_hojas,
+                // 'estado' => 'activo',
+                'detalles' => $request->detalles,
+                'funcionario_id_remitente' => $request->funcionario_id_remitente,
+                'unidad_id_remitente' => $unidad_id_remitente,
+                'direccion_id_remitente' => $direccion_id_remitente,
+                'funcionario_id_destino' => $request->funcionario_id_destino,
+                'entity_id' => $request->entity_id,
+            ]);
+
+            $file = $request->file('archivos');
+            if ($file) {
+                for ($i=0; $i < count($file); $i++) { 
+                    $nombre_origen = $file[$i]->getClientOriginalName();
+                    $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
+                    $dir = "entradas/".date('F').date('Y');
+                    Storage::makeDirectory($dir);
+                    Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
+                    Archivo::create([
+                        'nombre_origen' => $nombre_origen,
+                        'entrada_id' => $entrada->id,
+                        'ruta' => $dir.'/'.$newFileName,
+                        'user_id' => Auth::user()->id
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            // dd($th);
+            DB::rollback();
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
     }
 
     /**
@@ -244,8 +308,20 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-        //
+    {  
+        DB::beginTransaction();
+        try {
+            $entrada = Entrada::findOrFail($id);
+            $entrada->derivaciones()->delete();
+            $entrada->delete();
+            DB::commit();
+            return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+        }
+        
+       
     }
 
     public function print(Entrada $entrada){

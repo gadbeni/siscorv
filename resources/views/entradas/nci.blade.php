@@ -78,9 +78,10 @@
                 </td>
             </tr>
         </table>
+        <hr>
         <table width="100%" cellspacing="2">
             <tr>
-                <td style="height: 80px" colspan="6">
+                <td style="height: 250px" colspan="6">
                     <p style="padding: 20px"></p>
                 </td>
             </tr>
@@ -94,88 +95,7 @@
             </tr>
         </table>
     </div>
-    <div class="bordered" style="margin-top: 5px">
-        <table width="100%">
-            <tr>
-                <td width="110px" height="50px">Fecha de salidad</td>
-                <td width="100px">....../....../............</td>
-                <td width="50px">Hora</td>
-                <td width="80px">...... : ......</td>
-                <td width="100px">Recibido por: </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td>DE</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td>REF</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td height="100px" colspan="6">
-                    NOTA: <br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                </td>
-            </tr>
-            <tr>
-                <td width="110px" height="50px">Fecha de salidad</td>
-                <td width="100px">....../....../............</td>
-                <td width="50px">Plazo</td>
-                <td width="100px">....../....../............</td>
-                <td width="90px">Firma y sello</td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
-    <div class="bordered" style="margin-top: 5px">
-        <table width="100%">
-            <tr>
-                <td width="110px" height="50px">Fecha de salidad</td>
-                <td width="100px">....../....../............</td>
-                <td width="50px">Hora</td>
-                <td width="80px">...... : ......</td>
-                <td width="100px">Recibido por: </td>
-                <td></td>
-            </tr>
-            <tr>
-                <td>A</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td>DE</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td>REF</td>
-                <td class="bordered" colspan="5" height="20px"></td>
-            </tr>
-            <tr>
-                <td height="100px" colspan="6">
-                    NOTA: <br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                    _______________________________________________________________________________________<br>
-                </td>
-            </tr>
-            <tr>
-                <td width="110px" height="50px">Fecha de salidad</td>
-                <td width="100px">....../....../............</td>
-                <td width="50px">Plazo</td>
-                <td width="100px">....../....../............</td>
-                <td width="90px">Firma y sello</td>
-                <td></td>
-            </tr>
-        </table>
-    </div>
+
     {{-- Pie de página --}}
     <div style="position: fixed; bottom: 15px; right: -20px; text-align: right">
         @php

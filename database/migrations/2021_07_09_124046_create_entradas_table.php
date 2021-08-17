@@ -21,7 +21,7 @@ class CreateEntradasTable extends Migration
             $table->string('remitente', 150)->nullable();
             $table->string('cite', 50)->nullable();
             $table->string('referencia')->nullable();
-            $table->string('nro_hojas', 30)->nullable();
+            $table->string('nro_hojas')->nullable();
             
             $table->string('funcionario_id_remitente', 10)->nullable();
             $table->integer('unidad_id_remitente')->nullable();
