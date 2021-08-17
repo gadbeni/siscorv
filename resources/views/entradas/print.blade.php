@@ -34,16 +34,22 @@
     <div class="bordered" style="margin-top: 20px">
         <table width="100%" cellspacing="10" style="font-size: 13px">
             <tr>
-                <td width="50px">FECHA</td>
-                <td width="20px">:</td>
-                <td class="bordered">
-                {{ date('d/m/Y H:i:s', strtotime($entrada->created_at)) }}
-                </td>
+                <td width="30px">FECHA</td>
+                <td width="3px">:</td>
+                <td class="bordered">{{ date('d/m/Y', strtotime($entrada->created_at)) }}</td>
+                @if($entrada->tipo == 'E')
+                <td width="10px">HORA</td>
+                <td width="3px">:</td>
+                <td class="bordered">{{ date('H:i', strtotime($entrada->created_at)) }}</td>
+                <td width="100px">Nº de HOJAS</td>
+                <td width="3px">:</td>
+                <td class="bordered">{{ $entrada->nro_hojas }}</td>
+                @endif
             </tr>
             <tr>
                 <td>A</td>
                 <td>:</td>
-                <td class="bordered">
+                <td class="bordered" colspan="7">
                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}. <br>
                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
                 </td>
@@ -51,14 +57,23 @@
             <tr>
                 <td>DE</td>
                 <td>:</td>
-                <td class="bordered">
+                <td class="bordered" colspan="7">
                     {{$entrada->entity->nombre}}.
                 </td>
             </tr>
+            @if($entrada->tipo == 'E')
+            <tr>
+                <td width="50px">REMITENTE</td>
+                <td>:</td>
+                <td class="bordered" colspan="7">
+                    {{$entrada->remitente}}.
+                </td>
+            </tr>
+            @endif
             <tr>
                 <td>REF</td>
                 <td>:</td>
-                <td class="bordered">
+                <td class="bordered" colspan="7">
                     <b>{{$entrada->referencia}}</b>
                 </td>
             </tr>
