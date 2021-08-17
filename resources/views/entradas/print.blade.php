@@ -36,12 +36,12 @@
             <tr>
                 <td width="30px">FECHA</td>
                 <td width="3px">:</td>
-                <td class="bordered">{{ date('d/m/Y', strtotime($entrada->created_at)) }}</td>
+                <td width="20px" class="bordered">{{ date('d/m/Y', strtotime($entrada->created_at)) }}</td>
                 @if($entrada->tipo == 'E')
                 <td width="10px">HORA</td>
                 <td width="3px">:</td>
-                <td class="bordered">{{ date('H:i', strtotime($entrada->created_at)) }}</td>
-                <td width="100px">Nº HOJAS</td>
+                <td width="20px" class="bordered">{{ date('H:i', strtotime($entrada->created_at)) }}</td>
+                <td width="70px">Nº HOJAS</td>
                 <td width="3px">:</td>
                 <td class="bordered">{{ $entrada->nro_hojas }}</td>
                 @endif
