@@ -47,7 +47,7 @@
                 @endif
             </tr>
             <tr>
-                <td>A</td>
+                <td width="30px">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                 <td>:</td>
                 <td class="bordered" colspan="7">
                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}. <br>
@@ -55,7 +55,7 @@
                 </td>
             </tr>
             <tr>
-                <td>DE</td>
+                <td>{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
                 <td>:</td>
                 <td class="bordered" colspan="7">
                     {{$entrada->entity->nombre}}.
