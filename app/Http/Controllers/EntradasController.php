@@ -39,10 +39,13 @@ class EntradasController extends Controller
         }else{
             $query_filtro = 'tipo = "E"';
         }
-        $data = Entrada::with(['entity', 'estado', 'derivaciones'])
-                    ->whereRaw($query_filtro)
-                    ->where('deleted_at', NULL)->get();
-        // return $data;
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
+                        ->whereRaw($query_filtro)
+                        ->select([
+                            'id','tipo','gestion','estado_id','cite','remitente','referencia','entity_id','created_at'
+                        ])
+                        ->where('deleted_at', NULL)->take(10);
+         //return $data;
 
         return
             Datatables::of($data)

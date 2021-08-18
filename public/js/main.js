@@ -3,6 +3,7 @@ function customDataTable(url, columns = []){
         processing: true,
         serverSide: true,
         ajax: url,
+        deferRender: true,
         columns,
         order: [[ 0, "desc" ]],
         language: {
