@@ -12,6 +12,8 @@ class Entrada extends Model
 
     protected $dates = ['deleted_at'];
     
+    protected $withCount = ['derivaciones'];
+
     protected $casts = [
         'details' => 'array'
     ];
