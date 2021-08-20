@@ -91,7 +91,7 @@
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
                                     @if ($data->tipo == 'E')
-                                    <p>{{ $data->entity->nombre }}</p>
+                                    <p>{{ $data->entity->nombre ?? 'Sin Origen' }}</p>
                                     @else
                                     <p>{{ $origen }}</p>
                                     @endif
