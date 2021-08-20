@@ -58,7 +58,7 @@ class EntradasController extends Controller
             })
             ->addColumn('origen', function($row){
                 if($row->tipo == 'E'){
-                    return $row->entity->nombre;
+                    return $row->entity->nombre ?? 'Sin entidad';
                 }else{
                     $origen = '';
                     $direccion = $this->getIdDireccionInfo($row->direccion_id_remitente);
