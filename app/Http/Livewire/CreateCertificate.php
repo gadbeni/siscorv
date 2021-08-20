@@ -97,7 +97,7 @@ class CreateCertificate extends Component
                 $persona->nombre = $this->getNameattribute($this->nombre);
                 $persona->ap_paterno = $this->getNameattribute($this->ap_paterno);
                 $persona->ap_materno = $this->getNameattribute($this->ap_materno);
-                $persona->full_name = $persona->nombre.' '.$persona->ap_materno.' '.$persona->ap_paterno;
+                $persona->full_name = $persona->nombre.' '.$persona->ap_paterno.' '.$persona->ap_materno;
                 $persona->ci = $this->ci;
                 $persona->alfanum = $this->alfanum;
                 $persona->departamento_id = $this->departamento_id;
