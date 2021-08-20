@@ -22,6 +22,7 @@
 
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pendientes</a></li>
+                                <li><a data-toggle="tab" href="#menu2">Urgentes</a></li>
                                 <li><a data-toggle="tab" href="#menu1">Archivados</a></li>
                             </ul>
                             
@@ -31,6 +32,7 @@
                                         <table class="dataTable table table-hover">
                                             <thead>
                                                 <tr>
+                                                    <th>ID</th>
                                                     <th>HR</th>
                                                     <th>Fecha de derivación</th>
                                                     <th>Nro. de cite</th>
@@ -44,8 +46,9 @@
                                                         $derivacion = $item->derivaciones[count($item->derivaciones)-1];
                                                         // dd($derivacion);
                                                     @endphp
-                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && $item->estado_id != 4)
+                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && $item->estado_id != 4 && $item->urgent != true)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
                                                             <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->cite }}</td>
@@ -65,6 +68,7 @@
                                         <table class="dataTable table table-hover">
                                             <thead>
                                                 <tr>
+                                                    <th>ID</th>
                                                     <th>HR</th>
                                                     <th>Fecha de derivación</th>
                                                     <th>Nro. de cite</th>
@@ -80,6 +84,43 @@
                                                     @endphp
                                                     @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
+                                                            <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
+                                                            <td>{{ $item->cite }}</td>
+                                                            <td>{{ $item->remitente }}</td>
+                                                            <td>{{ $item->referencia }}</td>
+                                                        </tr>
+                                                    @endif
+                                                @empty
+                                                    
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="menu2" class="tab-pane fade">
+                                    <div class="table-responsive">
+                                        <table class="dataTable table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>HR</th>
+                                                    <th>Fecha de derivación</th>
+                                                    <th>Nro. de cite</th>
+                                                    <th>Remitente</th>
+                                                    <th>Referencia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($ingresos as $item)
+                                                    @php
+                                                        $derivacion = $item->derivaciones[count($item->derivaciones)-1];
+                                                        // dd($derivacion);
+                                                    @endphp
+                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->urgent == true)
+                                                        <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
                                                             <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->cite }}</td>
@@ -120,7 +161,7 @@
             $(document).ready(function(){
                 $('.dataTable').DataTable({
                     language: {
-                        "order": [[ 1, "desc" ]],
+                        // "order": [[ 0, "desc" ]],
                         sProcessing: "Procesando...",
                         sLengthMenu: "Mostrar _MENU_ registros",
                         sZeroRecords: "No se encontraron resultados",

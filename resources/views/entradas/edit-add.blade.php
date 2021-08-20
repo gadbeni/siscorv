@@ -39,9 +39,21 @@
                                             <option {{old('tipo') === 'E' || $entrada->tipo === 'E' ? 'selected' : ''}} value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" name="cite" maxlength="50" class="form-control" value="{{old('cite') ? : $entrada->cite}}" required>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label class="control-label">Urgente</label>
+                                        <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Este campo es obligatorio."></span>
+                                        <input 
+                                            type="checkbox" 
+                                            name="urgent" 
+                                            data-toggle="toggle" 
+                                            data-on="Sí" 
+                                            data-off="No"
+                                            @if($entrada->urgent) checked @endif
+                                            >
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Remitente</label>
@@ -59,9 +71,16 @@
                                             class="form-control"
                                             value="{{old('remitente') ? :$entrada->remitente}}">
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-3">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
                                         <input type="text" name="nro_hojas" class="form-control" required value="{{old('nro_hojas') ? : $entrada->nro_hojas}}">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Plazo</label>
+                                        @php 
+                                        $fechaentrada = $entrada->deadline ? $entrada->deadline->format('Y-m-d') : '';
+                                        @endphp
+                                        <input type="date" name="deadline" class="form-control"  value="{{old('deadline') ? : $fechaentrada}}">
                                     </div>
                                     <div class="form-group col-md-6" id="div-entity_id" style="{{$entrada->tipo === 'E' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Origen</label>

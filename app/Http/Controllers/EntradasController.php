@@ -140,7 +140,7 @@ class EntradasController extends Controller
                 $funcionario = Persona::where('funcionario_id', $request->funcionario_id_remitente)->first();
                 $funcionario_remitente = $funcionario->full_name;
             }
-
+           
             $entrada = Entrada::create([
                 'gestion' => date('Y'),
                 'tipo' => $request->tipo,
@@ -148,6 +148,8 @@ class EntradasController extends Controller
                 'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
+                'urgent' => ($request->urgent) ? true : false,
+                'deadline' => $request->deadline,
                 // 'estado' => 'activo',
                 'detalles' => $request->detalles,
                 'funcionario_id_remitente' => $request->funcionario_id_remitente,
@@ -263,12 +265,16 @@ class EntradasController extends Controller
                 $funcionario_remitente = $funcionario->full_name;
             }
 
+            $date = Carbon::now();
+
             $entrada->update([
                 'tipo' => $request->tipo,
                 'remitente' => $request->tipo == 'E' ? $request->remitente : $funcionario_remitente,
                 'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
+                'urgent' => ($request->urgent) ? true : false,
+                'deadline' => $request->deadline,
                 // 'estado' => 'activo',
                 'detalles' => $request->detalles,
                 'funcionario_id_remitente' => $request->funcionario_id_remitente,
@@ -276,6 +282,8 @@ class EntradasController extends Controller
                 'direccion_id_remitente' => $direccion_id_remitente,
                 'funcionario_id_destino' => $request->funcionario_id_destino,
                 'entity_id' => $request->entity_id,
+                'actualizado_por' => auth()->user()->email,
+                'fecha_actualizacion' => $date->toDateTimeString()
             ]);
 
             $file = $request->file('archivos');
@@ -430,8 +438,8 @@ class EntradasController extends Controller
                             ->whereNull('deleted_at');
                         })
                         ->where('deleted_at', NULL)
-                        ->orderBy('id','desc')
-                        ->limit(10)->get();
+                        ->orderByRaw('(id) desc')
+                        ->get();
         }
         return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
     }

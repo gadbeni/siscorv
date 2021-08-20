@@ -17,11 +17,11 @@
     <table width="100%" style="margin-bottom: 3px">
         <tr>
             <td width="150px">
-                <img src="{{ asset('images/logo2021.png') }}" width="100px" alt="logo">
+                <img src="{{ asset('images/lg.png') }}" width="100px" alt="logo">
             </td>
             <td align="right">
                 <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br>
-                   
+                
                 </h3>
             </td>
         </tr>
