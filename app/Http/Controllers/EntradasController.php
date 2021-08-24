@@ -336,8 +336,8 @@ class EntradasController extends Controller
     }
 
     public function print(Entrada $entrada){
-        $view = view('entradas.print',['entrada' => $entrada->load('derivaciones','entity')]);
-        //return $view;
+        $view = view('entradas.hr',['entrada' => $entrada->load('derivaciones','entity')]);
+        return $view;
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         return $pdf->stream();
