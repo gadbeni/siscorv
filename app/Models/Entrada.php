@@ -10,7 +10,7 @@ class Entrada extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $dates = ['deleted_at','deadline'];
+    protected $dates = ['deleted_at'];
     
     //protected $withCount = ['derivaciones'];
 
