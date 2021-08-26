@@ -117,11 +117,11 @@
                     </thead>
                 </table>
                     {{-- ENCABEZADO --}}
-                    <br><br>
+                    <br><br><br>
                     {{-- Primera seccion --}}
                     <div class="caja">
                         <div class="text-center">
-                            <H1>CERTIFICADO DE NO ADEUDO</H1>
+                            <H1>CERTIFICADO DE NO ADEUDO</H1><br>
                             <h6>RESOLUCION DE GOBERNACION N° 137/2018</h6>
                         </div>
                         <br>
@@ -148,7 +148,7 @@
                                 </h3>
                             </strong>
                             <strong>{{$certificado->ci}}{{$alfanumerico}} {{$certificado->sigla}}</strong>
-                        </div><br>
+                        </div><br><br>
                         <p>
                             <strong>{{$certificado->descripcion}}</strong>
                         </p>
@@ -175,6 +175,7 @@
                         <p style="font-size: 13px;"><b>NOTA:</b>El presente informe queda nulo y sin valor legal alguno si contiene enmiendas,
                             borrones o superposiciones.</p>
                     </div>
+                    <br>
                     <div>
                         <table style="width: 100%;">
                             <tr>
