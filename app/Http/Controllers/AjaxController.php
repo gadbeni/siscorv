@@ -84,7 +84,7 @@ class AjaxController extends Controller
                                     ->where('co.Estado',1);
                                 })
                                 ->where('c.Estado', 1)
-                                ->where('co.DescripcionCargo', 'Secretario Dptal. de Administración y Finanzas')
+                                ->where('co.DescripcionCargo', 'Secretario Dptal. de Administración y Finanzas GAD - BENI')
                                 ->orWhere('co.DescripcionCargo', 'Gobernador del Dpto. del Beni')
                                 ->select('c.id', 'c.NombreCompleto as text','co.Estado')
                                 ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
