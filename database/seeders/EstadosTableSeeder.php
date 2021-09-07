@@ -55,6 +55,16 @@ class EstadosTableSeeder extends Seeder
                  'nombre' => 'Migrado',
                  'estado' => 'ACTIVO'
              ]);
+             Estado::create([
+                'key' => 'RE',
+                'nombre' => 'RESERVADO',
+                'estado' => 'ACTIVO'
+            ]);
+            Estado::create([
+                'key' => 'PR',
+                'nombre' => 'PROCESO',
+                'estado' => 'ACTIVO'
+            ]);
          }
     }
 }

@@ -9,6 +9,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
 use App\Http\Livewire\CreateCertificate;
+use App\Http\Controllers\ReservasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,6 +61,10 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/certificados/getfuncionariosderivacion/',[AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion');
 
         Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
+
+        //rutas para el modulo de personerias juridicas
+        Route::resource('reservas',ReservasController::class);
+        Route::get('reservas/ajax/list', [ReservasController::class, 'list']);
     });
 });
 

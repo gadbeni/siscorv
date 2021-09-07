@@ -31,7 +31,7 @@
                         <div class="panel panel-bordered">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-3">
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -39,7 +39,18 @@
                                             <option {{old('tipo') === 'E' || $entrada->tipo === 'E' ? 'selected' : ''}} value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-4">
+                                    <div id="div_category" class="form-group col-md-5">
+                                        <label class="control-label">Tipo Trámite</label>
+                                        <select name="category_id" class="form-control select2" id="select-category" required>
+                                            <option value="" selected>Seleccione el tipo</option>
+                                            @foreach (\App\Models\Category::with(['organization' => function($q){
+                                                $q->where('tipo','tptramites');
+                                            }])->get() as $item)
+                                            <option {{(int)old('category_id') === $item->id ||$entrada->category_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->organization->count() > 0) ? substr($item->organization->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option> 
+                                            @endforeach                                        
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-2">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" name="cite" maxlength="50" class="form-control" value="{{old('cite') ? : $entrada->cite}}" required>
                                     </div>
@@ -91,7 +102,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6" id="div-destinatario" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
+                                    <div class="form-group col-md-6" id="div-destinatario" >
                                         <label class="control-label">Destinatario</label>
                                         <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
                                     </div>
@@ -157,14 +168,22 @@
                         $('#input-remitente').fadeIn();
                         $('#div-detalle').fadeOut();
                         $('#div-entity_id').fadeIn();
-                        $('#div-destinatario').fadeOut();
                     }else{
                         $('#div-remitente').fadeIn();
                         $('#input-remitente').fadeOut();
                         $('#div-detalle').fadeIn();
                         $('#div-entity_id').fadeOut();
-                        $('#div-destinatario').fadeIn();
                     }
+                });
+                $('#select-category').change(function(){
+                    let type = $('#select-category option:selected').text();
+                    let tptramite ="PERS";
+                    if (type.includes(tptramite)) {
+                        $('#div-destinatario').fadeIn();
+                    }else{
+                        $('#div-destinatario').fadeOut();
+                    }
+                  
                 });
             });
         </script>

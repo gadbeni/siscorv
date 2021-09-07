@@ -290,8 +290,10 @@
 
     @section('javascript')
         <script>
+            var destinatario_id = 0;
             $(document).ready(function () {
                 // $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
+                console.log(destinatario_id);
             });
         </script>
     @stop

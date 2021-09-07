@@ -4,7 +4,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title"><i class="voyager-trash"></i> Si anula esta entrada tambien anulara la derivacion si tuviese?</h4>
+                <h4 class="modal-title"><i class="voyager-trash"></i> {{$name}}</h4>
             </div>
             <div class="modal-footer">
                 <form action="#" id="delete_form" method="POST">

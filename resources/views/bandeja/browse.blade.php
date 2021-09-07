@@ -43,10 +43,10 @@
                                             <tbody>
                                                 @forelse ($ingresos as $item)
                                                     @php
-                                                        $derivacion = $item->derivaciones[count($item->derivaciones)-1];
-                                                        // dd($derivacion);
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
+                                                        //dd($derivacion);
                                                     @endphp
-                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && $item->estado_id != 4 && $item->urgent != true)
+                                                    @if ($derivacion && ($funcionario_id == $derivacion->funcionario_id_para) && $item->estado_id != 6 && $item->estado_id != 4 && $item->urgent != true)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
                                                             <td>{{ $item->id }}</td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
@@ -79,10 +79,10 @@
                                             <tbody>
                                                 @forelse ($ingresos as $item)
                                                     @php
-                                                        $derivacion = $item->derivaciones[count($item->derivaciones)-1];
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
                                                         // dd($derivacion);
                                                     @endphp
-                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
+                                                    @if ($derivacion && $funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
                                                             <td>{{ $item->id }}</td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
@@ -116,7 +116,7 @@
                                             <tbody>
                                                 @forelse ($ingresos as $item)
                                                     @php
-                                                        $derivacion = $item->derivaciones[count($item->derivaciones)-1];
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
                                                         $now = \Carbon\Carbon::now();
                                                         $created = new \Carbon\Carbon($item->deadline);
                                                         $difference = ($created <= $now)
@@ -124,7 +124,7 @@
                                                                         : 'URGENTE';
                                                         // dd($derivacion);
                                                     @endphp
-                                                    @if ($funcionario_id == $derivacion->funcionario_id_para && $item->urgent)
+                                                    @if ($derivacion && $funcionario_id == $derivacion->funcionario_id_para && $item->urgent)
                                                         <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
                                                             <td>{{ $item->id }}</td>
                                                             <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>

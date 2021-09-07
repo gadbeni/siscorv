@@ -1,17 +1,17 @@
 @extends('voyager::master')
 
-@section('page_title', 'Viendo Ingresos')
+@section('page_title', 'Viendo Reservas')
 
-@if(auth()->user()->hasPermission('browse_entradas'))
+@if(auth()->user()->hasPermission('browse_reservas'))
 
     @section('page_header')
         <div class="container-fluid div-phone">
             <div class="row">
                 <div class="col-md-8">
                     <h1 class="page-title">
-                        <i class="voyager-credit-cards"></i> Ingresos
+                        <i class="voyager-credit-cards"></i> Reservas
                     </h1>
-                    <a href="{{ route('entradas.create') }}" class="btn btn-success btn-add-new">
+                    <a href="{{ route('reservas.create') }}" class="btn btn-success btn-add-new">
                         <i class="voyager-plus"></i> <span>Crear</span>
                     </a>
                 </div>
@@ -39,10 +39,8 @@
             </div>
         </div>
 
-        @include('partials.modal-delete',['name'=>'Si anula esta entrada tambien anulara la derivacion si tuviese?'])
+        @include('partials.modal-delete',['name' => 'Desea Anular esta reserva?'])
 
-        {{-- Personas modal --}}
-        @include('partials.modal-derivar')
     @stop
 
     @section('css')
@@ -58,39 +56,21 @@
         <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
 
         <script>
-            var destinatario_id;
             $(document).ready(function() {
                 let columns = [
                     { data: 'id', title: 'ID' },
-                    { data: 'hr', title: 'HR' },
+                    { data: 'nombre_reserva', title: 'Nombre reserva' },
+                    { data: 'nombre_solicitante', title: 'Solicitante' }, 
                     { data: 'fecha_ingreso', title: 'Fecha de ingreso' },
-                    { data: 'cite', title: 'Nro. de cite' },                   
-                    // { data: 'cite', title: 'Nro. cite' },
-                    // { data: 'nro_hojas', title: 'Nro. de hojas' },
-                    { data: 'origen', title: 'origen' },
-                    { data: 'remitente', title: 'Remitente' },
-                    { data: 'referencia', title: 'Referencia' },
                     { data: 'estado', title: 'Estado' },
                     { data: 'action', title: 'Acciones', orderable: false, searchable: false },
                 ]
-                customDataTable("{{ url('admin/entradas/ajax/list') }}/", columns);
+                customDataTable("{{ url('admin/reservas/ajax/list') }}/", columns);
             });
-
-            function derivacionItem(id,destinoid=0){
-                $('#form-derivacion input[name="id"]').val(id);
-                destinatario_id = destinoid;
-            }
 
             function deleteItem(url){
                 $('#delete_form').attr('action', url);
             }
-
-            $(function() {
-                let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
-                @if (session('alert-type'))
-                socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
-                @endif
-            });
 
         </script>
     @endpush

@@ -59,7 +59,10 @@ class AjaxController extends Controller
                                     DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
                                     'c.N_carnet as ci',
                                 ])
-                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->limit(10)->get();
+                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
+                                ->groupBy('text')
+                                ->limit(15)
+                                ->get();
         }
         return response()->json($personas);
     }
@@ -70,30 +73,41 @@ class AjaxController extends Controller
                             ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
                             ->join('cargo as ca', 'ca.ID', 'co.idCargo')
                             ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
-                            ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')->first();
+                            ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')
+                            ->orderBy('co.id','desc')
+                            ->first();
         if(!$funcionario){
-            return response()->json([]);
+            return response()->json([
+                "text" => "usted no es un funcionario activo"
+            ]);
         }
         $search = $request->search;
+        $type = $request->type;
+
         $funcionarios = [];
-        if (auth()->user()->role_id == 2) {
-            $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                                //->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-                                ->join('contratos as co', function ($join) {
-                                    $join->on('co.idContribuyente', '=', 'c.N_Carnet')
-                                    ->where('co.Estado',1);
-                                })
-                                ->where('c.Estado', 1)
-                                ->where('co.DescripcionCargo', 'Secretario Dptal. de Administración y Finanzas')
-                                ->orWhere('co.DescripcionCargo', 'Gobernador del Dpto. del Beni')
-                                ->select('c.id', 'c.NombreCompleto as text','co.Estado')
-                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
-                                ->groupBy('c.NombreCompleto')
-                                ->limit(5)->get();
-                                
-            return response()->json($funcionarios);
-        }else{
-            if($search) {
+       
+            if (!$search && $type > 0) {
+                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
+                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                ->where('c.id', '<>', $persona->funcionario_id)
+                ->where('c.id',$type)
+                ->select('c.id', 'c.NombreCompleto as text')
+                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
+            }elseif ($search && auth()->user()->role_id == 2) {
+                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
+                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                ->where('c.id', '<>', $persona->funcionario_id)
+                ->select('c.id', 'c.NombreCompleto as text')
+                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
+                ->groupBy('text')
+                ->get();
+            }else{
                 /*
                     Si el funcionario no es director (idCargo=4) solo puede derivar
                     a los funcionarios de su misma dirección 
@@ -110,10 +124,13 @@ class AjaxController extends Controller
                                     ->whereRaw($query_filter_cargo)
                                     // ->whereRaw($query_filter_rol)
                                     ->select('c.id', 'c.NombreCompleto as text')
-                                    ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
+                                    ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
+                                    ->groupBy('text')
+                                    ->limit(15)
+                                    ->get();
             }
             return response()->json($funcionarios);
-        }
+        //}
     }
 
     public function imprimir($id){

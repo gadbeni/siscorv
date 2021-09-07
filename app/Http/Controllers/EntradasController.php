@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 use DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -42,7 +43,8 @@ class EntradasController extends Controller
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
-                            'id','tipo','gestion','estado_id','cite','remitente','referencia','entity_id','created_at'
+                            'id','tipo','gestion','estado_id','cite','remitente','referencia','entity_id','created_at',
+                            'funcionario_id_destino'
                         ])
                         ->where('deleted_at', NULL)->take(10);
          //return $data;
@@ -77,7 +79,7 @@ class EntradasController extends Controller
                 return $row->estado->nombre;
             })
             ->addColumn('action', function($row){
-                $derivar_button = ' <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem('.$row->id.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                $derivar_button = ' <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem('.$row->id.','.$row->funcionario_id_destino.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
                                         <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
                                     </button>';
                 $actions = '
@@ -161,6 +163,7 @@ class EntradasController extends Controller
                 'registrado_por_id_direccion' => $this->getIdDireccionFuncionario($persona ? $persona->funcionario_id : 844)->DA,
                 'registrado_por_id_unidad' => $this->getIdDireccionFuncionario($persona ? $persona->funcionario_id : 844)->idDependencia,
                 'entity_id' => $request->entity_id,
+                'category_id' => $request->category_id,
                 'estado_id' => 6
             ]);
 
@@ -280,9 +283,10 @@ class EntradasController extends Controller
                 'funcionario_id_remitente' => $request->funcionario_id_remitente,
                 'unidad_id_remitente' => $unidad_id_remitente,
                 'direccion_id_remitente' => $direccion_id_remitente,
-                'funcionario_id_destino' => $request->funcionario_id_destino,
+                'funcionario_id_destino' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->funcionario_id_destino,
                 'entity_id' => $request->entity_id,
                 'actualizado_por' => auth()->user()->email,
+                'category_id' => $request->category_id,
                 'fecha_actualizacion' => $date->toDateTimeString()
             ]);
 
@@ -432,13 +436,12 @@ class EntradasController extends Controller
         $funcionario_id = null;
         if ($funcionario) {
             $funcionario_id = $funcionario->funcionario_id;
-            $ingresos = Entrada::with(['entity', 'derivaciones'])
-                        ->whereHas('derivaciones', function($q) use($funcionario_id){
-                            $q->where('funcionario_id_para', $funcionario_id)
-                            ->whereNull('deleted_at');
+            $ingresos = Entrada::with('entity')
+                        ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
+                            $query->where('funcionario_id_para', $funcionario_id);
+                            $query->where('deleted_at',null);
                         })
                         ->where('deleted_at', NULL)
-                        ->orderByRaw('(id) desc')
                         ->get();
         }
         return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
@@ -450,7 +453,12 @@ class EntradasController extends Controller
             $derivacion =  Derivation::findOrFail($id);
             $derivacion->visto = Carbon::now();
             $derivacion->save();
-            $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones'])->where('id', $derivacion->entrada_id)->where('deleted_at', NULL)->first();
+            $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
+                                $q->where('deleted_at',null);
+                            }])
+                            ->where('id', $derivacion->entrada_id)
+                            ->where('deleted_at', NULL)
+                            ->first();
 
             $origen = '';
             $destino = NULL;

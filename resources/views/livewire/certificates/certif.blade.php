@@ -170,7 +170,6 @@
                     <br>
                     <br>
                     <br>
-                    <br>
                     <div class="text-center">
                         <p style="font-size: 13px;"><b>NOTA:</b>El presente informe queda nulo y sin valor legal alguno si contiene enmiendas,
                             borrones o superposiciones.</p>
