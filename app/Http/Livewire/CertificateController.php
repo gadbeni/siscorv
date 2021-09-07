@@ -30,6 +30,7 @@ class CertificateController extends Component
                                 ->where('certificates.codigo', 'like', '%' .$this->buscar. '%')
                                 ->orWhere('per.ci', 'like', '%' .$this->buscar. '%')
                                 ->orWhere('certificates.type', 'like', '%' .$this->buscar. '%')
+                                ->orWhere('per.full_name', 'like', '%' .$this->buscar. '%')
                                 ->orderBy('certificates.id','desc')
                                 //->whereNull('certificates.deleted_at')
                                 ->paginate($this->pagination);

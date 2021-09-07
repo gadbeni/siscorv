@@ -42,10 +42,12 @@
                 type: "get",
                 dataType: 'json',
                 delay: 500,
-                data: function (params) {
-                    return {
-                        search: params.term // search term
-                    };
+                data:  (params) =>  {
+                    var query = {
+                        search: params.term,
+                        type: destinatario_id
+                    }
+                    return query;
                 },
                 processResults: function (response) {
                     return {
