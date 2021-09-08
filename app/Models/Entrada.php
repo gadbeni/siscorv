@@ -42,4 +42,8 @@ class Entrada extends Model
     function derivaciones(){
         return $this->hasMany(Derivation::class)->withTrashed();
     }
+
+    public function destinatario(){
+        return $this->belongsTo(Persona::class,'funcionario_id_destino','funcionario_id');
+    }
 }
