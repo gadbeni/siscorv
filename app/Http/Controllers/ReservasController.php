@@ -67,7 +67,7 @@ class ReservasController extends Controller
     }
 
     public function edit(Reserva $reserva) {
-        
+        return view('reservas.add_edit',compact('reserva'));
     }
 
     public function update(Request $request) {

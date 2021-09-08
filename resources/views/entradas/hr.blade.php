@@ -112,8 +112,12 @@
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
+                                    @if($entrada->funcionario_id_destino)
+                                    {{ $entrada->destinatario->full_name}}
+                                    @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
+                                    @endif
                                 </td>
                             </tr>
                         </table>
