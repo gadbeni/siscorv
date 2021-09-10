@@ -204,15 +204,18 @@
                     }
                 })
 
-
-                // Socket.io
-                let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
-                socket.on('sendNotificationToClient', (id) => {
-                    let user_id = "{{ Auth::user()->id }}";
-                    if(user_id == id){
-                        $('#alert-new').fadeIn();
-                    }
-                });
+                try {
+                     // Socket.io
+                    let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
+                    socket.on('sendNotificationToClient', (id) => {
+                        let user_id = "{{ Auth::user()->id }}";
+                        if(user_id == id){
+                            $('#alert-new').fadeIn();
+                        }
+                    });
+                } catch (error) {
+                    
+                }
 
                 @if (session('alert-type'))
                 socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");

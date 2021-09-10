@@ -59,6 +59,7 @@
 
         <script>
             var destinatario_id;
+            var intern_externo = 1;
             $(document).ready(function() {
                 let columns = [
                     { data: 'id', title: 'ID' },
@@ -91,7 +92,6 @@
                 socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
                 @endif
             });
-
         </script>
     @endpush
     

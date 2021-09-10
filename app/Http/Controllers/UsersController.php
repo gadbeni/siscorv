@@ -10,9 +10,11 @@ use DB;
 class UsersController extends Controller
 {
 
-    public function getFuncionario($search){
-
-        $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
+    public function getFuncionariotocreate(Request $request){
+        $search = $request->search;
+        $type = $request->type;
+        if ($type) {
+            $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
                         ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
                         ->where('c.Estado',1)
                         ->where('cont.Estado',1)
@@ -27,7 +29,22 @@ class UsersController extends Controller
                           ->orWhere('c.NombreCompleto', 'like', '%' . $search . '%')
                           ->groupBy('c.NombreCompleto')
                           ->limit(5)->get();
-
+        } else {
+            $personas = DB::connection('mysqlgobe')->table('contribuyente')
+                            ->where('Estado',1)
+                            ->select([
+                                'ID as id_funcionario','Expedido',
+                                'NombreCompleto as nombre_completo','alfanu',
+                                'APaterno as paterno','AMaterno as materno',
+                                DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
+                                'N_carnet as ci','tipo'
+                            ])
+                            ->where('N_carnet', 'like', '%' .$search . '%')
+                            ->orWhere('NombreCompleto', 'like', '%' . $search . '%')
+                            ->where('tipo','=','externo')
+                            ->groupBy('NombreCompleto')
+                            ->limit(5)->get();
+        }
         $response = array();
         foreach($personas as $persona){
             $response[] = array(
