@@ -83,10 +83,10 @@ class AjaxController extends Controller
         }
         $search = $request->search;
         $type = $request->type;
-
-        $funcionarios = [];
+        $int_ext = $request->externo; //para saber si buscara funcionario interno u externo
+        $funcionarios = [1];
        
-            if (!$search && $type > 0) {
+            if (!$search && $type > 0 && $int_ext != 0) {
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
@@ -96,7 +96,7 @@ class AjaxController extends Controller
                 ->where('c.id',$type)
                 ->select('c.id', 'c.NombreCompleto as text')
                 ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
-            }elseif ($search && auth()->user()->role_id == 2) {
+            }elseif ($search && auth()->user()->role_id == 2 && $int_ext != 0) {
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
@@ -107,6 +107,13 @@ class AjaxController extends Controller
                 ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
                 ->groupBy('text')
                 ->get();
+            }elseif ($search && $int_ext == 0) {
+                $funcionarios = DB::connection('mysqlgobe')->table('contribuyente')
+                            ->where('Estado', 1)
+                            ->where('tipo','externo')
+                            ->select('id','N_carnet','NombreCompleto as text','tipo')
+                            ->whereRaw('(N_carnet like "%' .$search . '%" or NombreCompleto like "%' .$search . '%")')
+                            ->get();
             }else{
                 /*
                     Si el funcionario no es director (idCargo=4) solo puede derivar
@@ -126,7 +133,7 @@ class AjaxController extends Controller
                                     ->select('c.id', 'c.NombreCompleto as text')
                                     ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
                                     ->groupBy('text')
-                                    ->limit(15)
+                                    ->limit(5)
                                     ->get();
             }
             return response()->json($funcionarios);

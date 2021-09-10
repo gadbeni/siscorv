@@ -41,6 +41,19 @@
 
                         <div class="panel-body">
                             <div class="form-group">
+                                <label class="control-label">INTERNO</label>
+                                <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title=" Seleccione no si el funcionario es externo."></span>
+                                <input 
+                                    type="checkbox" 
+                                    name="tipo"
+                                    id="toggleswitch" 
+                                    data-toggle="toggle" 
+                                    data-on="Sí" 
+                                    data-off="No"
+                                    checked 
+                                    >
+                            </div>
+                            <div class="form-group">
                                 <label for="funcionario_id">Funcionario</label>
                                 <select 
                                     name="funcionario_id" 
@@ -150,9 +163,19 @@
 @section('javascript')
 <script src="{{ asset('js/select2.min.js')}}"></script>
 <script>
+
+    var tipouser = 1;
+
     $('document').ready(function () {
         $('.toggleswitch').bootstrapToggle();
-
+        $('#toggleswitch').on('change', function() {
+            if (this.checked) {
+                 tipouser = 1;
+            } else {
+                 tipouser = 0;
+            }
+        });
+         ruta = "{{ route('user.getFuncionario') }}";
         $('#getfuncionario').select2({
             placeholder: '<i class="fa fa-search"></i> Buscar...',
             escapeMarkup : function(markup) {
@@ -168,11 +191,18 @@
             },
             quietMillis: 250,
             minimumInputLength: 4,
+            
             ajax: {
-                url: function (params) {
-                    let url = '{{ url("admin/search/") }}'
-                    return `${url}/${escape(params.term)}`;
-                },        
+                url: ruta,
+                type: "get",
+                dataType: 'json',
+                data:  (params) =>  {
+                    var query = {
+                        search: params.term,
+                        type: tipouser
+                    }
+                    return query;
+                },
                 processResults: function (data) {
                     return {
                         results: data
@@ -186,17 +216,18 @@
 
         $('#getfuncionario').on('select2:select', function (e) {
            
-				var data = e.params.data;
-                 console.log(data)
-				if (data) {
-					document.getElementById("nombre").value = data.nombre;
-					document.getElementById("ap_paterno").value = data.ap_paterno;
-					document.getElementById("ap_materno").value = data.ap_materno;
-					document.getElementById("ci").value = data.ci;
-                    document.getElementById("alfanum").value = data.alfanum;
-                    document.getElementById("departamento_id").value = data.departamento_id;
-				}					
-			});
+            var data = e.params.data;
+            if (data) {
+                document.getElementById("nombre").value = data.nombre;
+                document.getElementById("ap_paterno").value = data.ap_paterno;
+                document.getElementById("ap_materno").value = data.ap_materno;
+                document.getElementById("ci").value = data.ci;
+                document.getElementById("alfanum").value = data.alfanum;
+                document.getElementById("departamento_id").value = data.departamento_id;
+            }					
+		});
+
     });
+    
 </script>
 @stop

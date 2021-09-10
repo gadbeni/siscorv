@@ -50,7 +50,7 @@ Route::group(['prefix' => 'admin'], function () {
     
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
-    Route::get('search/{name}', [UsersController::class, 'getFuncionario']);
+    Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
 
     Route::middleware(['auth'])->group(function () {
         //rutas para los certificados

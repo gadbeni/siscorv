@@ -14,6 +14,19 @@
                         <input type="hidden" name="redirect" value="{{ $redirect }}">
                     @endif
                     <div class="form-group">
+                        <label class="control-label">INTERNO</label>
+                        <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Seleccione no si el funcionario no depende de la gobernacion."></span>
+                        <input 
+                            type="checkbox" 
+                            name="tipo"
+                            id="toggleswitch" 
+                            data-toggle="toggle" 
+                            data-on="Sí" 
+                            data-off="No"
+                            checked 
+                            >
+                    </div>
+                    <div class="form-group">
                         <label class="">Destinatario</label>
                         <select name="destinatario" class="form-control" id="select-destinatario"></select>
                     </div>
@@ -31,7 +44,8 @@
     </div>
 </form>
 
-<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="{{ asset('js/jquery-3.4.1.min.js')}}" ></script>
+
 <script>
     $(document).ready(function () {
         ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
@@ -45,7 +59,8 @@
                 data:  (params) =>  {
                     var query = {
                         search: params.term,
-                        type: destinatario_id
+                        type: destinatario_id,
+                        externo: intern_externo
                     }
                     return query;
                 },
@@ -56,5 +71,13 @@
                 }
             }
         });
+        $('#toggleswitch').on('change', function() {
+            if (this.checked) {
+                intern_externo = 1;
+            } else {
+                intern_externo = 0;
+            }
+        });
     });
+    
 </script>
