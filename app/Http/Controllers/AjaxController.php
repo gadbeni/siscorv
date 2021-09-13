@@ -119,7 +119,7 @@ class AjaxController extends Controller
                     Si el funcionario no es director (idCargo=4) solo puede derivar
                     a los funcionarios de su misma dirección 
                 */
-                $query_filter_cargo = $funcionario->idNivel <= 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
+                //$query_filter_cargo = $funcionario->idNivel <= 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
                 //$query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
                 $query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
@@ -128,7 +128,7 @@ class AjaxController extends Controller
                                     ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
                                     ->where('c.Estado', '=', '1')->where('co.Estado', '1')
                                     ->where('c.id', '<>', $persona->funcionario_id)
-                                    ->whereRaw($query_filter_cargo)
+                                    //->whereRaw($query_filter_cargo)
                                     // ->whereRaw($query_filter_rol)
                                     ->select('c.id', 'c.NombreCompleto as text')
                                     ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')

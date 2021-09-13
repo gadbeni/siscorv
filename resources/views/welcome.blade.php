@@ -78,6 +78,7 @@
         <nav id="navbar" class="navbar">
             <ul>
             <li><a class="nav-link scrollto active" href="#hero">Inicio</a></li>
+            <li><a class="nav-link scrollto" href="#services">Servicios</a></li>
             <li><a class="nav-link scrollto" href="#counts">Información</a></li>
             <li><a class="nav-link scrollto" href="#contact">Contáctanos</a></li>
             </ul>
@@ -116,12 +117,112 @@
             </div>
         </div>
     </section><!-- End Hero -->
-
     <main id="main">
         <div class="container" data-aos="fade-up">
             <div id="div-search"></div>
         </div>
 
+         <!-- ======= Team Section ======= -->
+        <section id="team" class="team section-bg">
+            <div class="container" data-aos="fade-up">
+
+                <div class="section-title">
+                <h2>SERVICIOS</h2>
+                <h3>¿Qué <span>Necesitás Hacer?</span></h3>
+                <p>Nuestra prioridad eres tú</p>
+                </div>
+
+                <div class="row">
+
+                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+                    <div class="member">
+                    <div class="member-img">
+                        <img src="assets/img/team/prsjuridica.jpg" class="img-fluid" alt="">
+                        <div class="social">
+                        </div>
+                    </div>
+                    <div class="member-info">
+                        <h4>
+                            <a href="javascript:showcontent('req')">
+                                DISPONIBILIDAD DE NOMBRE PARA PERSONALIDAD JURIDICA
+                            </a>
+                        </h4>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+                    <div class="member">
+                    <div class="member-img">
+                        <img src="assets/img/team/getperson.jpg" class="img-fluid" alt="">
+                        <div class="social">
+                        </div>
+                    </div>
+                    <div class="member-info">
+                        <h4>
+                        <a href="javascript:showcontent('find')">
+                         OBTENER PERSONALIDAD JURIDICA
+                        </a>
+                        </h4>
+                    </div>
+                </div>
+
+                </div>
+
+            </div>
+        </section><!-- End Team Section -->
+
+        <div class="container" data-aos="fade-up">
+            <div id="div-requirement" style="display:none">
+                <h3>¿Cuáles son los requisitos para solicitar la reserva de nombre?</h3>
+                <h5>PERSONERIA JURIDICA PARA: Asociaciones, Fundaciones, ONG, Sindicatos</h5>
+                <div>
+                    <h6 class="text-danger">TRAMITE</h6>
+                    <P>1. Solicitud Certificado de reserva de nombre otorgado por la instancia correspondiente 
+                        <strong>(Secretaria de Justicia)</strong>
+                    </P>
+                    <h6 class="text-danger">REQUISITOS:</h6>
+                    <P>2. Realizar una carta de solicitud de Reserva de nombre, dirigida al 
+                        <strong>Gobernador: Dr. José Alejandro Unzueta Shiriqui</strong>
+                    </P>
+                    <h6 class="text-danger">DOCUMENTOS PARA  PERSONERIA JURIDICA :</h6>
+                    <P> Solicitud de Personería Jurídica dirigida al Dr.  
+                        <strong>José Alejandro Unzueta Shiriqui/ GOBERNADOR DPTAL DEL BENI</strong>
+                    </P>
+                    <P> Depósito Bancario de Valores Bs. 50 a la CTA.CTE. N°   
+                        <strong>10000004707896 Banco Unión</strong>
+                    </P>
+                    <p> Depósito Bancario de Valores Bs.650 a la  CTA.CTE. N°<strong>10000004707896 Banco Unión.</strong></p>
+                    <p> ACTA DE FUNDACION (Fotocopia refrendada por notario de Fe Publica)</p>
+                    <p> ACTA DE ELECCION Y POSESION (Fotocopia refrendada por notario de Fe Publica)</p>
+                    <p> ESTATUTO ORGANICO (debidamente firmada por el Directorio o representante)</p>
+                    <p> REGLAMENTO INTERNO (debidamente firmado por el Directorio y/o representante legal)</p>
+                    <p> NOMINA DE SOCIOS (Fotocopias de C.I. Diez socios como mínimo)</p>
+                    <p> TRANSCRIPCION DEL ESTATUTO y/o REGLAMENTO EN CD. </p>
+                    <p> PRESETNACION DEL LIBRO ORIGINAL DE ACTAS </p>
+                    <p> Poder Notariado (Ley 351 Art. 6 N°5)</p>
+                    <p> Registro Domiciliario de la Organización social otorgado por la policía</p>
+                </div>
+            </div>
+            <div id="div-findpersoneria" style="display:none">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="input-group mt-5 input-group-lg">
+                            <input type="text" class="form-control" id="input-search" placeholder="Número de tramite" aria-label="" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
+                            </div>
+                        </div>
+                        <p style="margin: 10px">Verificá el estado de tu trámite.</p>
+                    </div>
+
+                    <form id="form-search" action="{{ route('home.search') }}" method="post">
+                        @csrf
+                        <input type="hidden" name="search" >
+                    </form>
+                </div>
+            </div>
+        </div>
         <!-- ======= Counts Section ======= -->
         <section id="counts" class="counts">
             <div class="container" data-aos="fade-up">
@@ -268,6 +369,16 @@
                     }
                 });
             });
+
+            function showcontent(info){
+                if (info == "find") {
+                    $('#div-findpersoneria').fadeIn();
+                    $('#div-requirement').fadeOut();
+                }else{
+                    $('#div-requirement').fadeIn();
+                    $('#div-findpersoneria').fadeOut();
+                }
+            }
         </script>
 
     </body>
