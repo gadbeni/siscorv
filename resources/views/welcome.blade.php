@@ -203,7 +203,7 @@
                         <div class="row">
                             <div class="col-md-5">
                                 <div class="input-group mt-5 input-group-lg">
-                                    <input v-model="search" type="text" class="form-control" placeholder="Número de tramite" aria-label="" aria-describedby="basic-addon1">
+                                    <input v-model="search" type="text" class="form-control" placeholder="Introduzca el nombre a buscar.." aria-label="" aria-describedby="basic-addon1">
                                     <div class="input-group-prepend">
                                         <button @click="getDatos" class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
                                     </div>

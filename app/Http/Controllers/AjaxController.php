@@ -163,7 +163,7 @@ class AjaxController extends Controller
         if ($search) {
            $data = OldData::where('razon_social','like','%'.$search.'%')
                             ->select('razon_social','provincia','municipio','localidad')->get();
-            $msg = $data->count() ? 'Puedes verificar en la sgte lista:' : 'No encontramos coincidencias';
+            $msg = $data->count() ? 'El nombre existe en la sgte lista:' : 'El nombre no existe puede proceder a realizar su tramite';
             $cont = $data->count() ? 1 : 0;
         }
         
