@@ -17,6 +17,7 @@ class CreateWarehousesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('ubicacion');
+            $table->string('tipo')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

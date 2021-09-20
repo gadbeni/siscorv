@@ -35,46 +35,60 @@
                                         <label class="control-label">Sucursal</label>
                                         <select name="warehouse_id" class="form-control select2" id="select-sucursal" required>
                                         <option value="" selected>Seleccione el tipo</option>
-                                            @foreach (\App\Models\Warehouse::get() as $item)
+                                            @foreach (\App\Models\Warehouse::where('tipo','sidepej')->get() as $item)
                                             <option {{(int)old('warehouse_id') === $item->id ||$reserva->warehouse_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->name }}</option> 
                                             @endforeach 
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-5">
                                         <label class="control-label">Nombre</label>
                                         <input type="text" name="nombre" maxlength="50" class="form-control" value="{{old('nombre') ? : $reserva->nombre}}" required>
                                     </div>
-                                    <div id="div_municipio" class="form-group col-md-5">
+                                    <div id="div_municipio" class="form-group col-md-4">
                                         <label class="control-label">Municipio</label>
                                         <select name="municipio_id" class="form-control select2" id="select-category" required>
                                             <option value="" selected>Seleccione el municipio</option>
                                             @foreach (\App\Models\Municipio::with('provincia')->get() as $item)
-                                            <option {{(int)old('municipio_id') === $item->id ||$reserva->municipio_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->provincia->count() > 0) ? substr($item->provincia->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option> 
+                                            <option {{(int)old('municipio_id') === $item->id ||$reserva->municipio_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->provincia->count() > 0) ? $item->provincia->nombre : '' }} - {{ $item->nombre }}</option> 
                                             @endforeach                                        
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-2">
+                                    <div class="form-group col-md-3">
                                         <label class="control-label">Localidad</label>
-                                        <input type="text" name="localidad" class="form-control" value="{{old('localidad') ? : $reserva->localidad}}" required>
+                                        <input type="text" name="localidad" class="form-control" value="{{old('localidad') ? : $reserva->localidad}}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nombre Solicitante</label>
-                                        <input type="text" name="solicitante" class="form-control" value="{{old('solicitante') ? : $reserva->solicitante}}" required>
+                                        <input type="text" name="nombre_solicitante" class="form-control" value="{{old('nombre_solicitante') ? : $reserva->nombre_solicitante}}" required>
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <label class="control-label">Nro. de Rec Oficial</label>
+                                        <label class="control-label">Nro. de Recibo Oficial</label>
                                         <input type="text" name="numero_recibo" class="form-control" required value="{{old('numero_recibo') ? : $reserva->numero_recibo}}">
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label class="control-label">Costo Reserva</label>
-                                        <input type="text" name="costo_reserva" class="form-control" required value="{{old('costo_reserva') ? : $reserva->costo_reserva}}">
+                                        <input type="number" name="costo_reserva" class="form-control" required value="{{old('costo_reserva') ? : $reserva->costo_reserva}}">
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label class="control-label">Fecha(Inicio Trámite)</label>
                                         @php 
-                                        $fechaentrada = $reserva->fecha_inicio ? $reserva->fecha_inicio->format('Y-m-d') : '';
+                                        $fechaentrada = $reserva->fecha_inicio ? $reserva->fecha_inicio : '';
                                         @endphp
                                         <input type="date" name="fecha_inicio" class="form-control"  value="{{old('fecha_inicio') ? : $fechaentrada}}">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Fecha Conclusion</label>
+                                        @php 
+                                        $fechaentrada = $reserva->fecha_conclusion ? $reserva->fecha_conclusion->format('Y-m-d') : '';
+                                        @endphp
+                                        <input type="date" name="fecha_conclusion" class="form-control"  value="{{old('fecha_conclusion') ? : $fechaentrada}}">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        @if ($errors->has('nombre'))
+                                            <span class="alert-danger">
+                                            <strong>{{ $errors->first('nombre')}}</strong>
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

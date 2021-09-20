@@ -64,9 +64,15 @@ Route::group(['prefix' => 'admin'], function () {
 
         //rutas para el modulo de personerias juridicas
         Route::resource('reservas',ReservasController::class);
+        Route::post('anulareserva/{id}',[ReservasController::class,'nulled'])->name('reservas.nulled');
         Route::get('reservas/ajax/list', [ReservasController::class, 'list']);
+
+        
     });
 });
+
+//ruta para la consulta de busqueda de disponibilidad de nombres de personerias disponible para el front-end+
+Route::get('consultas/{search?}', [AjaxController::class,'consultareservas']);
 
 // Clear cache
 Route::get('/admin/clear-cache', function() {

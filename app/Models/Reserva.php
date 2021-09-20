@@ -4,14 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Reserva extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = [
         'nombre_solicitante','nombre','localidad','numero_recibo','costo_reserva','fecha_inicio',
-        'fecha_inicio','municipio_id','user_id','estado_id','warehouse_id'
+        'fecha_conclusion','municipio_id','user_id','estado_id','warehouse_id'
     ];
 
     public function municipio (){

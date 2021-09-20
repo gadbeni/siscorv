@@ -21,6 +21,7 @@ class CreateReservasTable extends Migration
             $table->string('numero_recibo')->nullable();
             $table->decimal('costo_reserva', 9, 2);
             $table->date('fecha_inicio');
+            $table->date('fecha_conclusion')->nullable();
             $table->foreignId('municipio_id')->constrained();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('estado_id')->constrained();

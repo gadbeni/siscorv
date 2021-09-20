@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Persona;
 use Luecano\NumeroALetras\NumeroALetras;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OldData;
 use DB;
 
 class AjaxController extends Controller
@@ -128,8 +129,6 @@ class AjaxController extends Controller
                                     ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
                                     ->where('c.Estado', '=', '1')->where('co.Estado', '1')
                                     ->where('c.id', '<>', $persona->funcionario_id)
-                                    //->whereRaw($query_filter_cargo)
-                                    // ->whereRaw($query_filter_rol)
                                     ->select('c.id', 'c.NombreCompleto as text')
                                     ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
                                     ->groupBy('text')
@@ -154,5 +153,24 @@ class AjaxController extends Controller
             ->first();
             $monto_literal = (new NumeroALetras())->toInvoice($certificado->deuda, 2, 'BOLIVIANOS', 'CENTAVOS');
         return view('livewire.certificates.certif', compact('certificado','monto_literal'));
+    }
+
+    public function consultareservas(Request $request){
+        $search = $request->search;
+        $data = [];
+        $msg = '';
+        $cont = 0;
+        if ($search) {
+           $data = OldData::where('razon_social','like','%'.$search.'%')
+                            ->select('razon_social','provincia','municipio','localidad')->get();
+            $msg = $data->count() ? 'Puedes verificar en la sgte lista:' : 'No encontramos coincidencias';
+            $cont = $data->count() ? 1 : 0;
+        }
+        
+        return response()->json([
+            'data' => $data,
+            'message' => $msg,
+            'cont' => $cont
+        ]);
     }
 }
