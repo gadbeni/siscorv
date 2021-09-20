@@ -10,4 +10,8 @@ class Provincia extends Model
     use HasFactory;
 
     protected $fillable = ['nombre'];
+
+    public function reservas(){
+        return $this->hasManyThrough(Reserva::class, Municipio::class);
+    }
 }
