@@ -122,7 +122,7 @@ class AjaxController extends Controller
                 */
                 //$query_filter_cargo = $funcionario->idNivel <= 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
                 //$query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
-                $query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
+                //$query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
                                     ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                                     ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
