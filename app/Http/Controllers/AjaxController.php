@@ -70,22 +70,22 @@ class AjaxController extends Controller
 
     public function getFuncionariosDerivacion(Request $request){
         $persona = Persona::where('user_id', Auth::user()->id)->first();
-        $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
-                            ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-                            ->join('cargo as ca', 'ca.ID', 'co.idCargo')
-                            ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
-                            ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')
-                            ->orderBy('co.id','desc')
-                            ->first();
-        if(!$funcionario){
-            return response()->json([
-                "text" => "usted no es un funcionario activo"
-            ]);
-        }
+        // $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
+        //                     ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+        //                     ->join('cargo as ca', 'ca.ID', 'co.idCargo')
+        //                     ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
+        //                     ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')
+        //                     ->orderBy('co.id','desc')
+        //                     ->first();
+        // if(!$funcionario){
+        //     return response()->json([
+        //         "text" => "usted no es un funcionario activo"
+        //     ]);
+        // }
         $search = $request->search;
         $type = $request->type;
         $int_ext = $request->externo; //para saber si buscara funcionario interno u externo
-        $funcionarios = [1];
+        $funcionarios = [];
        
             if (!$search && $type > 0 && $int_ext != 0) {
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
