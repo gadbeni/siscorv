@@ -10,6 +10,7 @@ use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
 use App\Http\Livewire\CreateCertificate;
 use App\Http\Controllers\ReservasController;
+use App\Http\Controllers\ImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,7 +74,8 @@ Route::group(['prefix' => 'admin'], function () {
 
 //ruta para la consulta de busqueda de disponibilidad de nombres de personerias disponible para el front-end+
 Route::get('consultas/{search?}', [AjaxController::class,'consultareservas']);
-
+//importar datos antiguos
+Route::get('/import', [ImportController::class,'import']);
 // Clear cache
 Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');

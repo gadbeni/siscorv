@@ -15,8 +15,8 @@ class CreateOldDataTable extends Migration
     {
         Schema::create('old_data', function (Blueprint $table) {
             $table->id();
-            $table->string('numero_esolucion', 955)->nullable();
-            $table->string('fecha_esolucion', 955)->nullable();
+            $table->string('numero_resolucion', 955)->nullable();
+            $table->string('fecha_resolucion', 955)->nullable();
             $table->string('razon_social', 955)->nullable();
             $table->string('provincia', 955)->nullable();
             $table->string('municipio', 955)->nullable();

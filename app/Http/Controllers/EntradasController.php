@@ -38,7 +38,16 @@ class EntradasController extends Controller
         if(Auth::user()->role_id == 3){
             $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.($funcionario ? $funcionario->funcionario_id : 844);
         }else{
-            $query_filtro = 'tipo = "E"';
+            $funcionariodea =  DB::connection('mysqlgobe')
+                                ->table('contribuyente as c')
+                                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                                ->where('c.id', $funcionario->funcionario_id)
+                                ->select('c.id', 'c.DA')
+                                ->first();
+            $query_filtro = 'tipo = "E" and registrado_por_id_direccion = '.$funcionariodea->DA;
         }
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
