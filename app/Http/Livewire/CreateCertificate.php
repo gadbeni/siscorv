@@ -91,7 +91,9 @@ class CreateCertificate extends Component
             $customer = Persona::where('ci',$this->ci)->first();
             if ($customer) {
                 $persona_id = $customer->id;
-                $cod = $customer->nombre[0].''.$customer->ap_paterno[0].''.$customer->ap_materno[0];
+                $paterno = $customer->ap_paterno ? $customer->ap_paterno[0] : '' ;
+                $materno = $customer->ap_materno ? $customer->ap_materno[0] : '' ;
+                $cod = $customer->nombre[0].''.$paterno .''.$materno;
             }else{
                 $persona = new Persona;
                 $persona->nombre = $this->getNameattribute($this->nombre);
@@ -104,13 +106,19 @@ class CreateCertificate extends Component
                 $persona->save();
                 $persona->tipo = 'funcionario';
                 $persona_id = $persona->id;
-                $cod = $this->nombre[0].''.$this->ap_paterno[0].''.$this->ap_materno[0];
+                $paterno = $this->ap_paterno ? $this->ap_paterno[0] : '' ;
+                $materno = $this->ap_materno ? $this->ap_materno[0] : '' ;
+                $cod = $persona->nombre[0].''.$paterno .''.$materno;
+                //$cod = $this->nombre[0].''.$this->ap_paterno[0] ? $this->ap_paterno[0] : '' .''.$this->ap_materno[0] ?? '';
             }
         }elseif ($this->type == "externo") {
             $customer = Persona::where('ci',$this->ci)->first();
             if ($customer) {
                 $persona_id = $customer->id;
-                $cod = $customer->nombre[0].''.$customer->ap_paterno[0].''.$customer->ap_materno[0];
+                $paterno = $customer->ap_paterno[0] ? $customer->ap_paterno[0] : '' ;
+                $materno = $customer->ap_materno[0] ? $customer->ap_materno[0] : '' ;
+                $cod = $customer->nombre[0].''.$paterno .''.$materno;
+                //$cod = $customer->nombre[0].''.$customer->ap_paterno[0].''.$customer->ap_materno[0];
             }
             if ($this->funcionarioId === 0) {
                 $persona = new Persona;
