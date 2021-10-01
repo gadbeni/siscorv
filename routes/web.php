@@ -10,6 +10,7 @@ use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
 use App\Http\Livewire\CreateCertificate;
 use App\Http\Controllers\ReservasController;
+use App\Http\Controllers\PersoneriasController;
 use App\Http\Controllers\ImportController;
 
 /*
@@ -68,7 +69,8 @@ Route::group(['prefix' => 'admin'], function () {
         Route::post('anulareserva/{id}',[ReservasController::class,'nulled'])->name('reservas.nulled');
         Route::get('reservas/ajax/list', [ReservasController::class, 'list']);
 
-        
+        Route::resource('personerias',PersoneriasController::class);
+        Route::get('personerias/ajax/list', [PersoneriasController::class, 'list']);
     });
 });
 
@@ -81,3 +83,7 @@ Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');
     return redirect('/admin/profile')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);
 })->name('clear.cache');
+
+Route::get('services', function () {
+    return view('frontend.pages.services');
+})->name('services');

@@ -147,6 +147,7 @@ class ReservasController extends Controller
     }
     
     public function destroy(Reserva $reserva) {
-        
+        $reserva->delete();
+        return redirect()->route('reservas.index')->with(['message' => 'Reserva anulada exitosamente.', 'alert-type' => 'success']);
     }
 }
