@@ -16,4 +16,8 @@ class Personeria extends Model
         'documento_municipal','numero_documento','fecha_numerodocumento','reserva_id','departamento_id',
         'objeto_id','ambitoaplicacion_id','user_id','warehouse_id'
     ];
+
+    public function reserva() {
+        return $this->belongsTo(Reserva::class);
+    }
 }
