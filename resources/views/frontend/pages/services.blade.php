@@ -2,7 +2,7 @@
 
 @section('content')
  <!-- ======= Hero Section ======= -->
-<section>
+<!-- <section>
         <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
@@ -29,54 +29,45 @@
                 <span class="visually-hidden">Next</span>
             </button>
         </div>
-</section>
+</section> -->
     <!-- End Hero -->
 <main id="main">
     <!-- ======= Team Section ======= -->
-    <section id="app" class="team section-bg">
+    <section id="app" class="portfolio">
         <div class="container" data-aos="fade-up">
 
             <div class="section-title">
             <h2>SERVICIOS</h2>
             <h3>¿Qué <span>Necesitás Hacer?</span></h3>
-            <p>Nuestra prioridad eres tú</p>
             </div>
 
-            <div class="row">
-
-                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-                    <div class="member">
-                    <div class="member-img">
-                        <img src="assets/img/team/prsjuridica.jpg" class="img-fluid" alt="">
-                        <div class="social">
-                        </div>
-                    </div>
-                    <div class="member-info">
-                        <h4>
-                            <a href="javascript:;" @click="showcontent('req')">
-                                DISPONIBILIDAD DE NOMBRE PARA PERSONALIDAD JURIDICA
-                            </a>
-                        </h4>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-                    <div class="member">
-                    <div class="member-img">
-                        <img src="assets/img/team/getperson.jpg" class="img-fluid" alt="">
-                        <div class="social">
-                        </div>
-                    </div>
-                    <div class="member-info">
-                        <h4>
-                        <a href="javascript:;" @click="showcontent('find')">
-                        OBTENER PERSONALIDAD JURIDICA
-                        </a>
-                        </h4>
-                    </div>
+            <div class="row" data-aos="fade-up" data-aos-delay="100">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <ul id="portfolio-flters">
+                        <li data-filter="*" class="filter-active">TODOS</li>
+                        <li data-filter=".filter-app">TRÁMITES</li>
+                        <li data-filter=".filter-card">TURISMO</li>
+                    </ul>
                 </div>
             </div>
+            <div class="row portfolio-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="col-lg-4 col-md-4 portfolio-item filter-app">
+                    <a href="javascript:;" @click="showcontent('req')">
+                        <img src="assets/img/team/disname.png" class="img-fluid" alt=""> 
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 portfolio-item filter-app">
+                    <a href="javascript:;" @click="showcontent('find')">
+                        <img src="assets/img/team/obtenerpers.png" class="img-fluid" alt="">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-4 portfolio-item filter-app">
+                    <a href="{{ url('/')}}">
+                        <img src="assets/img/team/segtramite.png" class="img-fluid" alt="">
+                    </a>
+                </div>
+            </div>
+            
             <div class="container" data-aos="fade-up">
                 <div id="div-requirement" style="display:none">
                     <h3>¿Cuáles son los requisitos para solicitar la reserva de nombre?</h3>
@@ -125,7 +116,7 @@
                 <div>
                     <div class="text-center"  v-if="cont < 1">
                         <h4>Descarga los reguisitos aqui.</h4>
-                        <a href="{{ asset('assets/PERSONERIAJURIDICA.pdf') }}" class="btn btn-primary" target="_blank">Descargar</a>
+                        <a href="{{ asset('assets/REQUISITOSPERSONERIAJURIDICA.pdf') }}" class="btn btn-primary" target="_blank">Descargar</a>
                     </div>
                     <ol>
                         <li v-for="todo in datos">
@@ -141,3 +132,11 @@
     </section><!-- End Team Section -->
 </main><!-- End #main -->
 @endsection()
+
+@push('css')
+    <style>
+        .img-fluid:hover{
+            opacity: .8;
+        }
+    </style>
+@endpush
