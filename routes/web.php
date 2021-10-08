@@ -30,6 +30,7 @@ Route::get('login', function () {
 
 Route::get('/', [HomeController::class, 'index']);
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
+Route::get('/buscartramite', [HomeController::class, 'searchtramite']);
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();

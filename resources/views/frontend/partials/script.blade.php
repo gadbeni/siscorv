@@ -31,33 +31,61 @@
     const ListRenderingApp = {
         data() {
             return {
+                tipo: 'tramite',
                 search: '',
+                textplaceholder: '',
                 cont : 1,
-                msg: 'Verificá el estado de tu trámite',
-                datos: []
+                msg: '',
+                datos: [],
+                trempty: false,
+                tramite: null,
             }
         },
         methods: {
             async getDatos() {
                 try {
-                    const response = await axios.get('/consultas?search='+this.search);
-                    let res = response.data;
-                    this.datos = res.data;
-                    this.msg = res.message;
-                    this.cont = res.cont;
-                    console.log(this.cont);
+                    if (this.tipo == "siscor") {
+                        const response = await axios.get('/buscartramite?search='+this.search);
+                        if (!Object.keys(response.data).length) {
+                            this.tramite = null;
+                            this.trempty = true
+                        }else{
+                            this.trempty = false
+                            this.tramite = response.data;
+                        }
+                        
+                    }else{
+                        const response = await axios.get('/consultas?search='+this.search);
+                        let res = response.data;
+                        this.datos = res.data;
+                        this.msg = res.message;
+                        this.cont = res.cont;
+                    }
                 } catch (error) {
                     console.error(error);
                 }
             },
             showcontent(info){
-                if (info == "find") {
+                if (info == "tramite") {
                     $('#div-findpersoneria').fadeIn();
                     $('#div-requirement').fadeOut();
-                }else{
+                    this.textplaceholder = "Introduzca el nombre a buscar..";
+                    this.tramite = {},
+                    this.tipo = info;
+                    this.msg = 'Verifica el estado de tu trámite';
+                } else if(info == "siscor"){
+                    $('#div-findpersoneria').fadeIn();
+                    $('#div-requirement').fadeOut();
+                    this.textplaceholder = "Número de Cite o HR";
+                    this.tipo = info;
+                    this.datos = [];
+                    this.msg = 'Para hacer seguimiento de su trámite ingrese el Número de Cite o el HR y presion el botón Buscar.';
+                    console.log(this.tipo);
+                }
+                else{
                     this.search = '';
                     this.cont = 1;
-                    this.msg = 'Verificá el estado de tu trámite';
+                    this.msg = '';
                     this.datos = [];
                     $('#div-requirement').fadeIn();
                     $('#div-findpersoneria').fadeOut();
@@ -65,5 +93,5 @@
             }
         }
     }
-    Vue.createApp(ListRenderingApp).mount('#app')
+    Vue.createApp(ListRenderingApp).mount('#main')
 </script>

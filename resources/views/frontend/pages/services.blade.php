@@ -57,61 +57,56 @@
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 portfolio-item filter-app">
-                    <a href="javascript:;" @click="showcontent('find')">
+                    <a href="javascript:;" @click="showcontent('tramite')">
                         <img src="assets/img/team/obtenerpers.png" class="img-fluid" alt="">
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 portfolio-item filter-app">
-                    <a href="{{ url('/')}}">
+                    <a href="javascript:;" @click="showcontent('siscor')">
                         <img src="assets/img/team/segtramite.png" class="img-fluid" alt="">
                     </a>
                 </div>
             </div>
-            
-            <div class="container" data-aos="fade-up">
-                <div id="div-requirement" style="display:none">
-                    <h3>¿Cuáles son los requisitos para solicitar la reserva de nombre?</h3>
-                    <h5>PERSONERIA JURIDICA PARA: Asociaciones, Fundaciones, ONG, Sindicatos</h5>
-                    <div>
-                        <h6 class="text-danger">TRAMITE</h6>
-                        <P>1. Solicitud Certificado de reserva de nombre otorgado por la instancia correspondiente 
-                            <strong>(Secretaria de Justicia)</strong>
-                        </P>
-                        <h6 class="text-danger">REQUISITOS:</h6>
-                        <P>2. Realizar una carta de solicitud de Reserva de nombre, dirigida al 
-                            <strong>Gobernador: Dr. José Alejandro Unzueta Shiriqui</strong>
-                        </P>
-                        <h6 class="text-danger">DOCUMENTOS PARA  PERSONERIA JURIDICA :</h6>
-                        <P> Solicitud de Personería Jurídica dirigida al Dr.  
-                            <strong>José Alejandro Unzueta Shiriqui/ GOBERNADOR DPTAL DEL BENI</strong>
-                        </P>
-                        <P> Depósito Bancario de Valores Bs. 50 a la CTA.CTE. N°   
-                            <strong>10000004707896 Banco Unión</strong>
-                        </P>
-                        <p> Depósito Bancario de Valores Bs.650 a la  CTA.CTE. N°<strong>10000004707896 Banco Unión.</strong></p>
-                        <p> ACTA DE FUNDACION (Fotocopia refrendada por notario de Fe Publica)</p>
-                        <p> ACTA DE ELECCION Y POSESION (Fotocopia refrendada por notario de Fe Publica)</p>
-                        <p> ESTATUTO ORGANICO (debidamente firmada por el Directorio o representante)</p>
-                        <p> REGLAMENTO INTERNO (debidamente firmado por el Directorio y/o representante legal)</p>
-                        <p> NOMINA DE SOCIOS (Fotocopias de C.I. Diez socios como mínimo)</p>
-                        <p> TRANSCRIPCION DEL ESTATUTO y/o REGLAMENTO EN CD. </p>
-                        <p> PRESETNACION DEL LIBRO ORIGINAL DE ACTAS </p>
-                        <p> Poder Notariado (Ley 351 Art. 6 N°5)</p>
-                        <p> Registro Domiciliario de la Organización social otorgado por la policía</p>
-                    </div>
+            <div id="div-requirement" style="display:none">
+                <h3>¿Cuáles son los requisitos para solicitar la reserva de nombre?</h3>
+                <h5>PERSONERIA JURIDICA PARA: Asociaciones, Fundaciones, ONG, Sindicatos</h5>
+                <div>
+                    <h6 class="text-danger">TRAMITE</h6>
+                    <P>1. Solicitud Certificado de reserva de nombre otorgado por la instancia correspondiente 
+                        <strong>(Secretaria de Justicia)</strong>
+                    </P>
+                    <h6 class="text-danger">REQUISITOS:</h6>
+                    <P>2. Realizar una carta de solicitud de Reserva de nombre, dirigida al 
+                        <strong>Gobernador: Dr. José Alejandro Unzueta Shiriqui</strong>
+                    </P>
+                    <h6 class="text-danger">DOCUMENTOS PARA  PERSONERIA JURIDICA :</h6>
+                    <P> Solicitud de Personería Jurídica dirigida al Dr.  
+                        <strong>José Alejandro Unzueta Shiriqui/ GOBERNADOR DPTAL DEL BENI</strong>
+                    </P>
+                    <P> Depósito Bancario de Valores Bs. 50 a la CTA.CTE. N°   
+                        <strong>10000004707896 Banco Unión</strong>
+                    </P>
+                    <p> Depósito Bancario de Valores Bs.650 a la  CTA.CTE. N°<strong>10000004707896 Banco Unión.</strong></p>
+                    <p> ACTA DE FUNDACION (Fotocopia refrendada por notario de Fe Publica)</p>
+                    <p> ACTA DE ELECCION Y POSESION (Fotocopia refrendada por notario de Fe Publica)</p>
+                    <p> ESTATUTO ORGANICO (debidamente firmada por el Directorio o representante)</p>
+                    <p> REGLAMENTO INTERNO (debidamente firmado por el Directorio y/o representante legal)</p>
+                    <p> NOMINA DE SOCIOS (Fotocopias de C.I. Diez socios como mínimo)</p>
+                    <p> TRANSCRIPCION DEL ESTATUTO y/o REGLAMENTO EN CD. </p>
+                    <p> PRESETNACION DEL LIBRO ORIGINAL DE ACTAS </p>
+                    <p> Poder Notariado (Ley 351 Art. 6 N°5)</p>
+                    <p> Registro Domiciliario de la Organización social otorgado por la policía</p>
                 </div>
-                <div id="div-findpersoneria" style="display:none">
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="input-group mt-5 input-group-lg">
-                                <input v-model="search" type="text" class="form-control" placeholder="Introduzca el nombre a buscar.." aria-label="" aria-describedby="basic-addon1">
-                                <div class="input-group-prepend">
-                                    <button @click="getDatos" class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
-                                </div>
-                            </div>
-                            <p style="margin: 10px">@{{ msg }}</p>
+            </div>
+            <div class="container col-md-10 col-md-offset-1" data-aos="fade-up">
+                <div id="div-findpersoneria" style="display:none" >
+                    <div class="input-group mt-5 input-group-lg">
+                        <input v-model="search" type="text" class="form-control" :placeholder="textplaceholder" aria-label="" aria-describedby="basic-addon1">
+                        <div class="input-group-prepend">
+                            <button @click="getDatos" class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
                         </div>
                     </div>
+                    <p style="margin: 10px">@{{ msg }}</p>
                 </div>
                 <div>
                     <div class="text-center"  v-if="cont < 1">
@@ -130,6 +125,50 @@
             </div>
         </div>
     </section><!-- End Team Section -->
+
+    <section >
+        <template v-if="tramite">
+            <div class="section-title" style="margin-top: 50px">
+                <h2>Seguimiento</h2>
+                <h3><span>Seguimiento del Trámite</span></h3>
+                <p>La siguiente información te muestra el historial de tu trámite.</p>
+            </div>
+            <div class="row m-5">
+                <div class="col-md-6">
+                    <div class="panel-body" style="padding-top:0;">
+                        <p>Hoja de Ruta</p>
+                    </div>
+                    <div class="panel-heading" style="border-bottom:0;">
+                        <h3 class="panel-title">@{{ tramite.tipo +'-'+ tramite.gestion +'-'+ tramite.id}}</h3>
+                    </div>
+                </div>
+                <div class="col-md-6" style="text-align: right">
+                    <div class="panel-body" style="padding-top:0;">
+                        <p>Fecha de ingreso</p>
+                    </div>
+                    <div class="panel-heading" style="border-bottom:0;">
+                        <h5 class="panel-title">@{{ tramite.created_at }}<small></small></h5>
+                    </div>
+                </div>
+                <hr>
+                <div class="col-md-12 mt-1">
+                <b>Número de Cite: </b> &nbsp; @{{ tramite.cite }} <br>
+                    <b>Número de hojas: </b> &nbsp; @{{ tramite.nro_hojas }} <br>
+                    <b>Origen: </b> &nbsp; @{{ tramite.entity.nombre }} <br>
+                    <b>Remitente: </b> &nbsp; @{{ tramite.remitente }} <br>
+                    <b>Referencia: </b> &nbsp; @{{ tramite.referencia }} <br>
+                    <b>Estado: </b> &nbsp; <span class="bg text-white" style="padding: 2px 5px">estado</span>
+                </div>
+            </div>
+        </template>
+        <template v-if="trempty" class="row">
+            <div class="col-md-12 text-center mt-3">
+                <img src="images/not-found.png" width="150px" alt="Not Found">
+                <h3 class="text-muted mt-3">Trámite no encontrado</h3>
+            </div>
+        </template>
+        <hr>
+    </section>
 </main><!-- End #main -->
 @endsection()
 

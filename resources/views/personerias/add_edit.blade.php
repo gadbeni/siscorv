@@ -4,7 +4,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @stop
 
-@section('page_title', 'Añadir Reserva')
+@section('page_title', 'Añadir Personeria')
 
 @if(auth()->user()->hasPermission('add_reservas') || auth()->user()->hasPermission('edit_reservas'))
 
