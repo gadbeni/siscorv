@@ -14,7 +14,6 @@
 
     <nav id="navbar" class="navbar">
         <ul>
-        <li><a class="nav-link scrollto active" href="{{ url('/')}}">Inicio</a></li>
         <li><a class="nav-link scrollto" href="{{ route('services')}}">Servicios</a></li>
         <li><a class="nav-link scrollto" href="#counts">Información</a></li>
         <li><a class="nav-link scrollto" href="#contact">Contáctanos</a></li>

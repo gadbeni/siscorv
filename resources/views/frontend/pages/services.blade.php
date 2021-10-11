@@ -46,19 +46,19 @@
                     <ul id="portfolio-flters">
                         <li data-filter="*" class="filter-active">TODOS</li>
                         <li data-filter=".filter-app">TRÁMITES</li>
-                        <li data-filter=".filter-card">TURISMO</li>
+                        <!-- <li data-filter=".filter-card">TURISMO</li> -->
                     </ul>
                 </div>
             </div>
             <div class="row portfolio-container" data-aos="fade-up" data-aos-delay="200">
                 <div class="col-lg-4 col-md-4 portfolio-item filter-app">
                     <a href="javascript:;" @click="showcontent('req')">
-                        <img src="assets/img/team/disname.png" class="img-fluid" alt=""> 
+                        <img src="assets/img/team/obtenerpers.png" class="img-fluid" alt=""> 
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 portfolio-item filter-app">
                     <a href="javascript:;" @click="showcontent('tramite')">
-                        <img src="assets/img/team/obtenerpers.png" class="img-fluid" alt="">
+                        <img src="assets/img/team/disname.png" class="img-fluid" alt="">
                     </a>
                 </div>
                 <div class="col-lg-4 col-md-4 portfolio-item filter-app">
