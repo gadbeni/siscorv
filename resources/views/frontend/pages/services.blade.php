@@ -126,7 +126,7 @@
         </div>
     </section><!-- End Team Section -->
 
-    <section >
+    <section  >
         <template v-if="tramite">
             <div class="section-title" style="margin-top: 50px">
                 <h2>Seguimiento</h2>
@@ -152,9 +152,9 @@
                 </div>
                 <hr>
                 <div class="col-md-12 mt-1">
-                <b>Número de Cite: </b> &nbsp; @{{ tramite.cite }} <br>
+                    <b>Número de Cite: </b> &nbsp; @{{ tramite.cite }} <br>
                     <b>Número de hojas: </b> &nbsp; @{{ tramite.nro_hojas }} <br>
-                    <b>Origen: </b> &nbsp; @{{ tramite.entity.nombre }} <br>
+                    <b>Origen: </b> &nbsp; @{{ tramite ? tramite.entity.nombre : '' }}<br>
                     <b>Remitente: </b> &nbsp; @{{ tramite.remitente }} <br>
                     <b>Referencia: </b> &nbsp; @{{ tramite.referencia }} <br>
                     <b>Estado: </b> &nbsp; <span class="bg text-white" style="padding: 2px 5px">estado</span>

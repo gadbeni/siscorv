@@ -67,28 +67,33 @@
             },
             showcontent(info){
                 if (info == "tramite") {
+                    this.search = '';
+                    this.tipo = info;
+                    this.tramite = null;
                     $('#div-findpersoneria').fadeIn();
                     $('#div-requirement').fadeOut();
                     this.textplaceholder = "Introduzca el nombre a buscar..";
-                    this.tramite = {},
-                    this.tipo = info;
                     this.msg = 'Verifica el estado de tu trámite';
+                    this.trempty = false;
                 } else if(info == "siscor"){
+                    this.cont = 1;
+                    this.tipo = info;
                     $('#div-findpersoneria').fadeIn();
                     $('#div-requirement').fadeOut();
                     this.textplaceholder = "Número de Cite o HR";
-                    this.tipo = info;
+                    this.search = '';
                     this.datos = [];
                     this.msg = 'Para hacer seguimiento de su trámite ingrese el Número de Cite o el HR y presion el botón Buscar.';
-                    console.log(this.tipo);
                 }
                 else{
                     this.search = '';
                     this.cont = 1;
+                    this.tramite = null,
                     this.msg = '';
                     this.datos = [];
                     $('#div-requirement').fadeIn();
                     $('#div-findpersoneria').fadeOut();
+                    this.trempty = false;
                 }
             }
         }
