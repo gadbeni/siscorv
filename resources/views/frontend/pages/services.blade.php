@@ -157,11 +157,33 @@
                     <b>Origen: </b> &nbsp; @{{ tramite ? tramite.entity.nombre : '' }}<br>
                     <b>Remitente: </b> &nbsp; @{{ tramite.remitente }} <br>
                     <b>Referencia: </b> &nbsp; @{{ tramite.referencia }} <br>
-                    <b>Estado: </b> &nbsp; <span class="bg text-white" style="padding: 2px 5px">estado</span>
+                    <b>Estado: </b> &nbsp; <span :style="{ backgroundColor : tramite.estado.color }">@{{ tramite.estado.nombre }}</span>
+                </div>
+            </div>
+            <div v-if="tramite.derivaciones.length > 0">
+                <div class="row m-5">
+                    <div class="col-md-12">
+                        <h4 style="text-decoration: underline">Historial de derivaciones</h4>
+                    </div>
+                    <ul class="timeline">
+                        <li class="timeline-inverted" v-for="item in tramite.derivaciones">
+                            <div class="timeline-badge primary"><i class="bi bi-check-lg"></i></div>
+                            <div class="timeline-panel">
+                                <div class="timeline-heading">
+                                    <h4 class="timeline-title">@{{ item.funcionario_direccion_para }}</h4>
+                                    <h6>@{{ item.funcionario_nombre_para }} | <small>@{{ item.funcionario_cargo_para }}</small></h6>
+                                    <p><small class="text-muted"><i class="glyphicon glyphicon-time"></i> @{{ item.created_at }}</small></p>
+                                </div>
+                                <div class="timeline-body">
+                                    <p>@{{ item.observacion }}</p>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </template>
-        <template v-if="trempty" class="row">
+        <template v-show="trempty" class="row">
             <div class="col-md-12 text-center mt-3">
                 <img src="images/not-found.png" width="150px" alt="Not Found">
                 <h3 class="text-muted mt-3">Trámite no encontrado</h3>
