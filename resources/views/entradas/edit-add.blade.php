@@ -35,8 +35,8 @@
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="" selected>Seleccione el tipo</option>
-                                            <option {{old('tipo') === 'I' || $entrada->tipo === 'I' ? 'selected' : ''}} value="I" @if (Auth::user()->role_id != 3) disabled @endif>Interno</option>
-                                            <option {{old('tipo') === 'E' || $entrada->tipo === 'E' ? 'selected' : ''}} value="E" @if (Auth::user()->role_id != 2) disabled @endif>Externo</option>
+                                            <option {{old('tipo') === 'I' || $entrada->tipo === 'I' ? 'selected' : ''}} value="I" @if (!auth()->user()->hasRole('funcionario')) disabled @endif>Interno</option>
+                                            <option {{old('tipo') === 'E' || $entrada->tipo === 'E' ? 'selected' : ''}} value="E" @if (!auth()->user()->hasRole(['ventanilla'])) disabled @endif>Externo</option>
                                         </select>
                                     </div>
                                     <div id="div_category" class="form-group col-md-5">
@@ -114,9 +114,9 @@
                                         <label class="control-label">Referencia</label>
                                         <textarea name="referencia" class="form-control" rows="3" required>{{old('referencia') ? : $entrada->referencia}}</textarea>
                                     </div>
-                                   
-                                    <div class="form-group col-md-12" id="div-detalle" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
-                                        {{-- <label class="control-label">Referencia</label> --}}
+                                    
+                                    <div class="form-group col-md-12" id="div-detalle" style="{{ auth()->user()->hasRole(['funcionario']) || $entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
+                                        <label class="control-label">Cuerpo</label> 
                                         <textarea class="form-control richTextBox" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
                                    
@@ -157,10 +157,11 @@
                 });
 
                 var additionalConfig = {
-                    selector: 'textarea.richTextBox[name="detalle"]',
+                    selector: 'textarea.richTextBox[name="detalles"]',
                 }
+                
                 tinymce.init(window.voyagerTinyMCE.getConfig(additionalConfig));
-
+                
                 $('#select-tipo').change(function(){
                     let tipo = $('#select-tipo option:selected').val();
                     if(tipo == 'E'){
@@ -175,10 +176,12 @@
                         $('#div-entity_id').fadeOut();
                     }
                 });
+
                 $('#select-category').change(function(){
                     let type = $('#select-category option:selected').text();
+                    let tipo = $('#select-tipo option:selected').val();
                     let tptramite ="PERS";
-                    if (type.includes(tptramite)) {
+                    if (type.includes(tptramite) || tipo == 'I') {
                         $('#div-destinatario').fadeIn();
                     }else{
                         $('#div-destinatario').fadeOut();

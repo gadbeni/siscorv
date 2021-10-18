@@ -349,7 +349,11 @@ class EntradasController extends Controller
     }
 
     public function print(Entrada $entrada){
-        $view = view('entradas.hr',['entrada' => $entrada->load('derivaciones','entity')]);
+        $destino = $entrada->funcionario_id_destino;
+        $view = view('entradas.hr',['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
+            $q->where('funcionario_id_para','!=',$destino)->get();
+            }],'entity')
+        ]);
         return $view;
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
