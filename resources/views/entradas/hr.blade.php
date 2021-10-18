@@ -71,15 +71,18 @@
                                         </tr>
                                         <tr>
                                             <td class="text-center" style="width: 45%">
-                                                @if($entrada->tipo == 'E')
-                                                <span style="line-height: 8px; font-size: 25px;"><strong>HOJA DE RUTA N°:</strong></span>
-                                                @else
-                                                <span style="line-height: 8px; font-size: 25px;"><strong>HNOTA DE COMUNICACION INTERNA:</strong></span>
-                                                @endif
+                                                <span style="line-height: 8px; font-size: 25px;"><strong>{{($entrada->tipo == 'E') ? 'HOJA DE RUTA N°:' : 'NOTA DE COMUNICACION INTERNA:'}}</strong></span>
                                             </td>
-                                            <td class="text-left" style="width: 30%; border: 1px solid #000; padding: 5px; font-weight: bold;">
-                                                {{$entrada->tipo .'-' . $entrada->cite }}
-                                            </td>
+                                            @if($entrada->tipo == 'E')
+                                                <td class="text-left" style="width: 30%; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                    {{$entrada->tipo .'-' . $entrada->cite }}
+                                                </td>
+                                            @else
+                                                <td class="text-left" style="width: 20%; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                    {{$entrada->tipo .'-' . $entrada->cite }}
+                                                </td>
+                                            @endif
+                                            
                                         </tr>
                                     </table>
                                 </td>
@@ -124,9 +127,19 @@
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{$entrada->entity->nombre}}.</td>
+                                <td class="box-margin">{{$entrada->entity->nombre ?? $entrada->remitente }}.</td>
                             </tr>
                         </table>
+                            @if($entrada->tipo == 'I')
+                                @foreach($entrada->derivaciones as $der)
+                                    <table class="alltables" style="margin-top: 5px;">
+                                        <tr>
+                                            <td style="width: 20%">VIA</td>
+                                            <td class="box-margin">{{ $der->funcionario_nombre_para }}</td>
+                                        </tr>
+                                    </table>
+                                @endforeach
+                            @endif
                         @if($entrada->tipo == 'E')
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
@@ -140,20 +153,44 @@
                                 <td style="width: 20%">REF</td>
                                 <td class="box-margin">{{ $entrada->referencia }}</td>
                             </tr>
-                            <tr>
-                                <td ></td>
-                                @if($entrada->urgent)
-                                <td style="text-align: right;">
-                                    <img src="{{ asset('images/urgente.jpg')}}" height="90px" width="210px" style="opacity: 0.4">
-                                </td>
-                                @else
-                                <td style="height: 70px" colspan="6">
-                                    <p style="padding: 20px"></p>
-                                </td>
-                                @endif
-                            </tr>
+                            @if($entrada->tipo == 'E')
+                                <tr>
+                                    <td ></td>
+                                    @if($entrada->urgent)
+                                    <td style="text-align: right;">
+                                        <img src="{{ asset('images/urgente.jpg')}}" height="90px" width="210px" style="opacity: 0.4">
+                                    </td>
+                                    @else
+                                    <td style="height: 70px" colspan="6">
+                                        <p style="padding: 20px"></p>
+                                    </td>
+                                    @endif
+                                </tr>
+                            @endif
                         </table>
+                        @if($entrada->tipo == 'E')
+                            <table class="alltables">
+                                <tr>
+                                    <td style="width: 15%;">Fecha de Salida</td>
+                                    <td>{{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}</td>
+                                    <td>Plazo</td>
+                                    <td>{{ $entrada->deadline ? date('d/m/Y', strtotime($entrada->deadline)) : '....../....../............' }}</td>
+                                    <td class="text-right" style="width: 30%">Firma y sello</td>
+                                    <td style="width: 25%"></td>
+                                </tr>
+                            </table>
+                        @endif
+                    </div>
+                    {{-- Body seccion --}}
+                    @if($entrada->tipo == 'I')
+                    <div class="box-section">
                         <table class="alltables">
+                            <tr>
+                                <td style="height: 350px" colspan="6">
+                                    <p style="padding: 20px">{!! $entrada->detalles !!}</p>
+                                    <br>
+                                </td>
+                            </tr>
                             <tr>
                                 <td style="width: 15%;">Fecha de Salida</td>
                                 <td>{{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}</td>
@@ -162,10 +199,18 @@
                                 <td class="text-right" style="width: 30%">Firma y sello</td>
                                 <td style="width: 25%"></td>
                             </tr>
+                            <tr>
+                                <td colspan="6">
+                                <p></p>
+                                </td>
+                            </tr>
                         </table>
                     </div>
+                    @endif
+                    {{-- end section body --}}
 
                     {{-- Segunda seccion --}}
+                    @if($entrada->tipo == 'E')
                     <div class="box-section">
                         <table width="100%" cellspacing="5">
                             <tr>
@@ -233,7 +278,7 @@
                             </tr>
                         </table>
                     </div>
-
+                    @endif
                     {{-- Tercera seccion --}}
                     <div class="box-section">
                         <table width="100%" cellspacing="5">

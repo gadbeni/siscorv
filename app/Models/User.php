@@ -47,4 +47,8 @@ class User extends \TCG\Voyager\Models\User
     public function warehouses(){
         return $this->belongsToMany(Warehouse::class);
     }
+
+    public function isAdmin(){
+        return $this->hasRole(['admin']);
+    }
 }
