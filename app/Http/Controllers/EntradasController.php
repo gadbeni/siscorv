@@ -35,10 +35,7 @@ class EntradasController extends Controller
 
     public function list(){
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        if(Auth::user()->role_id == 3){
-            $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.($funcionario ? $funcionario->funcionario_id : 844);
-        }else{
-            $funcionariodea =  DB::connection('mysqlgobe')
+        $funcionariodea =  DB::connection('mysqlgobe')
                                 ->table('contribuyente as c')
                                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
@@ -47,8 +44,17 @@ class EntradasController extends Controller
                                 ->where('c.id', $funcionario->funcionario_id)
                                 ->select('c.id', 'c.DA')
                                 ->first();
+
+        if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+            $query_filtro = 'registrado_por_id_direccion = '.$funcionariodea->DA;
+        } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
             $query_filtro = 'tipo = "E" and registrado_por_id_direccion = '.$funcionariodea->DA;
+        } elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+            $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.$funcionario->funcionario_id;
+        } elseif (auth()->user()->isAdmin()) {
+            $query_filtro = 1;
         }
+        
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
