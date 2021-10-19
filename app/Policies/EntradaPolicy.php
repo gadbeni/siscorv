@@ -6,6 +6,7 @@ use App\Models\Entrada;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\Persona;
+use Illuminate\Support\Facades\DB;
 
 class EntradaPolicy
 {
@@ -28,6 +29,22 @@ class EntradaPolicy
     public function viewAny(User $user, Entrada $entrada)
     {
         $funcionario = Persona::where('user_id', $user->id)->first();
+         $funcionariodea =  DB::connection('mysqlgobe')
+                                ->table('contribuyente as c')
+                                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+                                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+                                ->where('c.id', $funcionario->funcionario_id)
+                                ->select('c.id', 'c.DA')
+                                ->first();
+        if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+            return $entrada->registrado_por_id_direccion == $funcionariodea->DA;
+        } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
+            return $entrada->tipo == 'E' && $entrada->registrado_por_id_direccion == $funcionariodea->DA;
+        } elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+            return $entrada->tipo == 'I' && $entrada->funcionario_id_remitente == $funcionario->funcionario_id;
+        }
         //
     }
 
