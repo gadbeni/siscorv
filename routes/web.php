@@ -12,6 +12,7 @@ use App\Http\Livewire\CreateCertificate;
 use App\Http\Controllers\ReservasController;
 use App\Http\Controllers\PersoneriasController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\TramiteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -72,6 +73,10 @@ Route::group(['prefix' => 'admin'], function () {
 
         Route::resource('personerias',PersoneriasController::class);
         Route::get('personerias/ajax/list', [PersoneriasController::class, 'list']);
+
+        //ruta para la busqueda de tramites externo e internos juntos
+        Route::get('tramites',[TramiteController::class,'index'])->name('tramites_index');
+        Route::get('get-tramites',[TramiteController::class,'documentosjson'])->name('tramites_json');
     });
 });
 
