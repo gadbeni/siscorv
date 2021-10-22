@@ -13,11 +13,11 @@ class TramiteController extends Controller
     }
 
     public function documentosjson(){
-		//if (request()->ajax()) {
+		if (request()->ajax()) {
 			$VueTables = new EloquentVueTables;
 	        $data = $VueTables->get(new Entrada, ['id','tipo','cite','remitente','referencia','entity_id','estado_id','category_id','created_at'],['entity:id,nombre', 'estado:id,nombre']);
 	        return response()->json($data);
-		//}
-        //return abort(401);
+		}
+        return abort(401);
 	}
 }
