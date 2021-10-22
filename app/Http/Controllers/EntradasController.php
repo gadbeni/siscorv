@@ -49,12 +49,13 @@ class EntradasController extends Controller
             $query_filtro = 'registrado_por_id_direccion = '.$funcionariodea->DA;
         } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
             $query_filtro = 'tipo = "E" and registrado_por_id_direccion = '.$funcionariodea->DA;
-        } elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-            $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.$funcionario->funcionario_id;
-        } elseif (auth()->user()->isAdmin()) {
+        } elseif (auth()->user()->isAdmin() || auth()->user()->id == 28) {
             $query_filtro = 1;
         }
-        
+        elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+            $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.$funcionario->funcionario_id;
+        } 
+
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([

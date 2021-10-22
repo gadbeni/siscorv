@@ -104,7 +104,7 @@ export default{
             .finally(function () {
             // always executed
             });
-        }
+      }
 	}
 }
 </script>
