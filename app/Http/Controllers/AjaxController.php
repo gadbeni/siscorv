@@ -56,6 +56,7 @@ class AjaxController extends Controller
                                     'c.ID as id',
                                     'c.NombreCompleto as text',
                                     'c.APaterno as ap_paterno','c.alfanu as alfanum',
+                                    'c.Cargo as cargo',
                                     'c.AMaterno as ap_materno','c.Expedido as departamento_id',
                                     DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
                                     'c.N_carnet as ci',

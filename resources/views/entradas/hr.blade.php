@@ -116,7 +116,7 @@
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
                                     @if($entrada->funcionario_id_destino)
-                                    {{ $entrada->destinatario->full_name}}
+                                    {{ $funcionario->nombre. ' '.$funcionario->cargo}}
                                     @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
@@ -127,7 +127,7 @@
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{$entrada->entity->nombre ?? $entrada->remitente }}.</td>
+                                <td class="box-margin">{{ $entrada->remitente }}.</td>
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
@@ -135,7 +135,7 @@
                                     <table class="alltables" style="margin-top: 5px;">
                                         <tr>
                                             <td style="width: 20%">VIA</td>
-                                            <td class="box-margin">{{ $der->funcionario_nombre_para }}</td>
+                                            <td class="box-margin">{{ $der->funcionario_nombre_para }} {{$der->funcionario_cargo_para}}</td>
                                         </tr>
                                     </table>
                                 @endforeach
