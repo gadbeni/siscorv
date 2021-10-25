@@ -129,7 +129,8 @@ class EntradasController extends Controller
     public function create()
     {
         $entrada = new Entrada;
-        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        $user_auth = Persona::where('user_id', Auth::user()->id)->first();
+        $funcionario = $this->getFuncionario($user_auth->funcionario_id);
         return view('entradas.edit-add', compact('entrada','funcionario'));
     }
 
@@ -140,7 +141,7 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
+    {  
         DB::beginTransaction();
         try {
 
@@ -155,14 +156,12 @@ class EntradasController extends Controller
             if($request->tipo == 'I'){
                 $unidad_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->idDependencia;
                 $direccion_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->DA;
-                $funcionario = Persona::where('funcionario_id', $request->funcionario_id_remitente)->first();
-                $funcionario_remitente = $funcionario->full_name;
             }
            
             $entrada = Entrada::create([
                 'gestion' => date('Y'),
                 'tipo' => $request->tipo,
-                'remitente' => $request->tipo == 'E' ? $request->remitente : $funcionario_remitente,
+                'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
                 'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
@@ -203,7 +202,7 @@ class EntradasController extends Controller
             DB::commit();
             return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
+             dd($th);
             DB::rollback();
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
@@ -280,15 +279,13 @@ class EntradasController extends Controller
             if($request->tipo == 'I'){
                 $unidad_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->idDependencia;
                 $direccion_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->DA;
-                $funcionario = Persona::where('funcionario_id', $request->funcionario_id_remitente)->first();
-                $funcionario_remitente = $funcionario->full_name;
             }
 
             $date = Carbon::now();
 
             $entrada->update([
                 'tipo' => $request->tipo,
-                'remitente' => $request->tipo == 'E' ? $request->remitente : $funcionario_remitente,
+                'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
                 'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
@@ -357,9 +354,13 @@ class EntradasController extends Controller
 
     public function print(Entrada $entrada){
         $destino = $entrada->funcionario_id_destino;
+        $funcionario = null;
+        if ($entrada->funcionario_id_destino) {
+            $funcionario = $this->getFuncionario($entrada->funcionario_id_destino);
+        }
         $view = view('entradas.hr',['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
             $q->where('funcionario_id_para','!=',$destino)->get();
-            }],'entity')
+            }],'entity'),'funcionario' =>$funcionario
         ]);
         return $view;
         $pdf = \App::make('dompdf.wrapper');
