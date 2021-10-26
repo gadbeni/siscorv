@@ -359,7 +359,7 @@ class EntradasController extends Controller
             $funcionario = $this->getFuncionario($entrada->funcionario_id_destino);
         }
         $view = view('entradas.hr',['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
-            $q->where('funcionario_id_para','!=',$destino)->get();
+            //$q->where('funcionario_id_para','!=',$destino)->get();
             }],'entity'),'funcionario' =>$funcionario
         ]);
         return $view;
