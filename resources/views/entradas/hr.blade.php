@@ -96,11 +96,17 @@
                             <tr>
                                 <td  WIDTH="17%">FECHA</td>
                                 <td class="caja" WIDTH="12%">
-                                {{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}
+                                    @if($entrada->derivaciones()->count() > 0)
+                                        {{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}
+                                    @else
+                                     2021
+                                    @endif
                                 </td>
                                 @if($entrada->tipo == 'E')
                                 <td WIDTH="8%">&nbsp;HORA</td>
-                                <td class="caja" WIDTH="5%">{{ date('H:i', strtotime($entrada->created_at)) }}</td>
+                                <td class="caja" WIDTH="5%">
+                                    {{ date('H:i', strtotime($entrada->created_at)) }}
+                                </td>
                                 <td WIDTH="10%">&nbsp;Nº HOJAS</td>
                                 <td class="caja"  WIDTH="33%">{{ $entrada->nro_hojas }}</td>
                                 @else
@@ -131,14 +137,18 @@
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
-                                @foreach($entrada->derivaciones as $der)
+                                @forelse($entrada->derivaciones as $der)
+                                    @if($entrada->funcionario_id_destino != $der->funcionario_id_para)
                                     <table class="alltables" style="margin-top: 5px;">
                                         <tr>
                                             <td style="width: 20%">VIA</td>
                                             <td class="box-margin">{{ $der->funcionario_nombre_para }} {{$der->funcionario_cargo_para}}</td>
                                         </tr>
                                     </table>
-                                @endforeach
+                                    @endif
+                                @empty
+                                 <br>
+                                @endforelse
                             @endif
                         @if($entrada->tipo == 'E')
                         <table class="alltables" style="margin-top: 5px;">
