@@ -137,17 +137,14 @@
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
-                                @forelse($entrada->derivaciones as $der)
-                                    @if($entrada->funcionario_id_destino != $der->funcionario_id_para)
+                                @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
                                         <tr>
                                             <td style="width: 20%">VIA</td>
-                                            <td class="box-margin">{{ $der->funcionario_nombre_para }} {{$der->funcionario_cargo_para}}</td>
+                                            <td class="box-margin">{{ $der->nombre }} {{$der->cargo}}</td>
                                         </tr>
                                     </table>
-                                    @endif
                                 @empty
-                                 <br>
                                 @endforelse
                             @endif
                         @if($entrada->tipo == 'E')

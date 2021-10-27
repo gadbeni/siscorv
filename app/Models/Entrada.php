@@ -46,4 +46,8 @@ class Entrada extends Model
     public function destinatario(){
         return $this->belongsTo(Persona::class,'funcionario_id_destino','funcionario_id');
     }
+
+    function vias(){
+        return $this->hasMany(Via::class)->withTrashed();
+    }
 }

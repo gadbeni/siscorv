@@ -221,9 +221,8 @@ class EntradasController extends Controller
                     $q->where('deleted_at', NULL);
                 }, 'archivos' => function($q){
                     $q->where('deleted_at', NULL);
-                }])->where('id', $id)
+                },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
-        
         /*
             En caso de se una nota interna obtener los datos del remietente
         */
@@ -347,8 +346,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-        }
-        
+        }   
        
     }
 
@@ -588,5 +586,28 @@ class EntradasController extends Controller
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion
         ]);
+    }
+
+    public function store_vias(Request $request){
+        DB::beginTransaction();
+        try {
+            $entrada = Entrada::findOrFail($request->id);
+            $via = $this->getFuncionario($request->via);
+            if($via){
+                $entrada->vias()->create([
+                    'funcionario_id' => $via->id_funcionario,
+                    'nombre' => $via->nombre,
+                    'cargo' => $via->cargo,
+                ]);
+                DB::commit();
+            }else{
+                return redirect()->back()->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            }
+            return redirect()->back()->with(['message' => 'Via agregada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            //dd($th);
+            return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
     }
 }

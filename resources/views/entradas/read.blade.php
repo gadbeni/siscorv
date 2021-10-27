@@ -192,6 +192,65 @@
                             </div>
                         </div>
                     </div>
+                    @if($data->tipo == 'I')
+                    <div class="panel panel-bordered" style="padding-bottom:5px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <h3 class="panel-title">Vias</h3>
+                                        </div>
+                                        <div class="col-md-3 text-right">
+                                            <button 
+                                                type="button" 
+                                                data-toggle="modal" 
+                                                data-target="#modal-derivar" 
+                                                title="Nuevo" class="btn btn-success"
+                                                style="margin: 15px;">
+                                                <i class="voyager-list-add"></i> 
+                                                Nuevo
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID&deg;</th>
+                                                <th>Nombre</th>
+                                                <th>Cargo</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $cont = 1;
+                                            @endphp
+                                            @forelse ($data->vias as $item)
+                                                <tr>
+                                                    <td>{{ $cont }}</td>
+                                                    <td>{{ $item->nombre }}</td>
+                                                    <td>{{ $item->cargo }}</td>
+                                                    <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
+                                                </tr>
+                                                @php
+                                                    $cont++;
+                                                @endphp
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
                             <div class="col-md-12">
@@ -293,14 +352,23 @@
         </div>
 
         @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
+
+        {{-- Personas modal --}}
+        @include('partials.modal-agregar-vias', ['id' => $data->id])
     @stop
 
     @section('css')
-
+    <style>
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
     @endsection
 
     @section('javascript')
         <script>
+            var destinatario_id = 0;
+            var intern_externo = 1;
             $(document).ready(function () {
 
                 $('.btn-anular').click(function(){
