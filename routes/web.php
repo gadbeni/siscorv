@@ -45,6 +45,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/delete/derivacion/file', [EntradasController::class, 'delete_derivacion_file'])->name('delete.derivacion.file');
     Route::get('entradas/{entrada}/print', [EntradasController::class, 'print'])->name('entradas.print');
     Route::get('entradas/{entrada}/printhr', [EntradasController::class, 'printhr'])->name('entradas.printhr');
+    Route::post('entradas/store/vias', [EntradasController::class, 'store_vias'])->name('store.vias');
 
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
