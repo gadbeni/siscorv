@@ -13,6 +13,7 @@ use Storage;
 
 // Models
 use App\Models\Entrada;
+use App\Models\Via;
 use App\Models\Archivo;
 use App\Models\Derivation;
 use App\Models\Persona;
@@ -608,6 +609,16 @@ class EntradasController extends Controller
             DB::rollback();
             //dd($th);
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function anulacion_via(Request $request){
+        try {
+            Via::findOrFail($request->id)->delete();
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Via Anulada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            // dd($th);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 }

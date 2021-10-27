@@ -48,6 +48,6 @@ class Entrada extends Model
     }
 
     function vias(){
-        return $this->hasMany(Via::class)->withTrashed();
+        return $this->hasMany(Via::class);
     }
 }

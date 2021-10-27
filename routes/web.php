@@ -46,6 +46,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('entradas/{entrada}/print', [EntradasController::class, 'print'])->name('entradas.print');
     Route::get('entradas/{entrada}/printhr', [EntradasController::class, 'printhr'])->name('entradas.printhr');
     Route::post('entradas/store/vias', [EntradasController::class, 'store_vias'])->name('store.vias');
+    Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
 
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');

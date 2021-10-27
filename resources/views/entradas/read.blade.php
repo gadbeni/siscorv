@@ -233,7 +233,16 @@
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->nombre }}</td>
                                                     <td>{{ $item->cargo }}</td>
-                                                    <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
+                                                    <td>
+                                                        <button type="button" 
+                                                        data-toggle="modal" 
+                                                        data-target="#delete-via-modal" 
+                                                        data-id="{{ $item->id }}" 
+                                                        data-entrada_id="{{ $data->id }}"
+                                                        class="btn btn-danger btn-sm btn-delete-via">
+                                                            <span class="voyager-trash"></span>
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                                 @php
                                                     $cont++;
@@ -351,6 +360,8 @@
             </div>
         </div>
 
+        {{-- delete via modal --}}
+        @include('partials.modal-delete-via')
         @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
 
         {{-- Personas modal --}}
@@ -378,6 +389,12 @@
                 $('.btn-delete-file').click(function(){
                     let id = $(this).data('id');
                     $('#delete_file_form input[name="id"]').val(id);
+                });
+                $('.btn-delete-via').click(function(){
+                    let id = $(this).data('id');
+                    let entrada_id = $(this).data('entrada_id');
+                    $('#delete_via_form input[name="id"]').val(id);
+                    $('#delete_via_form input[name="entrada_id"]').val(entrada_id);
                 });
             });
         </script>
