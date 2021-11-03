@@ -49,9 +49,9 @@ class AjaxController extends Controller
         $personas = [];
         if($search) {
             $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
-                                ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
+                                //->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
                                 ->where('c.Estado',1)
-                                ->where('cont.Estado',1)
+                                //->where('cont.Estado',1)
                                 ->select([
                                     'c.ID as id',
                                     'c.NombreCompleto as text',
