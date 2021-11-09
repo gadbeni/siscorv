@@ -10,6 +10,7 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" name="id" value="{{ isset($id) ? $id : '' }}">
+                    <input type="hidden" name="der_id" value="{{ isset($der_id) ? $der_id : '' }}">
                     @if (isset($redirect))
                         <input type="hidden" name="redirect" value="{{ $redirect }}">
                     @endif
@@ -28,7 +29,13 @@
                     </div>
                     <div class="form-group">
                         <label class="">Destinatario</label>
-                        <select name="destinatario" class="form-control" id="select-destinatario"></select>
+                        <select 
+                            name="destinatarios[]" 
+                            class="form-control" 
+                            id="select-destinatario"
+                            multiple="multiple"
+                            >
+                        </select>
                     </div>
                     <div class="form-group">
                         <label class="">Observaciones</label>
@@ -50,6 +57,7 @@
     $(document).ready(function () {
         ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
         $("#select-destinatario").select2({
+            maximumSelectionLength: 2,
             ajax: { 
                 allowClear: true,
                 url: ruta,
@@ -69,7 +77,8 @@
                         results: response
                     };
                 }
-            }
+            },
+            allowClear: true
         });
         $('#toggleswitch').on('change', function() {
             if (this.checked) {

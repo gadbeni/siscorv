@@ -193,6 +193,7 @@
                                         <tbody>
                                             @php
                                                 $cont = 1;
+                                                $cont_h = 1;
                                             @endphp
                                             @forelse ($data->derivaciones as $item)
                                                 <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
@@ -202,11 +203,11 @@
                                                     <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
                                                     <td>{{ $item->observacion }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    {{-- <td>
+                                                    <td>
                                                         @if ($cont == count($data->derivaciones))
                                                             <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
                                                         @endif
-                                                    </td> --}}
+                                                    </td>
                                                 </tr>
                                                 @php
                                                     $cont++;
@@ -220,6 +221,34 @@
                                     </table>
                                 </div>
                                 <hr style="margin:0;">
+                                <div class="panel-body" style="padding-top:0;">
+                                    <table class="table table-bordered-table-hover">
+                                        @php
+                                            $conta = 1;
+                                            $cont_h = 1;
+                                        @endphp
+                                        @forelse ($data->derivaciones as $item)
+                                        <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                            <th>{{ $conta }}</th>
+                                            @if ($item->parent_id != $item->entrada_id)
+                                                <td>{{ $item->derivationparent }}</td> 
+                                            @endif
+                                            <td>{{ $item->funcionario_direccion_para }}</td>
+                                            <td>{{ $item->funcionario_unidad_para }}</td>
+                                            <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
+                                            <td>{{ $item->observacion }}</td>
+                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                        </tr>
+                                        @php
+                                            $conta++;
+                                            @endphp
+                                        @empty
+                                            <tr>
+                                                <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
+                                            </tr>
+                                        @endforelse
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -252,7 +281,7 @@
         </form>
         
         {{-- Personas modal --}}
-        @include('partials.modal-derivar', ['id' => $data->id, 'redirect' => 'bandeja.index'])
+        @include('partials.modal-derivar', ['id' => $data->id, $der_id = $derivacion->id, 'redirect' => 'bandeja.index'])
 
         {{-- rechazar modal --}}
         <form action="{{ route('bandeja.rechazar', ['id' => $data->id]) }}" method="post">
