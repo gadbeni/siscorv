@@ -101,7 +101,7 @@ class EntradasController extends Controller
                                     </button>';
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
-                        '.($row->estado->id == 6 ? $derivar_button : '').'
+                        '.($row->derivaciones->whereNull('deleted_at')->count() == 0 ? $derivar_button : '').'
                         <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-info view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
@@ -109,7 +109,7 @@ class EntradasController extends Controller
                             '<a href="'.route('entradas.edit', ['entrada' => $row->id]).'" title="Editar" class="btn btn-sm btn-warning">
                                 <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                             </a>' : '').
-                        ''.(($row->derivaciones->count() <= 1) ? 
+                        ''.(($row->derivaciones->whereNull('deleted_at')->count() <= 1) ? 
                             '<button title="Anular" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/entradas/".$row->id)."'".')">
                                 <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
                             </button>' : '').
@@ -399,28 +399,28 @@ class EntradasController extends Controller
     }
 
     public function store_derivacion(Request $request){
-        $user = Persona::where('funcionario_id', $request->destinatario)->first();
-         /*Si la derivación viene del RDE no se registra al funcionario de origen*/
-        
-        $rde = $request->redirect ? null : 1;
+        $destinatarios = $request->destinatarios;
         $persona = Persona::where('user_id', Auth::user()->id)->first();
         if(!$persona){
             return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
         }
-       
         DB::beginTransaction();
         try {
-            $redirect = $request->redirect ?? 'entradas.index';
-             $entrada = Entrada::findOrFail($request->id);
-            $funcionario = $this->getFuncionario($request->destinatario);
-            if($funcionario){
-                // Actualizar estado de la correspondencia
-                //$entrada = Entrada::findOrFail($request->id);
-                $detaillast = array();
-                if (isset($entrada->details)) {
-                    $detaillast[] = $entrada->details;
-                }
-                $detalle = [
+            $cont = 0;
+            foreach ($destinatarios as $valor) {
+                $user = Persona::where('funcionario_id', $valor)->first();
+                /*Si la derivación viene del RDE no se registra al funcionario de origen*/
+                $rde = $request->redirect ? null : 1;
+                $redirect = $request->redirect ?? 'entradas.index';
+                $entrada = Entrada::findOrFail($request->id);
+                $funcionario = $this->getFuncionario($valor);
+                if($funcionario){
+                    // Actualizar estado de la correspondencia
+                    $detaillast = array();
+                    if (isset($entrada->details)) {
+                        $detaillast[] = $entrada->details;
+                    }
+                    $detalle = [
                         'id_origen' => auth()->user()->id, 
                         'nombre_origen' => $persona->full_name,
                         'id_para' => $funcionario->id_funcionario,
@@ -428,19 +428,20 @@ class EntradasController extends Controller
                         'fecha' => Carbon::now()
                     ];
              
-                if (count($detaillast) == 0) {
-                    $entrada->details = $detalle;
-                } else {
-                   array_push($detaillast,$detalle);
-                   $entrada->details = $detaillast;
+                    if (count($detaillast) == 0) {
+                        $entrada->details = $detalle;
+                    } else {
+                        array_push($detaillast,$detalle);
+                        $entrada->details = $detaillast;
+                    }
+                    $entrada->estado_id = 3;
+                    $entrada->save();
+                    $cont++;
+                    $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
+                    DB::commit();
+                }else{
+                    return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
                 }
-                //dd($detaillast);
-                $entrada->estado_id = 3;
-                $entrada->save();
-                $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
-                DB::commit();
-            }else{
-                return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
             }
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
@@ -459,7 +460,6 @@ class EntradasController extends Controller
             $ingresos = Entrada::with('entity')
                         ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
                             $query->where('funcionario_id_para', $funcionario_id);
-                            $query->where('deleted_at',null);
                         })
                         ->where('deleted_at', NULL)
                         ->get();
@@ -494,7 +494,7 @@ class EntradasController extends Controller
 
                 $destino = $this->getFuncionario($data->funcionario_id_destino);
             }
-            return view('bandeja.read', compact('data', 'origen', 'destino'));
+            return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
         } catch (\Throwable $th) {
             // dd($th);
             return redirect()->route('voyager.dashboard');
@@ -585,7 +585,9 @@ class EntradasController extends Controller
             'responsable_actual' => 1,
             'rechazo' => $rechazo,
             'registro_por' => Auth::user()->email,
-            'observacion' => $request->observacion
+            'observacion' => $request->observacion,
+            'parent_id' => $request->der_id ? $request->der_id : $request->id,
+            'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
         ]);
     }
 

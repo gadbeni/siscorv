@@ -28,19 +28,19 @@ class Entrada extends Model
     ];
 
     function entity(){
-        return $this->belongsTo(Entity::class)->withTrashed();
+        return $this->belongsTo(Entity::class);
     }
 
     function estado(){
-        return $this->belongsTo(Estado::class, 'estado_id')->withTrashed();
+        return $this->belongsTo(Estado::class, 'estado_id');
     }
 
     function archivos(){
-        return $this->hasMany(Archivo::class)->withTrashed();
+        return $this->hasMany(Archivo::class);
     }
 
     function derivaciones(){
-        return $this->hasMany(Derivation::class)->withTrashed();
+        return $this->hasMany(Derivation::class);
     }
 
     public function destinatario(){
@@ -49,5 +49,10 @@ class Entrada extends Model
 
     function vias(){
         return $this->hasMany(Via::class);
+    }
+
+    public function parents()
+    {
+        return $this->morphMany(Derivation::class, 'parent');
     }
 }
