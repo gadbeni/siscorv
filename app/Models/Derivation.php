@@ -28,7 +28,7 @@ class Derivation extends Model
         return $this->belongsTo(Derivation::class, 'parent_id');
     }
 
-    public function commentable()
+    public function parent()
     {
         return $this->morphTo();
     }

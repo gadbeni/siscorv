@@ -457,14 +457,20 @@ class EntradasController extends Controller
         $funcionario_id = null;
         if ($funcionario) {
             $funcionario_id = $funcionario->funcionario_id;
-            $ingresos = Entrada::with('entity')
-                        ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
-                            $query->where('funcionario_id_para', $funcionario_id);
-                        })
-                        ->where('deleted_at', NULL)
-                        ->get();
+            if (!$funcionario_id) {
+                return redirect()->back()->with(['message' => 'Falta tu codigo de funcionario contactate con sistema para solucionarlo porfavor.', 'alert-type' => 'error']);
+            }
+            // $ingresos = Entrada::with('entity')
+            //             ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
+            //                 $query->where('funcionario_id_para', $funcionario_id);
+            //             })
+            //             ->where('deleted_at', NULL)
+            //             ->get();
+            $derivaciones = Derivation::with(['entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent','entrada.estado:id,nombre'])
+                                        ->select('id','entrada_id','created_at','visto','funcionario_id_para')
+                                        ->where('funcionario_id_para', $funcionario_id)->get();   
         }
-        return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
+        return view('bandeja.browse', compact('derivaciones', 'funcionario_id'));
     }
 
     public function derivacion_show($id)
