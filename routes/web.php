@@ -79,6 +79,9 @@ Route::group(['prefix' => 'admin'], function () {
         //ruta para la busqueda de tramites externo e internos juntos
         Route::get('tramites',[TramiteController::class,'index'])->name('tramites_index');
         Route::get('get-tramites',[TramiteController::class,'documentosjson'])->name('tramites_json');
+
+        //ruta para mostrar los tramites pronto a expiracion
+        Route::get('getdocumexpired',[HomeController::class,'documents_expired'])->name('documents_expired');
     });
 });
 

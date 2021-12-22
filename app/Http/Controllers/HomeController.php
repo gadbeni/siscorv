@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // Models
 use App\Models\Entrada;
 use App\Models\RequestsClient;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
@@ -35,5 +36,15 @@ class HomeController extends Controller
                     ->where('deleted_at', NULL)->first();
         // dd($data);
         return response()->json($data);
+    }
+
+    public function documents_expired(){
+        $now = Carbon::now()->format('Y-m-d');
+        $old = Carbon::now()->addDays(3)->format('Y-m-d');
+        $data = Entrada::with(['entity'])
+                        ->select('id', 'cite' ,'tipo', 'gestion','remitente','deadline','created_at', 'entity_id')
+                        ->whereBetween('deadline',[$now, $old])
+                        ->get();
+        return view('entradas.documents_to_expired', compact('data'));
     }
 }

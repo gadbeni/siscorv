@@ -133,6 +133,11 @@ return [
                 'classes'    => 'class-full-of-rum',
                 'icon_class' => 'voyager-person',
             ],
+            'HR a Expirar' => [
+                'route'        => 'documents_expired',
+                'icon_class'   => 'voyager-eye',
+                'target_blank' => true,
+            ],
             'voyager::generic.home' => [
                 'route'        => '/',
                 'icon_class'   => 'voyager-home',
