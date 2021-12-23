@@ -41,21 +41,22 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                
-                                                @forelse ($derivaciones as $item)
+                                                @forelse ($ingresos as $item)
                                                     @php
-                                                        
-                                                        $derivacion = count($item->entrada->derivaciones) ? $item->entrada->derivaciones[count($item->entrada->derivaciones)-1] : 0;
-                                                        $childrens = count($item->parents) ? $item->parents->whereIn('funcionario_id_de',[$funcionario_id]) : 0;
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
+                                                        $derivacion_hijo = 0;
+                                                      
+                                                        $derivacion_hijo = count($item->parents) ? $item->parents[$item->parents] : 0;
+                                                        //dd($derivacion);
                                                     @endphp
-                                                    @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true)
-                                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
-                                                            <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                            <td>{{ $item->entrada->cite }}</td>
-                                                            <td>{{ $item->entrada->remitente }}</td>
-                                                            <td>{{ $item->entrada->referencia }}</td>
+                                                    @if ($derivacion && ($funcionario_id == $derivacion->funcionario_id_para) && $item->estado_id != 6 && $item->estado_id != 4 && $item->urgent != true)
+                                                        <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
+                                                            <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
+                                                            <td>{{ $item->cite }}</td>
+                                                            <td>{{ $item->remitente }}</td>
+                                                            <td>{{ $item->referencia }}</td>
                                                         </tr>
                                                     @endif
                                                 @empty
@@ -79,19 +80,19 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($derivaciones as $item)
+                                                @forelse ($ingresos as $item)
                                                     @php
-                                                        //$derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
                                                         // dd($derivacion);
                                                     @endphp
-                                                    @if ($item->entrada->estado_id == 4)
-                                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
-                                                            <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}</small></td>
-                                                            <td>{{ $item->entrada->cite }}</td>
-                                                            <td>{{ $item->entrada->remitente }}</td>
-                                                            <td>{{ $item->entrada->referencia }}</td>
+                                                    @if ($derivacion && $funcionario_id == $derivacion->funcionario_id_para && $item->estado_id == 4)
+                                                        <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
+                                                            <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}</small></td>
+                                                            <td>{{ $item->cite }}</td>
+                                                            <td>{{ $item->remitente }}</td>
+                                                            <td>{{ $item->referencia }}</td>
                                                         </tr>
                                                     @endif
                                                 @empty
@@ -116,33 +117,33 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @forelse ($derivaciones as $item)
+                                                @forelse ($ingresos as $item)
                                                     @php
-                                                        //$derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
+                                                        $derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
                                                         $now = \Carbon\Carbon::now();
-                                                        $created = new \Carbon\Carbon($item->entrada->deadline);
+                                                        $created = new \Carbon\Carbon($item->deadline);
                                                         $difference = ($created <= $now)
                                                                         ? 'NOTA EXTEMPORÁNEA'
                                                                         : 'URGENTE';
                                                         // dd($derivacion);
                                                     @endphp
-                                                    @if ($item->entrada->urgent)
-                                                        <tr class="entrada @if(!$item->entrada->visto) unread @endif" title="Ver" onclick="read({{ $item->entrada->id }})">
-                                                            <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> 
+                                                    @if ($derivacion && $funcionario_id == $derivacion->funcionario_id_para && $item->urgent)
+                                                        <tr class="entrada @if(!$derivacion->visto) unread @endif" title="Ver" onclick="read({{ $derivacion->id }})">
+                                                            <td>{{ $item->id }}</td>
+                                                            <td>{{ $item->tipo.'-'.$item->gestion.'-'.$item->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($derivacion->created_at)) }} <br> 
                                                                 <small>
-                                                                    {{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}
+                                                                    {{ \Carbon\Carbon::parse($derivacion->created_at)->diffForHumans() }}
                                                                 </small>
                                                             </td>
-                                                            <td>{{ date('d/m/Y', strtotime($item->entrada->deadline)) }} <br> 
+                                                            <td>{{ date('d/m/Y', strtotime($item->deadline)) }} <br> 
                                                                 <small>
                                                                     <strong class="{{($difference != 'URGENTE') ? 'danger' : 'success'}}"><h5>{{$difference}}</h5></strong>
                                                                 </small>
                                                             </td>
-                                                            <td>{{ $item->entrada->cite }}</td>
-                                                            <td>{{ $item->entrada->remitente }}</td>
-                                                            <td>{{ $item->entrada->referencia }}</td>
+                                                            <td>{{ $item->cite }}</td>
+                                                            <td>{{ $item->remitente }}</td>
+                                                            <td>{{ $item->referencia }}</td>
                                                         </tr>
                                                     @endif
                                                 @empty

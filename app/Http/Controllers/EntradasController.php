@@ -10,7 +10,6 @@ use DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Storage;
-
 // Models
 use App\Models\Entrada;
 use App\Models\Via;
@@ -241,7 +240,8 @@ class EntradasController extends Controller
 
             $destino = $this->getFuncionario($data->funcionario_id_destino);
         }
-        return view('entradas.read', compact('data', 'origen', 'destino'));
+        $results = $this->generateTreeview($data);
+        return view('entradas.read', compact('data', 'origen', 'destino','results'));
     }
 
     /**
@@ -457,15 +457,32 @@ class EntradasController extends Controller
         $funcionario_id = null;
         if ($funcionario) {
             $funcionario_id = $funcionario->funcionario_id;
-            $ingresos = Entrada::with('entity')
-                        ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
-                            $query->where('funcionario_id_para', $funcionario_id);
-                        })
-                        ->where('deleted_at', NULL)
-                        ->get();
+            if (!$funcionario_id) {
+                return redirect()->back()->with(['message' => 'Falta tu codigo de funcionario contactate con sistema para solucionarlo porfavor.', 'alert-type' => 'error']);
+            }
+            // $ingresos = Entrada::with('entity')
+            //             ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
+            //                 $query->where('funcionario_id_para', $funcionario_id);
+            //             })
+            //             ->where('deleted_at', NULL)
+            //             ->get();
+            $derivaciones = Derivation::with([
+                                        'entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent',
+                                        'entrada.estado:id,nombre',
+                                        'derivationparent:id,tipo,gestion,cite,remitente,urgent',
+                                        'parents'])
+                                        // 'parents' => function($query) use($funcionario_id){
+                                        //         $query->where('funcionario_id_de', $funcionario_id);
+                                        //     }
+                                        // ])
+                                        ->select('id','entrada_id','created_at','visto','funcionario_id_para','parent_id','parent_type')
+                                        ->where('funcionario_id_para', $funcionario_id)->get(); 
+           
         }
-        return view('bandeja.browse', compact('ingresos', 'funcionario_id'));
+        return view('bandeja.browse', compact('derivaciones', 'funcionario_id'));
     }
+
+    
 
     public function derivacion_show($id)
     {
@@ -474,12 +491,13 @@ class EntradasController extends Controller
             $derivacion->visto = Carbon::now();
             $derivacion->save();
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
-                                $q->where('deleted_at',null);
+                                $q->where('deleted_at',null)
+                                  ->whereNull('parent_id');
                             }])
                             ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
                             ->first();
-
+           
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
@@ -491,14 +509,135 @@ class EntradasController extends Controller
                 if ($unidad) {
                     $origen = $unidad->Nombre;
                 }
-
                 $destino = $this->getFuncionario($data->funcionario_id_destino);
             }
-            return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
+            
+            $results = $this->generateTreeview($data);
+            return view('bandeja.read', compact('data', 'origen', 'destino','derivacion','results'));
         } catch (\Throwable $th) {
             // dd($th);
             return redirect()->route('voyager.dashboard');
         }
+    }
+    
+    public function generateTreeview($data){
+        $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "correspondencia";
+            $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
+
+            if (mysqli_connect_errno()) {
+                printf("Connect failed: %s\n", mysqli_connect_error());
+                exit();
+            }
+
+            $sql = "SELECT * FROM derivations where entrada_id = $data->id";
+            $result = mysqli_query($conn, $sql) or die("database error:". mysqli_error($conn));
+            
+            $menus = array(
+                'items' => array(),
+                'parents' => array()
+            );
+            while ($items = mysqli_fetch_assoc($result)) {
+                    // Create current menus item id into array
+                    $menus['items'][$items['id']] = $items;
+                    // Creates list of all items with children
+                    $menus['parents'][$items['parent_id']][] = $items['id'];
+            }
+            
+            $derchild = $data->derivaciones()->wherenotNull('parent_id')->first();
+            $der = $derchild ? $derchild->parent_id : $data->id;
+            $results = $this->createTreeView($der, $menus);
+
+            return $results;
+    }
+
+    public function createTreeView($parent, $menu) {
+        $html = "";
+        if (isset($menu['parents'][$parent])) {
+            $html .= "<ol class='tree'>";
+            foreach ($menu['parents'][$parent] as $itemId) {
+                 $estilo = $menu['items'][$itemId]['rechazo'] ? 'text-danger' : '';
+                if(!isset($menu['parents'][$itemId])) {
+                   $html .= "<li class='li'>
+                            <label for='subfolder2' class='".$estilo."'><a href='#' data-toggle='modal' data-target='#info_modal'
+                            class='".$estilo." btn-showinfo'
+                            data-id='".$menu['items'][$itemId]['id']."'
+                            data-direccion_para='".$menu['items'][$itemId]['funcionario_direccion_para']."'
+                            data-unidad_para='".$menu['items'][$itemId]['funcionario_unidad_para']."'
+                            data-observacion='".$menu['items'][$itemId]['observacion']."'
+                            >".$menu['items'][$itemId]['funcionario_nombre_para']. ' ['.Carbon::parse($menu['items'][$itemId]['created_at'])->diffForHumans().']'."</a>
+                            </label><input type='checkbox' name='subfolder2'/></li>";
+                }
+                if(isset($menu['parents'][$itemId])) {
+                    $html .= "
+                    <li class='li'><label for='subfolder2' class='".$estilo."'>
+                    <a href='#' data-toggle='modal' data-target='#info_modal'
+                        class='".$estilo." btn-showinfo'
+                        data-id='".$menu['items'][$itemId]['id']."'
+                        data-direccion_para='".$menu['items'][$itemId]['funcionario_direccion_para']."'
+                        data-unidad_para='".$menu['items'][$itemId]['funcionario_unidad_para']."'
+                        data-observacion='".$menu['items'][$itemId]['observacion']."' 
+                        >".$menu['items'][$itemId]['funcionario_nombre_para']. ' ['.Carbon::parse($menu['items'][$itemId]['created_at'])->diffForHumans().']'."</a>
+                   
+                    </label> <input type='checkbox' name='subfolder2'/>";
+                    $html .= $this->createTreeView($itemId, $menu);
+                    $html .= "</li>";
+                }
+            }
+            $html .= "</ol>";
+        }
+        return $html;
+    }
+
+    public function createTreeViewTable($parent, $menu) {
+        $html = "";
+        if (isset($menu['parents'][$parent])) {
+            $html .= "<table class='tree table table-bordered-table-hover>'
+                       <thead>
+                        <tr>
+                            <th>N&deg;</th>
+                            <th>Dirección</th>
+                            <th>Unidad</th>
+                            <th>Funcionario</th>
+                            <th>Observaciones</th>
+                            <th>Fecha de derivación</th>
+                        </tr>
+                       </thead>";
+                       $cont = 1;
+            foreach ($menu['parents'][$parent] as $itemId) {
+                if(!isset($menu['parents'][$itemId])) {
+                   $html .= "<tbody>
+                                <tr class='li'>
+                                    <td>$cont</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_direccion_para']."</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_unidad_para']."</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_nombre_para']."</td>
+                                    <td>".$menu['items'][$itemId]['observacion']."</td>
+                                    <td>".$menu['items'][$itemId]['created_at']."</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>";
+                }
+                if(isset($menu['parents'][$itemId])) {
+                    $html .= "<tbody>
+                                <tr class='li'>
+                                    <td>$cont</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_direccion_para']."</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_unidad_para']."</td>
+                                    <td>".$menu['items'][$itemId]['funcionario_nombre_para']."</td>
+                                    <td>".$menu['items'][$itemId]['observacion']."</td>
+                                    <td>".$menu['items'][$itemId]['created_at']."</td>
+                                    <td></td>
+                                </tr>";
+                    $html .= $this->createTreeViewTable($itemId, $menu);
+                    $html .= "</tbody>";
+                }
+            }
+            $html .= "</table>";
+        }
+        return $html;
     }
 
     public function derivacion_archivar(Request $request){

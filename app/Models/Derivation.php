@@ -17,7 +17,7 @@ class Derivation extends Model
         'funcionario_cargo_para', 'funcionario_direccion_id_para', 'funcionario_direccion_para', 
         'funcionario_unidad_id_para', 'funcionario_unidad_para', 'responsable_actual', 'logico', 'fisico', 
         'fecha_fisico', 'observacion', 'estado', 'registro_por', 'actualizado_por', 'entrada_id', 'visto', 
-        'rechazo','type','parent_id','parent_type'
+        'rechazo','parent_id','parent_type'
     ];
 
     function entrada(){
@@ -25,10 +25,10 @@ class Derivation extends Model
     }
 
     function derivationparent(){
-        return $this->belongsTo(Derivation::class, 'parent_id');
+        return $this->belongsTo(Entrada::class, 'parent_id');
     }
 
-    public function commentable()
+    public function parent()
     {
         return $this->morphTo();
     }
