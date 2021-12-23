@@ -10,7 +10,9 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" name="id" value="{{ isset($id) ? $id : '' }}">
+                    @if (isset($der_id))
                     <input type="hidden" name="der_id" value="{{ isset($der_id) ? $der_id : '' }}">
+                    @endif
                     @if (isset($redirect))
                         <input type="hidden" name="redirect" value="{{ $redirect }}">
                     @endif
@@ -78,7 +80,7 @@
                     };
                 }
             },
-            allowClear: true
+            //allowClear: true
         });
         $('#toggleswitch').on('change', function() {
             if (this.checked) {

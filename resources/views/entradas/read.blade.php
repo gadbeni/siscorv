@@ -309,6 +309,13 @@
                                     </table>
                                 </div>
                                 <hr style="margin:0;">
+                                <div class="panel-body" >
+                                    <div class="container">
+                                        <div class="col-md-12">
+                                            {!! $results !!}
+                                        </div>
+                                    </div>
+                                </div> 
                             </div>
                         </div>
                     </div>
@@ -366,6 +373,35 @@
 
         {{-- Personas modal --}}
         @include('partials.modal-agregar-vias', ['id' => $data->id])
+
+        {{-- info modal --}}
+        <div class="modal modal-success fade" tabindex="-1" id="info_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-activity"></i> Detalle de la derivacion</h4>
+                    </div>
+                    <form id="info_form" action="#" method="POST">
+                     @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Direccion</label>
+                            <input class="form-control" type="text" name="direccion_para" readonly>
+                            <label>Unidad</label>
+                            <input class="form-control" type="text" name="unidad_para" readonly>
+                            <label>Observacion</label>
+                            <textarea class="form-control" name="observacion" id="" rows="4" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id">
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cerrar</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @stop
 
     @section('css')
@@ -373,6 +409,56 @@
         .select2-container {
             width: 100% !important;
         }
+        /* CSS to style Treeview menu  */
+        ol.tree {
+                    padding: 0 0 0 30px;
+                    /* width: 500px; */
+            }
+            .li { 
+                    position: relative; 
+                    margin-left: -15px;
+                    list-style: none;
+            }      
+            .li input {
+                    position: absolute;
+                    left: 0;
+                    margin-left: 0;
+                    opacity: 0;
+                    z-index: 2;
+                    cursor: pointer;
+                    height: 1em;
+                    width: 1em;
+                    top: 0;
+            }
+            .li input + ol {
+                    background: url({{asset("/images/treeview/toggle-small-expand.png")}}) 40px 0 no-repeat;
+                    margin: -1.600em 0px 8px -44px; 
+                    height: 1em;
+            }
+            .li input + ol > .li { 
+                    display: none; 
+                    margin-left: -14px !important; 
+                    padding-left: 1px; 
+            }
+            .li label {
+                    background: url({{asset("/images/treeview/default.png")}}) 15px 1px no-repeat;
+                    cursor: pointer;
+                    display: block;
+                    padding-left: 37px;
+            }
+            .li input:checked + ol {
+                    background: url({{asset("images/treeview/toggle-small.png")}}) 40px 5px no-repeat;
+                    margin: -1.96em 0 0 -44px; 
+                    padding: 1.563em 0 0 80px;
+                    height: auto;
+            }
+            .li input:checked + ol > .li { 
+                    display: block; 
+                    margin: 8px 0px 0px 0.125em;
+            }
+            .li input:checked + ol > .li:last-child { 
+                    margin: 8px 0 0.063em;
+            }
     </style>
     @endsection
 
@@ -395,6 +481,16 @@
                     let entrada_id = $(this).data('entrada_id');
                     $('#delete_via_form input[name="id"]').val(id);
                     $('#delete_via_form input[name="entrada_id"]').val(entrada_id);
+                });
+                $('.btn-showinfo').click(function(){
+                    let id = $(this).data('id');
+                    let unidad_para = $(this).data('unidad_para');
+                    let direccion_para = $(this).data('direccion_para');
+                    let observacion = $(this).data('observacion');
+                    $('#info_form input[name="id"]').val(id);
+                    $('#info_form input[name="direccion_para"]').val(direccion_para);
+                    $('#info_form input[name="unidad_para"]').val(unidad_para);
+                    $('#info_form textarea[name="observacion"]').val(observacion);
                 });
             });
         </script>

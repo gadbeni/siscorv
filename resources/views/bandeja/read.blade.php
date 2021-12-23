@@ -177,6 +177,7 @@
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Historial de derivaciones</h3>
                                 </div>
+                                @if ($data->derivaciones->count() > 0)
                                 <div class="panel-body" style="padding-top:0;">
                                     <table class="table table-bordered-table-hover">
                                         <thead>
@@ -193,7 +194,6 @@
                                         <tbody>
                                             @php
                                                 $cont = 1;
-                                                $cont_h = 1;
                                             @endphp
                                             @forelse ($data->derivaciones as $item)
                                                 <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
@@ -203,11 +203,6 @@
                                                     <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
                                                     <td>{{ $item->observacion }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    <td>
-                                                        @if ($cont == count($data->derivaciones))
-                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                        @endif
-                                                    </td>
                                                 </tr>
                                                 @php
                                                     $cont++;
@@ -220,35 +215,15 @@
                                         </tbody>
                                     </table>
                                 </div>
+                                @endif
                                 <hr style="margin:0;">
-                                <div class="panel-body" style="padding-top:0;">
-                                    <table class="table table-bordered-table-hover">
-                                        @php
-                                            $conta = 1;
-                                            $cont_h = 1;
-                                        @endphp
-                                        @forelse ($data->derivaciones as $item)
-                                        <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
-                                            <th>{{ $conta }}</th>
-                                            @if ($item->parent_id != $item->entrada_id)
-                                                <td>{{ $item->derivationparent }}</td> 
-                                            @endif
-                                            <td>{{ $item->funcionario_direccion_para }}</td>
-                                            <td>{{ $item->funcionario_unidad_para }}</td>
-                                            <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
-                                            <td>{{ $item->observacion }}</td>
-                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                        </tr>
-                                        @php
-                                            $conta++;
-                                            @endphp
-                                        @empty
-                                            <tr>
-                                                <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
-                                            </tr>
-                                        @endforelse
-                                    </table>
-                                </div>
+                                <div class="panel-body" >
+                                    <div class="container">
+                                        <div class="col-md-12">
+                                            {!! $results !!}
+                                        </div>
+                                    </div>
+                                </div>    
                             </div>
                         </div>
                     </div>
@@ -308,6 +283,35 @@
                 </div>
             </div>
         </form>
+
+        {{-- info modal --}}
+        <div class="modal modal-success fade" tabindex="-1" id="info_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-activity"></i> Detalle de la derivacion</h4>
+                    </div>
+                    <form id="info_form" action="#" method="POST">
+                     @csrf
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Direccion</label>
+                            <input class="form-control" type="text" name="direccion_para" readonly>
+                            <label>Unidad</label>
+                            <input class="form-control" type="text" name="unidad_para" readonly>
+                            <label>Observacion</label>
+                            <textarea class="form-control" name="observacion" id="" rows="4" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id">
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cerrar</button>
+                    </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     @stop
 
     @section('css')
@@ -315,8 +319,58 @@
             .select2-container {
                 width: 100% !important;
             }
+           /* CSS to style Treeview menu  */
+            ol.tree {
+                    padding: 0 0 0 30px;
+                    /* width: 500px; */
+            }
+            .li { 
+                    position: relative; 
+                    margin-left: -15px;
+                    list-style: none;
+            }      
+            .li input {
+                    position: absolute;
+                    left: 0;
+                    margin-left: 0;
+                    opacity: 0;
+                    z-index: 2;
+                    cursor: pointer;
+                    height: 1em;
+                    width: 1em;
+                    top: 0;
+            }
+            .li input + ol {
+                    background: url({{asset("/images/treeview/toggle-small-expand.png")}}) 40px 0 no-repeat;
+                    margin: -1.600em 0px 8px -44px; 
+                    height: 1em;
+            }
+            .li input + ol > .li { 
+                    display: none; 
+                    margin-left: -14px !important; 
+                    padding-left: 1px; 
+            }
+            .li label {
+                    background: url({{asset("/images/treeview/default.png")}}) 15px 1px no-repeat;
+                    cursor: pointer;
+                    display: block;
+                    padding-left: 37px;
+            }
+            .li input:checked + ol {
+                    background: url({{asset("images/treeview/toggle-small.png")}}) 40px 5px no-repeat;
+                    margin: -1.96em 0 0 -44px; 
+                    padding: 1.563em 0 0 80px;
+                    height: auto;
+            }
+            .li input:checked + ol > .li { 
+                    display: block; 
+                    margin: 8px 0px 0px 0.125em;
+            }
+            .li input:checked + ol > .li:last-child { 
+                    margin: 8px 0 0.063em;
+            }
         </style>
-
+        
     @section('javascript')
         <script>
             var destinatario_id = 0;
@@ -324,7 +378,18 @@
 
             $(document).ready(function () {
                 // $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
+                $('.btn-showinfo').click(function(){
+                    let id = $(this).data('id');
+                    let unidad_para = $(this).data('unidad_para');
+                    let direccion_para = $(this).data('direccion_para');
+                    let observacion = $(this).data('observacion');
+                    $('#info_form input[name="id"]').val(id);
+                    $('#info_form input[name="direccion_para"]').val(direccion_para);
+                    $('#info_form input[name="unidad_para"]').val(unidad_para);
+                    $('#info_form textarea[name="observacion"]').val(observacion);
+                });
             });
+
         </script>
     @stop
     

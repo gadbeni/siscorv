@@ -93,5 +93,9 @@ Route::get('/admin/clear-cache', function() {
 })->name('clear.cache');
 
 Route::get('services', function () {
-    return view('frontend.pages.services');
+    return view('frontend.pages.servicios');
 })->name('services');
+
+Route::get('/{vue?}', function () {
+    return view('frontend.pages.servicios');
+})->where('vue', 'services');

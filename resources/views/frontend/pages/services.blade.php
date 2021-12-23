@@ -31,7 +31,7 @@
         </div>
 </section> -->
     <!-- End Hero -->
-<main id="main">
+<main id="tramite">
     <!-- ======= Team Section ======= -->
     <section id="app" class="portfolio">
         <div class="container" data-aos="fade-up">
@@ -191,6 +191,8 @@
         </template>
         <hr>
     </section>
+
+    <OrgChart />
 </main><!-- End #main -->
 @endsection()
 

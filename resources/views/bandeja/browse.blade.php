@@ -41,11 +41,12 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
+                                                
                                                 @forelse ($derivaciones as $item)
                                                     @php
-                                                        //$derivacion = count($item->entrada->derivaciones) ? $item->entrada->derivaciones[count($item->entrada->derivaciones)-1] : 0;
-                                                        $derivacion_hijo = count($item->parents) ? $item->parents[$item->parents] : 0;
-                                                        //dd($derivacion_hijo);
+                                                        
+                                                        $derivacion = count($item->entrada->derivaciones) ? $item->entrada->derivaciones[count($item->entrada->derivaciones)-1] : 0;
+                                                        $childrens = count($item->parents) ? $item->parents->whereIn('funcionario_id_de',[$funcionario_id]) : 0;
                                                     @endphp
                                                     @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true)
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
