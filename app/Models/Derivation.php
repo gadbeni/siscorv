@@ -12,6 +12,13 @@ class Derivation extends Model
 
     protected $dates = ['deleted_at'];
     
+    protected $appends = ['img'];
+  
+    public function getImgAttribute()
+    {
+        return config('voyager.user.default_avatar');
+    }
+    
     protected $fillable = [
         'funcionario_id_de', 'funcionario_id_para', 'funcionario_nombre_para', 'funcionario_cargo_id_para', 
         'funcionario_cargo_para', 'funcionario_direccion_id_para', 'funcionario_direccion_para', 

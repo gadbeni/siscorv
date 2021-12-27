@@ -4,8 +4,8 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const Tramites = () => import('../views/frontend/tramites.vue')
-const Treeview = () => import('../views/frontend/tree.vue')
-
+const Personerias = () => import('../views/frontend/personeria.vue')
+const Requitems = () => import('../views/frontend/requirement.vue')
 export default new Router({
 	mode: 'history',
 	routes: [
@@ -14,8 +14,12 @@ export default new Router({
 			component: Tramites
 		},
 		{
-			path: '/tree',
-			component: Treeview
+			path: '/personerias',
+			component: Personerias
+		},
+		{ 
+			path: '/requisitos',
+			component: Requitems
 		}
 	]
 })

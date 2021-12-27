@@ -105,9 +105,10 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
-                                        <td colspan="2"></td>
-                                        <td>SIN DATOS</td>
+                                    <tr class="text-center">
+                                        <td></td>
+                                        <td colspan="2">SIN DATOS</td>
+                                        <td></td>
                                     </tr>
                                 @endforelse
                             </tbody>

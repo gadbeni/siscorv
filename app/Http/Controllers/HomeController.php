@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 // Models
 use App\Models\Entrada;
 use App\Models\RequestsClient;
+use App\Models\Derivation;
 use Carbon\Carbon;
 
 class HomeController extends Controller
@@ -31,11 +32,20 @@ class HomeController extends Controller
     }
 
     public function searchtramite(Request $request){
-        $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])
+        $data = Entrada::with(['entity', 'estado', 'derivaciones'])
                     ->whereRaw('(cite = "'.$request->search.'" or CONCAT(tipo,"-",gestion,"-",id) = "'.strtoupper($request->search).'" )')
                     ->where('deleted_at', NULL)->first();
-        // dd($data);
-        return response()->json($data);
+        $results = Derivation::select([
+                                'id','funcionario_nombre_para as name',
+                                'funcionario_direccion_para as title','parent_id as pid'
+                                ])
+                            ->where('entrada_id',$data->id)
+                            ->whereNotnull('parent_id')
+                            ->get();
+        return response()->json([
+                                "entrada" => $data,
+                                "derivaciones" =>$results
+                            ]);
     }
 
     public function documents_expired(){

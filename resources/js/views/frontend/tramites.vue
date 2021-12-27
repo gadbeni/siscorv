@@ -1,12 +1,10 @@
 <template>
 <div>
     <div class="container col-md-10 col-md-offset-1">
-        <div id="div-findpersoneria">
-            <div class="input-group mt-5 input-group-lg">
-                <input v-model="search" type="text" class="form-control" :placeholder="textplaceholder" aria-label="" aria-describedby="basic-addon1">
-                <div class="input-group-prepend">
-                    <button @click="getDatos" class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
-                </div>
+        <div class="input-group mt-5 input-group-lg">
+            <input v-model="search" type="text" class="form-control" :placeholder="textplaceholder" aria-label="" aria-describedby="basic-addon1">
+            <div class="input-group-prepend">
+                <button @click="getDatos" class="btn btn-success" style="height: 50px"><span class="sm-hide">Buscar</span> <span class="bi bi-search label-search"></span></button>
             </div>
         </div>
         <template v-if="tramite">
@@ -33,13 +31,13 @@
                     </div>
                 </div>
                 <hr>
-                <div class="col-md-12 mt-1">
+                <div v-if="tramite" class="col-md-12 mt-1">
                     <b>Número de Cite: </b> &nbsp; {{ tramite.cite }} <br>
                     <b>Número de hojas: </b> &nbsp; {{ tramite.nro_hojas }} <br>
                     <b>Origen: </b> &nbsp; {{ tramite ? tramite.entity.nombre : '' }}<br>
                     <b>Remitente: </b> &nbsp; {{ tramite.remitente }} <br>
                     <b>Referencia: </b> &nbsp; {{ tramite.referencia }} <br>
-                    <b>Estado: </b> &nbsp; <span :style="{ backgroundColor : tramite.estado.color }">{{ tramite.estado.nombre }}</span>
+                    <b>Estado: </b> &nbsp; <span :style="{ backgroundColor : tramite.estado.color }">{{ tramite ? tramite.entity.nombre : '' }}</span>
                 </div>
             </div>
             <div v-if="tramite.derivaciones.length > 0">
@@ -71,10 +69,14 @@
             </div>
         </template>
     </div>
+    <div v-show="nodes.length > 0" id="app">
+        <div id="tree" ref="tree"></div>
+    </div>
 </div>
 </template>
 <script>
 import axios from 'axios';
+import OrgChart from '@balkangraph/orgchart.js'
 export default {
     data() {
         return {
@@ -82,20 +84,64 @@ export default {
             textplaceholder: 'Número de Cite o HR',
             msg: '',
             tramite: null,
+            nodes : []
         }
     },
 
     methods: {
         async getDatos() {
-            const response = await axios.get('/buscartramite?search='+this.search);
-             if (!Object.keys(response.data).length) {
-                this.tramite = null;
-                 this.msg = 'No se encontraron resultados';
-            }else{
-                this.tramite = response.data;
-                this.msg = '';
+            try{
+                const response = await axios.get('/buscartramite?search='+this.search);
+                console.log(response);
+                if (!Object.keys(response.data).length) {
+                    this.tramite = null;
+                    this.nodes = [];
+                    this.msg = 'No se encontraron resultados';
+                }else{
+                    this.tramite = response.data.entrada;
+                    this.nodes = response.data.derivaciones;
+                    this.msg = '';
+                    this.oc(this.$refs.tree, this.nodes);
+                }
+              
+            } catch (error) {
+                console.error(error);
             }
-        }
+        },
+        oc: function(domEl, x) {
+            this.chart = new OrgChart(domEl, {
+                nodes: x,
+                nodeBinding: {
+                    field_0: "name",
+                    field_1: "title",
+                    img_0: "img"
+                }
+            });
+        },
     }
 }
 </script>
+<style scoped>
+#app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    font-family: Helvetica;
+}
+
+#tree {
+    width: 100%;
+    height: 100%;
+}
+</style>
