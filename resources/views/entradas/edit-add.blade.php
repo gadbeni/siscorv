@@ -31,7 +31,7 @@
                         <div class="panel panel-bordered">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-2">
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -51,7 +51,7 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div id="div_category" class="form-group col-md-5">
+                                    <div id="div_category" class="form-group col-md-4">
                                         <label class="control-label">Tipo Trámite</label>
                                         <select name="category_id" class="form-control select2" id="select-category" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -62,9 +62,19 @@
                                             @endforeach                                        
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-2">
+                                    <div id="divcite" class="form-group col-md-2">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" maxlength="50" class="form-control" value="{{old('cite') ? : $entrada->cite}}" required>
+                                        <input type="text" name="cite" maxlength="50" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="control-label">Fecha Registro</label>
+                                        <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Si seleccionona una fecha anterior estara registrando un tramite con fecha atrasada."></span>
+                                        @php 
+                                        $dt = new DateTime(); // Date object using current date and time
+                                        $dt= $dt->format('Y-m-d\TH:i:s'); 
+                                        $fechaeregistro = $entrada->fecha_registro ? $entrada->fecha_registro->format('Y-m-d') : $dt;
+                                        @endphp
+                                        <input type="datetime-local" name="fecha_registro" class="form-control"  value="{{old('fecha_registro') ? : $fechaeregistro}}">
                                     </div>
                                     <div class="form-group col-md-2">
                                         <label class="control-label">Urgente</label>
@@ -117,7 +127,7 @@
                                     </div>
                                     <div class="form-group col-md-6" id="div-destinatario" >
                                         <label class="control-label">Destinatario</label>
-                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
+                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" required></select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
@@ -148,6 +158,7 @@
     @section('javascript')
         <script>
             $(document).ready(function(){
+                $('#divcite').fadeOut();
                 ruta = "{{ route('certificados.getFuncionario') }}";
                 $("#select-funcionario_id_destino").select2({
                     ajax: { 
@@ -190,17 +201,17 @@
                     }
                 });
 
-                $('#select-category').change(function(){
-                    let type = $('#select-category option:selected').text();
-                    let tipo = $('#select-tipo option:selected').val();
-                    let tptramite ="PERS";
-                    if (type.includes(tptramite) || tipo == 'I') {
-                        $('#div-destinatario').fadeIn();
-                    }else{
-                        $('#div-destinatario').fadeOut();
-                    }
+                // $('#select-category').change(function(){
+                //     let type = $('#select-category option:selected').text();
+                //     let tipo = $('#select-tipo option:selected').val();
+                //     let tptramite ="PERS";
+                //     if (type.includes(tptramite) || tipo == 'I') {
+                //         $('#div-destinatario').fadeIn();
+                //     }else{
+                //         $('#div-destinatario').fadeOut();
+                //     }
                   
-                });
+                // });
             });
         </script>
     @stop

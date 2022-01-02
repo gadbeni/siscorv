@@ -63,9 +63,8 @@
             $(document).ready(function() {
                 let columns = [
                     { data: 'id', title: 'ID' },
-                    { data: 'hr', title: 'HR' },
-                    { data: 'fecha_ingreso', title: 'Fecha de ingreso' },
-                    { data: 'cite', title: 'Nro. de cite' },                   
+                    { data: 'hr', title: 'HR|NCI' },
+                    { data: 'fecha_ingreso', title: 'F. Ingreso' },               
                     // { data: 'cite', title: 'Nro. cite' },
                     // { data: 'nro_hojas', title: 'Nro. de hojas' },
                     { data: 'origen', title: 'origen' },
