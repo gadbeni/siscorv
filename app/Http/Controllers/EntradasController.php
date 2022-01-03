@@ -262,8 +262,8 @@ class EntradasController extends Controller
     public function show($id)
     {
         $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
-                    $q->where('deleted_at', NULL)
-                      ->whereNull('parent_id');
+                    $q->where('deleted_at', NULL);
+                      //->whereNull('parent_id');
                 }, 'archivos' => function($q){
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
