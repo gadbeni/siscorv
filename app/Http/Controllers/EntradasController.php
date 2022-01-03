@@ -185,7 +185,7 @@ class EntradasController extends Controller
                 $direccion_id_remitente = $this->getIdDireccionFuncionario($request->funcionario_id_remitente)->DA;
             }
            
-            $entrada = Entrada::create([
+            $data = Entrada::create([
                 'gestion' => date('Y'),
                 'tipo' => $request->tipo,
                 'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
@@ -228,7 +228,23 @@ class EntradasController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            $origen = '';
+            $destino = NULL;
+            if($data->tipo == 'I'){
+                $direccion = $this->getIdDireccionInfo($data->direccion_id_remitente);
+                $unidad = $this->getIdUnidadInfo($data->unidad_id_remitente);
+                if($direccion){
+                    $origen = $direccion->NOMBRE;
+                }
+                if ($unidad) {
+                    $origen = $unidad->Nombre;
+                }
+
+                $destino = $this->getFuncionario($data->funcionario_id_destino);
+            }
+            $results = $this->generateTreeview($data);
+            return view('entradas.read', compact('data', 'origen', 'destino','results'));
+            //return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
              dd($th);
             DB::rollback();
@@ -350,7 +366,27 @@ class EntradasController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
+            $origen = '';
+            $destino = NULL;
+            if($entrada->tipo == 'I'){
+                $direccion = $this->getIdDireccionInfo($entrada->direccion_id_remitente);
+                $unidad = $this->getIdUnidadInfo($entrada->unidad_id_remitente);
+                if($direccion){
+                    $origen = $direccion->NOMBRE;
+                }
+                if ($unidad) {
+                    $origen = $unidad->Nombre;
+                }
+
+                $destino = $this->getFuncionario($entrada->funcionario_id_destino);
+            }
+            $results = $this->generateTreeview($entrada);
+            return view('entradas.read', [
+                'data' => $entrada, 
+                'origen' => $origen, 
+                'destino' => $destino,
+                'results' => $results]);
+            //return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
             DB::rollback();

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Carbon\Carbon;
 
 class Entrada extends Model
 {
@@ -16,7 +17,8 @@ class Entrada extends Model
 
     protected $casts = [
         'details' => 'array',
-        'deadline' => 'date'
+        'deadline' => 'date',
+        'fecha_registro' => 'datetime'
     ];
 
     protected $fillable = [
@@ -26,6 +28,11 @@ class Entrada extends Model
         'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id', 'tipo_id','details',
         'urgent','category_id'
     ];
+    
+    // public function getFechaRegistrotAttribute($value)
+    // {
+    //     return Carbon::parse($value)->format('Y-m-d\TH:i');
+    // }
 
     function entity(){
         return $this->belongsTo(Entity::class);

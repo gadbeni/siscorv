@@ -69,8 +69,13 @@ class Controller extends BaseController
     // funciones para las derivaciones dobles
     public function generateTreeview($data){
         $servername = "localhost";
-        $username = "augusto";
-        $password = "password";
+        //configuracion local
+        // $username = "augusto";
+        // $password = "password";
+        // $dbname = "siscor_v2";
+        //configuracion en produccion
+        $username = "gadbeniadm";
+        $password = "gadbeniadm2020";
         $dbname = "siscor_v2";
         $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 

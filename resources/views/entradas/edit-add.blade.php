@@ -72,9 +72,9 @@
                                         @php 
                                         $dt = new DateTime(); // Date object using current date and time
                                         $dt= $dt->format('Y-m-d\TH:i:s'); 
-                                        $fechaeregistro = $entrada->fecha_registro ? $entrada->fecha_registro->format('Y-m-d') : $dt;
+                                        $fechaeregistro = $entrada->fecha_registro ? $entrada->fecha_registro : $dt;
                                         @endphp
-                                        <input type="datetime-local" name="fecha_registro" class="form-control"  value="{{old('fecha_registro') ? : $fechaeregistro}}">
+                                        <input type="datetime-local" name="fecha_registro" class="form-control"  value="{{old('fecha_registro') ? : date('Y-m-d\TH:i', strtotime($fechaeregistro))}}">
                                     </div>
                                     <div class="form-group col-md-2">
                                         <label class="control-label">Urgente</label>
@@ -127,7 +127,7 @@
                                     </div>
                                     <div class="form-group col-md-6" id="div-destinatario" >
                                         <label class="control-label">Destinatario</label>
-                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" required></select>
+                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
