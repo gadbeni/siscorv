@@ -201,7 +201,7 @@ class EntradasController extends Controller
                 'urgent' => ($request->urgent) ? true : false,
                 'deadline' => $request->deadline,
                 // 'estado' => 'activo',
-                'fecha_registro' => $finddate,
+                'fecha_registro' => $request->fecha_registro,
                 'detalles' => $request->detalles,
                 'funcionario_id_remitente' => $request->funcionario_id_remitente,
                 'unidad_id_remitente' => $unidad_id_remitente,
