@@ -68,9 +68,6 @@ class EntradasController extends Controller
         return
             Datatables::of($data)
             ->addIndexColumn()
-            ->addColumn('hr', function($row){
-                return $row->tipo.'-'.$row->cite;
-            })
             ->addColumn('fecha_ingreso', function($row){
                 $f_ingreso = $row->fecha_ingreso ?? $row->created_at;
                 return date('d/m/Y H:i:s', strtotime($f_ingreso)).'<br><small>'.\Carbon\Carbon::parse($f_ingreso)->diffForHumans().'</small>';
@@ -143,32 +140,41 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
-        $fecha = Carbon::today();
-        $anio = Carbon::today()->year;
-        $finddate = Carbon::parse($request->fecha_registro);
-        if ($finddate->year < $anio) {
-            return redirect()->back()->with(['message' => 'No puede registrar tramites de una gestion pasada.', 'alert-type' => 'error']);
-        }
-        if ($finddate < $fecha) {
-            $oldtramite = Entrada::where('gestion',$anio)
-                                 ->where('tipo',$request->tipo)
-                                 ->whereDate('fecha_registro',$finddate)
-                                 ->orWhereDate('created_at',$finddate)
-                                 ->select('cite')
-                                 ->first();
-            $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] . '-' .'A'.'/'.$anio : null;
-            if (!$currentnci) {
-                return redirect()->back()->with(['message' => 'No existe ningun tramite registrado en la fecha seleccionada.', 'alert-type' => 'error']);
-            }
-        } else {
-            $oldtramite = Entrada::where('gestion',$anio)
-                                    ->where('tipo',$request->tipo)
-                                    ->select('cite')
-                                    ->orderBy('id','desc')
-                                    ->first();
-            $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] + 1 .'/'.$anio : 1 .'/'.$anio;
-        }
+        // $fecha = Carbon::today();
+        // $anio = Carbon::today()->year;
+        // $finddate = Carbon::parse($request->fecha_registro);
+        // if ($finddate->year < $anio) {
+        //     return redirect()->back()->with(['message' => 'No puede registrar tramites de una gestion pasada.', 'alert-type' => 'error']);
+        // }
+        // if ($finddate < $fecha) {
+        //     $oldtramite = Entrada::where('gestion',$anio)
+        //                          ->where('tipo',$request->tipo)
+        //                          ->whereDate('fecha_registro',$finddate)
+        //                          ->orWhereDate('created_at',$finddate)
+        //                          ->select('cite')
+        //                          ->first();
+        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] . '-' .'A'.'/'.$anio : null;
+        //     if (!$currentnci) {
+        //         return redirect()->back()->with(['message' => 'No existe ningun tramite registrado en la fecha seleccionada.', 'alert-type' => 'error']);
+        //     }
+        // } else {
+        //     $oldtramite = Entrada::where('gestion',$anio)
+        //                             ->where('tipo',$request->tipo)
+        //                             ->select('cite')
+        //                             ->orderBy('id','desc')
+        //                             ->first();
+        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] + 1 .'/'.$anio : 1 .'/'.$anio;
+        // }
         
+        $oldtramite = Entrada::where('tipo',$request->tipo)
+                                ->where('cite',$request->cite)
+                                ->where('deleted_at',NULL)
+                                ->first();
+        
+        if ($oldtramite) {
+            return redirect()->route('entrada.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
+        }
+
         DB::beginTransaction();
         try {
 

@@ -31,7 +31,7 @@
                         <div class="panel panel-bordered">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="form-group col-md-2">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label">Tipo</label>
                                         <select name="tipo" class="form-control select2" id="select-tipo" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -51,7 +51,7 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div id="div_category" class="form-group col-md-4">
+                                    <div id="div_category" class="form-group col-md-6">
                                         <label class="control-label">Tipo Trámite</label>
                                         <select name="category_id" class="form-control select2" id="select-category" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -62,11 +62,11 @@
                                             @endforeach                                        
                                         </select>
                                     </div>
-                                    <div id="divcite" class="form-group col-md-2">
+                                    <div id="divcite" class="form-group col-md-6">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" name="cite" maxlength="50" class="form-control" value="">
                                     </div>
-                                    <div class="form-group col-md-4">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
                                         <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Si seleccionona una fecha anterior estara registrando un tramite con fecha atrasada."></span>
                                         @php 
@@ -76,8 +76,8 @@
                                         @endphp
                                         <input type="datetime-local" name="fecha_registro" class="form-control"  value="{{old('fecha_registro') ? : date('Y-m-d\TH:i', strtotime($fechaeregistro))}}">
                                     </div>
-                                    <div class="form-group col-md-2">
-                                        <label class="control-label">Urgente</label>
+                                    <div class="form-group col-md-6">
+                                        <label class="control-label">Urgente</label><br>
                                         <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Este campo es obligatorio."></span>
                                         <input 
                                             type="checkbox" 
@@ -105,11 +105,11 @@
                                             class="form-control"
                                             value="{{old('remitente') ? :$entrada->remitente}}">
                                     </div>
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
                                         <input type="text" name="nro_hojas" class="form-control" value="{{old('nro_hojas') ? : $entrada->nro_hojas}}">
                                     </div>
-                                    <div class="form-group col-md-3">
+                                    <div class="form-group col-md-6">
                                         <label class="control-label">Plazo</label>
                                         @php 
                                         $fechaentrada = $entrada->deadline ? $entrada->deadline->format('Y-m-d') : '';
@@ -158,7 +158,7 @@
     @section('javascript')
         <script>
             $(document).ready(function(){
-                $('#divcite').fadeOut();
+               // $('#divcite').fadeOut();
                 ruta = "{{ route('certificados.getFuncionario') }}";
                 $("#select-funcionario_id_destino").select2({
                     ajax: { 
