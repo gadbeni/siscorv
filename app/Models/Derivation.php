@@ -16,7 +16,7 @@ class Derivation extends Model
   
     public function getImgAttribute()
     {
-        return config('voyager.user.default_avatar');
+        return 'storage/users/default.png';
     }
     
     protected $fillable = [

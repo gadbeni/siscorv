@@ -214,7 +214,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n#app[data-v-db274c9e] {\n    font-family: 'Avenir', Helvetica, Arial, sans-serif;\n    -webkit-font-smoothing: antialiased;\n    -moz-osx-font-smoothing: grayscale;\n    text-align: center;\n    color: #2c3e50;\n    margin-top: 60px;\n}\nhtml[data-v-db274c9e], body[data-v-db274c9e] {\n    width: 100%;\n    height: 100%;\n    padding: 0;\n    margin: 0;\n    overflow: hidden;\n    font-family: Helvetica;\n}\n#tree[data-v-db274c9e] {\n    width: 100%;\n    height: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#app[data-v-db274c9e] {\r\n    font-family: 'Avenir', Helvetica, Arial, sans-serif;\r\n    -webkit-font-smoothing: antialiased;\r\n    -moz-osx-font-smoothing: grayscale;\r\n    text-align: center;\r\n    color: #2c3e50;\r\n    margin-top: 60px;\n}\nhtml[data-v-db274c9e], body[data-v-db274c9e] {\r\n    width: 100%;\r\n    height: 100%;\r\n    padding: 0;\r\n    margin: 0;\r\n    overflow: hidden;\r\n    font-family: Helvetica;\n}\n#tree[data-v-db274c9e] {\r\n    width: 100%;\r\n    height: 100%;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

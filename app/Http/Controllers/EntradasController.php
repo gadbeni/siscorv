@@ -195,7 +195,7 @@ class EntradasController extends Controller
                 'gestion' => date('Y'),
                 'tipo' => $request->tipo,
                 'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
-                'cite' => $currentnci ?? 0,
+                'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
                 'urgent' => ($request->urgent) ? true : false,
@@ -557,17 +557,23 @@ class EntradasController extends Controller
 
     public function derivacion_show($id)
     {
+        // return $id;
         try {
-            $derivacion =  Derivation::findOrFail($id);
-            $derivacion->visto = Carbon::now();
-            $derivacion->save();
+            
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
                                 $q->where('deleted_at',null)
-                                  ->whereNull('parent_id');
+                                ->whereNull('parent_id');
                             }])
-                            ->where('id', $derivacion->entrada_id)
+                            ->where('id', $id)
                             ->where('deleted_at', NULL)
                             ->first();
+            
+            $derivacion =  Derivation::where('entrada_id',$data->id)->first();
+            
+            $derivacion->visto = Carbon::now();
+            
+            $derivacion->save();                
+            //  return $data;
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
