@@ -560,7 +560,6 @@ class EntradasController extends Controller
             $derivacion =  Derivation::where('id',$id)->first();            
             $derivacion->visto = Carbon::now();
             $derivacion->save();              
-
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
                                 $q->where('deleted_at',null)
                                 ->whereNull('parent_id');

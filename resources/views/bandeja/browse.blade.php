@@ -127,7 +127,7 @@
                                                         // dd($derivacion);
                                                     @endphp
                                                     @if ($item->entrada->urgent)
-                                                        <tr class="entrada @if(!$item->entrada->visto) unread @endif" title="Ver" onclick="read({{ $item->entrada->id }})">
+                                                        <tr class="entrada @if(!$item->entrada->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
                                                             <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> 
