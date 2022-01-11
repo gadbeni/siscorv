@@ -10,7 +10,7 @@
         <template v-if="tramite">
             <div class="section-title" style="margin-top: 50px">
                 <h2>Seguimiento</h2>
-                <h3><span>Seguimiento del Trámite</span></h3>
+                <h3><span>Seguimientos del Trámite</span></h3>
                 <p>La siguiente información te muestra el historial de tu trámite.</p>
             </div>
             <div class="row m-5">
@@ -69,7 +69,7 @@
             </div>
         </template>
     </div>
-    <div v-show="nodes.length > 0" id="app">
+    <div id="app">
         <div id="tree" ref="tree"></div>
     </div>
 </div>
@@ -89,25 +89,40 @@ export default {
     },
 
     methods: {
-        async getDatos() {
-            try{
-                const response = await axios.get('/buscartramite?search='+this.search);
-                console.log(response);
-                if (!Object.keys(response.data).length) {
-                    this.tramite = null;
-                    this.nodes = [];
-                    this.msg = 'No se encontraron resultados';
-                }else{
-                    this.tramite = response.data.entrada;
-                    this.nodes = response.data.derivaciones;
-                    this.msg = '';
-                    this.oc(this.$refs.tree, this.nodes);
-                }
-              
+        getDatos(){
+            try {
+                axios.get('/buscartramite?search='+this.search)
+                     .then((res) => {
+                            this.tramite = response.data.entrada;
+                            this.nodes = response.data.derivaciones;
+                            this.msg = '';
+                            this.oc(this.$refs.tree, this.nodes);
+                     }).error((err) => {
+                         log.error(err);
+                     });
             } catch (error) {
-                console.error(error);
+                
             }
         },
+        // async getDatos() {
+        //     try{
+        //         const response = await axios.get('/buscartramite?search='+this.search);
+        //         console.log(response);
+        //         if (!Object.keys(response.data).length) {
+        //             this.tramite = null;
+        //             this.nodes = [];
+        //             this.msg = 'No se encontraron resultados';
+        //         }else{
+        //             this.tramite = response.data.entrada;
+        //             this.nodes = response.data.derivaciones;
+        //             this.msg = '';
+        //             this.oc(this.$refs.tree, this.nodes);
+        //         }
+              
+        //     } catch (error) {
+        //         console.error(error);
+        //     }
+        // },
         oc: function(domEl, x) {
             this.chart = new OrgChart(domEl, {
                 nodes: x,

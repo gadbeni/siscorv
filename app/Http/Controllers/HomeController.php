@@ -32,9 +32,11 @@ class HomeController extends Controller
     }
 
     public function searchtramite(Request $request){
+        // dd(request('search'));
         $data = Entrada::with(['entity', 'estado', 'derivaciones'])
-                    ->whereRaw('(cite = "'.$request->search.'" or CONCAT(tipo,"-",gestion,"-",id) = "'.strtoupper($request->search).'" )')
-                    ->where('deleted_at', NULL)->first();
+                    ->where('cite', request('search'))
+                    ->where('deleted_at', NULL)
+                    ->first();
         $results = Derivation::select([
                                 'id','funcionario_nombre_para as name',
                                 'funcionario_direccion_para as title','parent_id as pid'
@@ -42,6 +44,7 @@ class HomeController extends Controller
                             ->where('entrada_id',$data->id)
                             ->whereNotnull('parent_id')
                             ->get();
+       
         return response()->json([
                                 "entrada" => $data,
                                 "derivaciones" =>$results

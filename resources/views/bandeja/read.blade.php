@@ -216,14 +216,7 @@
                                     </table>
                                 </div>
                                 @endif
-                                <hr style="margin:0;">
-                                <div class="panel-body" >
-                                    <div class="container">
-                                        <div class="col-md-12">
-                                            {!! $results !!}
-                                        </div>
-                                    </div>
-                                </div>    
+                                 
                             </div>
                         </div>
                     </div>

@@ -226,7 +226,7 @@ class EntradasController extends Controller
                     Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
                     Archivo::create([
                         'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $entrada->id,
+                        'entrada_id' => $data->id,
                         'ruta' => $dir.'/'.$newFileName,
                         'user_id' => Auth::user()->id
                     ]);
@@ -248,9 +248,8 @@ class EntradasController extends Controller
 
                 $destino = $this->getFuncionario($data->funcionario_id_destino);
             }
-            $results = $this->generateTreeview($data);
-            return view('entradas.read', compact('data', 'origen', 'destino','results'));
-            //return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            
+            return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
              dd($th);
             DB::rollback();
@@ -291,8 +290,8 @@ class EntradasController extends Controller
 
             $destino = $this->getFuncionario($data->funcionario_id_destino);
         }
-        $results = $this->generateTreeview($data);
-        return view('entradas.read', compact('data', 'origen', 'destino','results'));
+        
+        return view('entradas.read', compact('data', 'origen', 'destino'));
     }
 
     /**
@@ -557,23 +556,19 @@ class EntradasController extends Controller
 
     public function derivacion_show($id)
     {
-        // return $id;
         try {
-            
+            $derivacion =  Derivation::where('id',$id)->first();            
+            $derivacion->visto = Carbon::now();
+            $derivacion->save();              
+
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
                                 $q->where('deleted_at',null)
                                 ->whereNull('parent_id');
                             }])
-                            ->where('id', $id)
+                            ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
                             ->first();
-            
-            $derivacion =  Derivation::where('entrada_id',$data->id)->first();
-            
-            $derivacion->visto = Carbon::now();
-            
-            $derivacion->save();                
-            //  return $data;
+        
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
@@ -588,10 +583,9 @@ class EntradasController extends Controller
                 $destino = $this->getFuncionario($data->funcionario_id_destino);
             }
             
-            $results = $this->generateTreeview($data);
-            return view('bandeja.read', compact('data', 'origen', 'destino','derivacion','results'));
+            return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
         } catch (\Throwable $th) {
-            // dd($th);
+             dd($th);
             return redirect()->route('voyager.dashboard');
         }
     }

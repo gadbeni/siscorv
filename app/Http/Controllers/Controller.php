@@ -70,9 +70,9 @@ class Controller extends BaseController
     public function generateTreeview($data){
         $servername = "localhost";
         //configuracion local
-        // $username = "root";
-        // $password = "";
-        // $dbname = "siscor";
+        // $username = "augusto";
+        // $password = "password";
+        // $dbname = "siscor_v2";
         //configuracion en produccion
         $username = "gadbeniadm";
         $password = "gadbeniadm2020";
