@@ -64,7 +64,7 @@
                                     </div>
                                     <div id="divcite" class="form-group col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" maxlength="50" class="form-control" value="">
+                                        <input type="text" name="cite" maxlength="50" class="form-control" value="{{ old('fecha_registro') ? : $entrada->cite}}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
@@ -92,7 +92,7 @@
                                         <label class="control-label">Remitente</label>
                                         <div id="div-remitente" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                             <select name="funcionario_id_remitente" class="form-control select2">
-                                                <option value="{{ $funcionario ? $funcionario->id_funcionario : 844 }}">{{ $funcionario ? $funcionario->nombre : 'Admin' }}</option>
+                                                <option value="{{ $funcionario ? $funcionario->funcionario_id : 844 }}">{{ $funcionario ? $funcionario->nombre : 'Admin' }}</option>
                                             </select>
                                         </div>
                                         <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo : null}}">

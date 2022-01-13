@@ -17,7 +17,7 @@ class Controller extends BaseController
     public function getIdDireccionFuncionario($id_funcionario) {
         try {
             return DB::connection('mysqlgobe')->table('contribuyente')
-                        ->where('id', $id_funcionario)
+                        ->where('ID', $id_funcionario)
                         ->select('DA', 'idDependencia')
                         ->first();
         } catch (\Throwable $th) {

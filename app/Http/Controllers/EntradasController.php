@@ -385,15 +385,9 @@ class EntradasController extends Controller
 
                 $destino = $this->getFuncionario($entrada->funcionario_id_destino);
             }
-            $results = $this->generateTreeview($entrada);
-            return view('entradas.read', [
-                'data' => $entrada, 
-                'origen' => $origen, 
-                'destino' => $destino,
-                'results' => $results]);
-            //return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
+             dd($th);
             DB::rollback();
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
