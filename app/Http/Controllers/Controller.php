@@ -70,13 +70,13 @@ class Controller extends BaseController
     public function generateTreeview($data){
         $servername = "localhost";
         //configuracion local
-        // $username = "augusto";
-        // $password = "password";
-        // $dbname = "siscor_v2";
-        //configuracion en produccion
-        $username = "gadbeniadm";
-        $password = "gadbeniadm2020";
+        $username = "augusto";
+        $password = "password";
         $dbname = "siscor_v2";
+        //configuracion en produccion
+        // $username = "gadbeniadm";
+        // $password = "gadbeniadm2020";
+        // $dbname = "siscor_v2";
         $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
         if (mysqli_connect_errno()) {

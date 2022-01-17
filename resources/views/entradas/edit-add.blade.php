@@ -64,7 +64,7 @@
                                     </div>
                                     <div id="divcite" class="form-group col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" maxlength="50" class="form-control" value="{{ old('fecha_registro') ? : $entrada->cite}}">
+                                        <input type="text" name="cite" maxlength="50" class="form-control" placeholder="DF-1/2022" required>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>

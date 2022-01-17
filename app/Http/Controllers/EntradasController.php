@@ -172,7 +172,7 @@ class EntradasController extends Controller
                                 ->first();
         
         if ($oldtramite) {
-            return redirect()->route('entrada.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
+            return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
         }
 
         DB::beginTransaction();
