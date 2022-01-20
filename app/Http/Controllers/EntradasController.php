@@ -139,47 +139,20 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {  
-        // $fecha = Carbon::today();
-        // $anio = Carbon::today()->year;
-        // $finddate = Carbon::parse($request->fecha_registro);
-        // if ($finddate->year < $anio) {
-        //     return redirect()->back()->with(['message' => 'No puede registrar tramites de una gestion pasada.', 'alert-type' => 'error']);
-        // }
-        // if ($finddate < $fecha) {
-        //     $oldtramite = Entrada::where('gestion',$anio)
-        //                          ->where('tipo',$request->tipo)
-        //                          ->whereDate('fecha_registro',$finddate)
-        //                          ->orWhereDate('created_at',$finddate)
-        //                          ->select('cite')
-        //                          ->first();
-        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] . '-' .'A'.'/'.$anio : null;
-        //     if (!$currentnci) {
-        //         return redirect()->back()->with(['message' => 'No existe ningun tramite registrado en la fecha seleccionada.', 'alert-type' => 'error']);
-        //     }
-        // } else {
-        //     $oldtramite = Entrada::where('gestion',$anio)
-        //                             ->where('tipo',$request->tipo)
-        //                             ->select('cite')
-        //                             ->orderBy('id','desc')
-        //                             ->first();
-        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] + 1 .'/'.$anio : 1 .'/'.$anio;
-        // }
-        
+    {   
         $oldtramite = Entrada::where('tipo',$request->tipo)
-                                ->where('cite',$request->cite)
-                                ->where('deleted_at',NULL)
-                                ->first();
+                            ->where('cite',$request->cite)
+                            ->where('deleted_at',NULL)
+                            ->first();
         
         if ($oldtramite) {
-            return redirect()->route('entrada.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
+            return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
         }
 
         DB::beginTransaction();
         try {
 
             $persona = Persona::where('user_id', Auth::user()->id)->first();
-
             $unidad_id_remitente = NULL;
             $direccion_id_remitente = null;
             $funcionario_remitente = NULL;
@@ -251,7 +224,7 @@ class EntradasController extends Controller
             
             return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-             dd($th);
+            //  dd($th);
             DB::rollback();
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
@@ -387,7 +360,7 @@ class EntradasController extends Controller
             }
             return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-             dd($th);
+            //  dd($th);
             DB::rollback();
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
@@ -510,7 +483,7 @@ class EntradasController extends Controller
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th);
+            // dd($th);
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
@@ -522,25 +495,16 @@ class EntradasController extends Controller
         if ($funcionario) {
             $funcionario_id = $funcionario->funcionario_id;
             if (!$funcionario_id) {
-                return redirect()->back()->with(['message' => 'Falta tu codigo de funcionario contactate con sistema para solucionarlo porfavor.', 'alert-type' => 'error']);
+                return redirect()->back()->with(['message' => 'Falta tu código de funcionario contáctate con sistema para solucionarlo por favor.', 'alert-type' => 'error']);
             }
-            // $ingresos = Entrada::with('entity')
-            //             ->whereHas('derivaciones', function(Builder $query) use($funcionario_id){
-            //                 $query->where('funcionario_id_para', $funcionario_id);
-            //             })
-            //             ->where('deleted_at', NULL)
-            //             ->get();
             $derivaciones = Derivation::with([
-                                        'entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent',
-                                        'entrada.estado:id,nombre',
-                                        'derivationparent:id,tipo,gestion,cite,remitente,urgent',
-                                        'parents'])
-                                        // 'parents' => function($query) use($funcionario_id){
-                                        //         $query->where('funcionario_id_de', $funcionario_id);
-                                        //     }
-                                        // ])
-                                        ->select('id','entrada_id','created_at','visto','funcionario_id_para','parent_id','parent_type')
-                                        ->where('funcionario_id_para', $funcionario_id)->get(); 
+                                    'entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent,deadline',
+                                    'entrada.estado:id,nombre',
+                                    'derivationparent:id,tipo,gestion,cite,remitente,urgent',
+                                    'parents'
+                                ])
+                                ->select('id','entrada_id','created_at','visto','funcionario_id_para','parent_id','parent_type')
+                                ->where('funcionario_id_para', $funcionario_id)->get();
            
         }
         return view('bandeja.browse', compact('derivaciones', 'funcionario_id'));
@@ -555,8 +519,7 @@ class EntradasController extends Controller
             $derivacion->visto = Carbon::now();
             $derivacion->save();              
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
-                                $q->where('deleted_at',null)
-                                ->whereNull('parent_id');
+                                $q->where('deleted_at',null);
                             }])
                             ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
@@ -578,7 +541,7 @@ class EntradasController extends Controller
             
             return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
         } catch (\Throwable $th) {
-             dd($th);
+            //  dd($th);
             return redirect()->route('voyager.dashboard');
         }
     }
@@ -590,7 +553,7 @@ class EntradasController extends Controller
             Entrada::where('id', $request->id)->update(['estado_id' => 4]);
             return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            dd($th);
+            // dd($th);
             return redirect()->route('bandeja.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
@@ -633,7 +596,7 @@ class EntradasController extends Controller
             Derivation::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            dd($th);
+            // dd($th);
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }

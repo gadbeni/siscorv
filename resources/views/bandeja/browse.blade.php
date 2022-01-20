@@ -22,8 +22,8 @@
 
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pendientes</a></li>
-                                <li><a data-toggle="tab" href="#menu2">Urgentes</a></li>
-                                <li><a data-toggle="tab" href="#menu1">Archivados</a></li>
+                                <li><a data-toggle="tab" href="#urgente">Urgentes</a></li>
+                                <li><a data-toggle="tab" href="#archivados">Archivados</a></li>
                             </ul>
                             
                             <div class="tab-content">
@@ -43,16 +43,25 @@
                                             <tbody>
                                                 
                                                 @forelse ($derivaciones as $item)
-                                                    @php
-                                                        
-                                                        $derivacion = count($item->entrada->derivaciones) ? $item->entrada->derivaciones[count($item->entrada->derivaciones)-1] : 0;
-                                                        $childrens = count($item->parents) ? $item->parents->whereIn('funcionario_id_de',[$funcionario_id]) : 0;
+                                                    @php                                                        
+                                                        $childrens = App\Models\Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
                                                     @endphp
                                                     @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true)
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                            <td style="min-width: 100px !important">
+                                                                {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
+                                                                @if($childrens > 0)
+                                                                    <span class="badge badge-danger">Derivado</span>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @if ($item->created_at)
+                                                                {{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small>
+                                                                @else
+                                                                No definida
+                                                                @endif
+                                                            </td>
                                                             <td>{{ $item->entrada->cite }}</td>
                                                             <td>{{ $item->entrada->remitente }}</td>
                                                             <td>{{ $item->entrada->referencia }}</td>
@@ -65,43 +74,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                <div id="menu1" class="tab-pane fade">
-                                    <div class="table-responsive">
-                                        <table class="dataTable table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID</th>
-                                                    <th>HR</th>
-                                                    <th>Fecha de derivación</th>
-                                                    <th>Nro. de cite</th>
-                                                    <th>Remitente</th>
-                                                    <th>Referencia</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse ($derivaciones as $item)
-                                                    @php
-                                                        //$derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
-                                                        // dd($derivacion);
-                                                    @endphp
-                                                    @if ($item->entrada->estado_id == 4)
-                                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
-                                                            <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}</small></td>
-                                                            <td>{{ $item->entrada->cite }}</td>
-                                                            <td>{{ $item->entrada->remitente }}</td>
-                                                            <td>{{ $item->entrada->referencia }}</td>
-                                                        </tr>
-                                                    @endif
-                                                @empty
-                                                    
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div id="menu2" class="tab-pane fade">
+                                <div id="urgente" class="tab-pane fade">
                                     <div class="table-responsive">
                                         <table class="dataTable table table-hover">
                                             <thead>
@@ -118,28 +91,70 @@
                                             <tbody>
                                                 @forelse ($derivaciones as $item)
                                                     @php
-                                                        //$derivacion = count($item->derivaciones) ? $item->derivaciones[count($item->derivaciones)-1] : 0;
+                                                        // dd($item);
                                                         $now = \Carbon\Carbon::now();
                                                         $created = new \Carbon\Carbon($item->entrada->deadline);
                                                         $difference = ($created <= $now)
                                                                         ? 'NOTA EXTEMPORÁNEA'
-                                                                        : 'URGENTE';
-                                                        // dd($derivacion);
+                                                                        : 'URGENTE';                                                     
+                                                        $childrens = App\Models\Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
                                                     @endphp
                                                     @if ($item->entrada->urgent)
-                                                        <tr class="entrada @if(!$item->entrada->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
+                                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
-                                                            <td>{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
-                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> 
-                                                                <small>
-                                                                    {{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}
-                                                                </small>
+                                                            <td style="min-width: 100px !important">
+                                                                {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
+                                                                @if($childrens > 0)
+                                                                    <span class="badge badge-danger">Derivado</span>
+                                                                @endif
                                                             </td>
-                                                            <td>{{ date('d/m/Y', strtotime($item->entrada->deadline)) }} <br> 
+                                                            <td>
+                                                                @if ($item->created_at)
+                                                                {{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small>
+                                                                @else
+                                                                No definida
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @if ($item->entrada->deadline)
+                                                                {{ date('d/m/Y', strtotime($item->entrada->deadline)) }} <br>
+                                                                @endif
                                                                 <small>
                                                                     <strong class="{{($difference != 'URGENTE') ? 'danger' : 'success'}}"><h5>{{$difference}}</h5></strong>
                                                                 </small>
                                                             </td>
+                                                            <td>{{ $item->entrada->cite }}</td>
+                                                            <td>{{ $item->entrada->remitente }}</td>
+                                                            <td>{{ $item->entrada->referencia }}</td>
+                                                        </tr>
+                                                    @endif
+                                                @empty
+                                                    
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div id="archivados" class="tab-pane fade">
+                                    <div class="table-responsive">
+                                        <table class="dataTable table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>HR</th>
+                                                    <th>Fecha de derivación</th>
+                                                    <th>Nro. de cite</th>
+                                                    <th>Remitente</th>
+                                                    <th>Referencia</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @forelse ($derivaciones as $item)
+                                                    @if ($item->entrada->estado_id == 4)
+                                                        <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
+                                                            <td>{{ $item->entrada->id }}</td>
+                                                            <td style="min-width: 100px !important">{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
+                                                            <td>{{ date('d/m/Y H:i:s', strtotime($item->entrada->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->entrada->created_at)->diffForHumans() }}</small></td>
                                                             <td>{{ $item->entrada->cite }}</td>
                                                             <td>{{ $item->entrada->remitente }}</td>
                                                             <td>{{ $item->entrada->referencia }}</td>
@@ -203,7 +218,8 @@
                             copy: "Copiar",
                             colvis: "Visibilidad"
                         }
-                    }
+                    },
+                    order: [[ 0, 'desc' ]],
                 })
 
                 try {
