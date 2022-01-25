@@ -48,10 +48,6 @@ class Controller extends BaseController
     }
 
     public function getFuncionario($id){
-
-        // return DB::connection('mysqlgobe')->table('contratos')
-        // ->where('idContribuyente',7581456)
-        // ->select('*')->get();
         return DB::connection('mysqlgobe')->table('contribuyente as c')
                         ->join('contratos as cr','cr.idContribuyente', 'c.N_Carnet')
                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')

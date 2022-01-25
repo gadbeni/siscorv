@@ -69,13 +69,17 @@
                                             @endforeach                                        
                                         </select>
                                     </div>
-                                    <div id="divcite" class="form-group col-md-6">
+                                    <div id="divcite" class="form-group tip col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" id="cite" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022" required>
-                                        {{-- <div id="flotante" style="display:none;">
-                                            <label id="flotante" class="label label-danger">Pendiente</label>
-                                        </div> --}}
+                                        <input type="text" name="cite" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
+                                        <input type="text" name="cite" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="DF-1/2022s">
+                                    
                                     </div>
+                                    {{-- <div id="divext" class="form-group col-md-6">
+                                        <label class="control-label">Nro de cites</label>
+                                        <input type="text" name="cite" id="cite" maxlength="50" class="form-control" onkeypress="return check1(event)" style="text-transform:uppercase" placeholder="DF-1/2022" required>
+                                    </div> --}}
+                                    
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
                                         <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Si seleccionona una fecha anterior estara registrando un tramite con fecha atrasada."></span>
@@ -176,7 +180,10 @@
 
     @section('javascript')
         <script>
-
+            var okletra = true;
+            var oknumero = true;
+            var auxl=0;
+            var auxn=0;
             $(document).ready(function(){
                // $('#divcite').fadeOut();
                 ruta = "{{ route('certificados.getFuncionario') }}";
@@ -203,7 +210,9 @@
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
                 }
-                
+
+                $('#input1').fadeIn();
+                $('#input2').fadeOut();
                 tinymce.init(window.voyagerTinyMCE.getConfig(additionalConfig));
                 
                 $('#select-tipo').change(function(){
@@ -213,11 +222,24 @@
                         $('#input-remitente').fadeIn();
                         $('#div-detalle').fadeOut();
                         $('#div-entity_id').fadeIn();
+                        $('#input2').fadeIn();
+                        $('#input2').attr('required', 'required');
+                        $('#input1').fadeOut();
+                        $('#input1').removeAttr('required');
+                        auxn =5;
+                        auxl=5;
+                        
                     }else{
                         $('#div-remitente').fadeIn();
                         $('#input-remitente').fadeOut();
                         $('#div-detalle').fadeIn();
                         $('#div-entity_id').fadeOut();
+                        $('#input1').fadeIn();
+                        $('#input1').attr('required', 'required');
+                        $('#input2').fadeOut();
+                        $('#input2').removeAttr('required');
+                        auxn =0;
+                        auxl=0;
                     }
                 });
 
@@ -234,14 +256,7 @@
                 // });
             });
             
-
-            var okletra = true;
-            var oknumero = true;
-            var auxl=0;
-            var auxn=0;
-            
             function check(e) {   
-                        
                 tecla = (document.all) ? e.keyCode : e.which;
 
                 //Tecla de retroceso para borrar, siempre la permite
@@ -259,6 +274,7 @@
                 if(patron.test(tecla_final))
                 {
                     var contenido =document.getElementsByClassName("input1")[0].value;
+                    // var contenido =document.getElementsByClassName("input2")[0].value;
                     var cadena =  contenido+tecla_final;
                     // alert(cadena)
 
@@ -337,13 +353,12 @@
                 }
                                 
             }
+        
 
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("formulario").addEventListener('submit', validarFormulario); 
             });
             function validarFormulario(evento) {
-                
-
                 evento.preventDefault();
                 
                 if (auxl>=2 && auxn>=5) {
