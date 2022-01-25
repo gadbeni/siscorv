@@ -11,7 +11,10 @@
         </div>
         <div class="col-md-6 text-right" style="margin-top: 40px;">
             <div class="btn-group" role="group" aria-label="...">
-                @if ($data->estado_id != 4)
+                @php                                                        
+                    $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('deleted_at', NULL)->count();
+                @endphp
+                @if ($data->estado_id != 4 && $childrens == 0)
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
                     <button type="button" data-toggle="modal" data-target="#modal-derivar" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
                     <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
@@ -52,7 +55,7 @@
                                     <h3 class="panel-title">Número de Cite</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->cite }}</p>
+                                    <p>{{ $data->cite ?? 'No definido' }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -61,7 +64,7 @@
                                     <h3 class="panel-title">Número de hojas</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->nro_hojas }}</p>
+                                    <p>{{ $data->nro_hojas ?? 'No definido' }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -161,7 +164,7 @@
                                                 @endphp
                                             @empty
                                                 <tr>
-                                                    <td colspan="4"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                    <td colspan="5"><h5 class="text-center">No hay archivos guardados</h5></td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
