@@ -48,35 +48,43 @@ class Controller extends BaseController
     }
 
     public function getFuncionario($id){
+
+        // return DB::connection('mysqlgobe')->table('contratos')
+        // ->where('idContribuyente',7581456)
+        // ->select('*')->get();
         return DB::connection('mysqlgobe')->table('contribuyente as c')
+                        ->join('contratos as cr','cr.idContribuyente', 'c.N_Carnet')
                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                         ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                        ->where('c.Estado', '=', '1')
+                        ->where('cr.Estado', '=', '1')
                         ->where('c.id', '=', $id)
                         ->select([
                             'c.ID as id_funcionario',
                             'c.NombreCompleto as nombre',
                             'c.Estado as estado',
-                            'c.Cargo as cargo',
+                            'cr.DescripcionCargo as cargo',
                             'ua.ID as id_unidad',
                             'ua.Nombre as unidad',
                             'da.ID as id_direccion',
-                            'da.NOMBRE as direccion'
-                        ])
+                            'da.NOMBRE as direccion',
+                            'cr.Estado as contrato'
+                        ])->orderBy('cr.ID','DESC')
                         ->first();
     }
 
     // funciones para las derivaciones dobles
     public function generateTreeview($data){
         $servername = "localhost";
-        //configuracion local
-        // $username = "augusto";
-        // $password = "password";
-        // $dbname = "siscor_v2";
-        //configuracion en produccion
-        $username = "gadbeniadm";
-        $password = "gadbeniadm2020";
+        // configuracion 
+        $username = "augusto";
+        $password = "password";
         $dbname = "siscor_v2";
+
+        
+        // configuracion en produccion
+        // $username = "gadbeniadm";
+        // $password = "gadbeniadm2020";
+        // $dbname = "siscor_v2";
         $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
         if (mysqli_connect_errno()) {

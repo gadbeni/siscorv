@@ -139,7 +139,34 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {   
+    {  
+        $request->merge(['cite' =>  strtoupper($request->cite)]);
+        // $fecha = Carbon::today();
+        // $anio = Carbon::today()->year;
+        // $finddate = Carbon::parse($request->fecha_registro);
+        // if ($finddate->year < $anio) {
+        //     return redirect()->back()->with(['message' => 'No puede registrar tramites de una gestion pasada.', 'alert-type' => 'error']);
+        // }
+        // if ($finddate < $fecha) {
+        //     $oldtramite = Entrada::where('gestion',$anio)
+        //                          ->where('tipo',$request->tipo)
+        //                          ->whereDate('fecha_registro',$finddate)
+        //                          ->orWhereDate('created_at',$finddate)
+        //                          ->select('cite')
+        //                          ->first();
+        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] . '-' .'A'.'/'.$anio : null;
+        //     if (!$currentnci) {
+        //         return redirect()->back()->with(['message' => 'No existe ningun tramite registrado en la fecha seleccionada.', 'alert-type' => 'error']);
+        //     }
+        // } else {
+        //     $oldtramite = Entrada::where('gestion',$anio)
+        //                             ->where('tipo',$request->tipo)
+        //                             ->select('cite')
+        //                             ->orderBy('id','desc')
+        //                             ->first();
+        //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] + 1 .'/'.$anio : 1 .'/'.$anio;
+        // }
+        
         $oldtramite = Entrada::where('tipo',$request->tipo)
                             ->where('cite',$request->cite)
                             ->where('deleted_at',NULL)
@@ -263,7 +290,7 @@ class EntradasController extends Controller
 
             $destino = $this->getFuncionario($data->funcionario_id_destino);
         }
-        
+        // return $destino;
         return view('entradas.read', compact('data', 'origen', 'destino'));
     }
 
@@ -436,6 +463,7 @@ class EntradasController extends Controller
     }
 
     public function store_derivacion(Request $request){
+        return $request;
         $destinatarios = $request->destinatarios;
         $persona = Persona::where('user_id', Auth::user()->id)->first();
         if(!$persona){
