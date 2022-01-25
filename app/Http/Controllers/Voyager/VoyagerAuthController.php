@@ -28,7 +28,9 @@ class VoyagerAuthController extends BaseVoyagerAuthController
             $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
                                 ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
                                 ->join('cargo as ca', 'ca.ID', 'co.idCargo')
-                                ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
+                                ->where('c.Estado', 1)
+                                // ->where('co.Estado', 1)
+                                ->where('ca.estado', 1)
                                 ->where('c.id', $persona->funcionario_id)
                                 ->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel','tipo')
                                 ->first();
