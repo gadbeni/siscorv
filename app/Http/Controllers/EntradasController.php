@@ -463,7 +463,7 @@ class EntradasController extends Controller
     }
 
     public function store_derivacion(Request $request){
-        return $request;
+        // return $request;
         $destinatarios = $request->destinatarios;
         $persona = Persona::where('user_id', Auth::user()->id)->first();
         if(!$persona){
