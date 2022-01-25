@@ -140,6 +140,7 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
+        $request->merge(['cite' =>  strtoupper($request->cite)]);
         // $fecha = Carbon::today();
         // $anio = Carbon::today()->year;
         // $finddate = Carbon::parse($request->fecha_registro);
@@ -290,7 +291,7 @@ class EntradasController extends Controller
 
             $destino = $this->getFuncionario($data->funcionario_id_destino);
         }
-        
+        // return $destino;
         return view('entradas.read', compact('data', 'origen', 'destino'));
     }
 
@@ -463,6 +464,7 @@ class EntradasController extends Controller
     }
 
     public function store_derivacion(Request $request){
+        return $request;
         $destinatarios = $request->destinatarios;
         $persona = Persona::where('user_id', Auth::user()->id)->first();
         if(!$persona){

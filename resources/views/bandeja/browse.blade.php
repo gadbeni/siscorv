@@ -224,6 +224,7 @@
                 @endif
             });
 
+
             function read(id){
                 window.location = "{{ url('admin/bandeja') }}/"+id;
             }

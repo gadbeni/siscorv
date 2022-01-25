@@ -1,3 +1,9 @@
+{{-- <link href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script> --}}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.css" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.js"></script>
 @extends('voyager::master')
 
 @section('css')
@@ -23,6 +29,7 @@
                         action="{{ ! $entrada->id ? route('entradas.store') : route('entradas.update',$entrada->id) }}" 
                         method="POST" 
                         enctype="multipart/form-data"
+                        id="formulario"
                     >
                         @if($entrada->id)
                             @method('PUT')
@@ -64,7 +71,10 @@
                                     </div>
                                     <div id="divcite" class="form-group col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" maxlength="50" class="form-control" placeholder="DF-1/2022" required>
+                                        <input type="text" name="cite" id="cite" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022" required>
+                                        {{-- <div id="flotante" style="display:none;">
+                                            <label id="flotante" class="label label-danger">Pendiente</label>
+                                        </div> --}}
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
@@ -146,6 +156,13 @@
                                    
                                 </div>
                             </div>
+
+                            {{-- <p><a href="javascript:mostrar();">Mostrar</a></p>
+                            <div id="flotante" style="display:none;">
+                                
+                                <label class="label label-danger">Pendiente</label>
+                            </div> --}}
+
                             <div class="panel-footer text-right">
                                 <button type="submit" class="btn btn-primary save">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
                             </div>
@@ -156,8 +173,10 @@
         </div>
     @stop
 
+
     @section('javascript')
         <script>
+
             $(document).ready(function(){
                // $('#divcite').fadeOut();
                 ruta = "{{ route('certificados.getFuncionario') }}";
@@ -214,6 +233,151 @@
                   
                 // });
             });
+            
+
+            var okletra = true;
+            var oknumero = true;
+            var auxl=0;
+            var auxn=0;
+            
+            function check(e) {   
+                        
+                tecla = (document.all) ? e.keyCode : e.which;
+
+                //Tecla de retroceso para borrar, siempre la permite
+                if (tecla == 8) {
+            
+                    return true;
+                }
+
+                var numero =0;
+                var letra =0;
+                // Patron de entrada, en este caso solo acepta numeros y letras
+                patron = /[A-Za-z0-9-/-]/;
+                tecla_final = String.fromCharCode(tecla);
+                // alert(patron.test(tecla_final))
+                if(patron.test(tecla_final))
+                {
+                    var contenido =document.getElementsByClassName("input1")[0].value;
+                    var cadena =  contenido+tecla_final;
+                    // alert(cadena)
+
+                    for(var i = 0; i < (contenido+tecla_final).length; i++)
+                    {
+                        if((cadena[i]>="a" && cadena[i]<="z")||(cadena[i]>="A" && cadena[i]<="Z"))  
+                        {
+                            letra= letra+1;
+                        } 
+                        if(cadena[i] >= 0 && cadena[i]<= 9)  
+                        {
+                            numero= numero+1;
+                        }   
+                    }
+                    auxl=letra;
+                    auxn=numero;
+                    // alert(letra)
+                    // alert(numero)
+                    if(letra <= 5)
+                    {
+                        okletra = true;
+                    }
+
+                    var num ="0123456789";
+                    if (!(num.indexOf(tecla_final.charAt(0),0)!=-1))
+                    {
+                        // alert(4
+                        
+                        if(letra <= 5 && okletra == true)
+                        {
+                            if(letra == 5)
+                            {
+                                okletra = false;
+                            }
+                            else
+                            {
+                                okletra = true;
+                            }
+                            
+                            return true;
+                        }
+                        else
+                        {
+                            okletra = false;
+                            return false;
+                        }
+                    }
+                    
+
+                    if(numero <= 7)
+                    {
+                        oknumero = true;
+                    }
+
+                    if(numero <= 7 && oknumero == true)
+                    {
+                        if(numero == 7)
+                        {
+                            oknumero = false;
+                        }
+                        else
+                        {
+                            oknumero = true;
+                        }
+                        
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                
+                }
+                else{
+                    return false;
+                }
+                                
+            }
+
+            document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById("formulario").addEventListener('submit', validarFormulario); 
+            });
+            function validarFormulario(evento) {
+                
+
+                evento.preventDefault();
+                
+                if (auxl>=2 && auxn>=5) {
+                    this.submit();
+                }
+                else
+                {
+                    swal({
+                        title: "Error",
+                        text: "El Campo Nro. CITE tiene que tener minimo 2 letras y 5 numeros.\nEjemplo: DF-1/2022",
+                        // text: "Esta acción ya no se podrá deshacer, Así que piénsalo bien.",
+                        type: "error",
+                        showCancelButton: false,
+                        // confirmButtonColor: '#3085d6',
+                        // cancelButtonColor: '#d33',
+                        // confirmButtonText: 'Si, estoy seguro',
+                        // cancelButtonText: "Cancelar"
+                        });
+                    // alertify.confirm("This is a confirm dialog.",
+                    // function() {
+                    //     alertify.success('Ok');
+                    // },
+                    // function() {
+                    //     alertify.error('Cancel');
+                    // }
+                    // );
+                    div = document.getElementById('flotante');
+                    div.style.display = '';
+                    return;
+                }
+                
+            }
+
+
         </script>
     @stop
     
