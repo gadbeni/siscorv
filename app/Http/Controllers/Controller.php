@@ -48,39 +48,58 @@ class Controller extends BaseController
     }
 
     public function getFuncionario($id){
-        return DB::connection('mysqlgobe')->table('contribuyente as c')
-                        ->join('contratos as cr','cr.idContribuyente', 'c.N_Carnet')
+        // dd($id);
+        // return DB::connection('mysqlgobe')->table('contribuyente as c')
+        //                 ->join('contratos as cr','cr.idContribuyente', 'c.N_Carnet')
+        //                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+        //                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+        //                 ->where('cr.Estado', '=', '1')
+        //                 ->where('c.ID', '=', $id)
+        //                 ->select([
+        //                     'c.ID as id_funcionario',
+        //                     'c.NombreCompleto as nombre',
+        //                     'c.Estado as estado',
+        //                     'cr.DescripcionCargo as cargo',
+        //                     'ua.ID as id_unidad',
+        //                     'ua.Nombre as unidad',
+        //                     'da.ID as id_direccion',
+        //                     'da.NOMBRE as direccion',
+        //                     'cr.Estado as contrato'
+        //                 ])->orderBy('cr.ID','DESC')
+        //                 ->first();
+        $contribuyente = DB::connection('mysqlgobe')->table('contribuyente as c')
                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                         ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                        ->where('cr.Estado', '=', '1')
+                        ->where('c.Estado', '=', '1')
                         ->where('c.id', '=', $id)
                         ->select([
                             'c.ID as id_funcionario',
+                            'c.N_Carnet',
                             'c.NombreCompleto as nombre',
                             'c.Estado as estado',
-                            'cr.DescripcionCargo as cargo',
+                            'c.Cargo as cargo_auxiliar',
                             'ua.ID as id_unidad',
                             'ua.Nombre as unidad',
                             'da.ID as id_direccion',
-                            'da.NOMBRE as direccion',
-                            'cr.Estado as contrato'
-                        ])->orderBy('cr.ID','DESC')
-                        ->first();
+                            'da.NOMBRE as direccion'
+                        ])->first();
+        if($contribuyente){
+            $contrato = DB::connection('mysqlgobe')->table('contratos')
+                                    ->where('idContribuyente', $contribuyente->N_Carnet)
+                                    ->where('Estado', '1')->orderBy('ID','DESC')->first();
+            $contribuyente->cargo = $contrato ? $contrato->DescripcionCargo : $contribuyente->cargo_auxiliar;
+        }
+        return $contribuyente;
     }
 
     // funciones para las derivaciones dobles
     public function generateTreeview($data){
         $servername = "localhost";
         // configuracion 
-        $username = "augusto";
-        $password = "password";
-        $dbname = "siscor_v2";
-
+        $username = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $dbname = env('DB_DATABASE');
         
-        // configuracion en produccion
-        // $username = "gadbeniadm";
-        // $password = "gadbeniadm2020";
-        // $dbname = "siscor_v2";
         $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
         if (mysqli_connect_errno()) {

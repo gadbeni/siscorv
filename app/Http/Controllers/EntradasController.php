@@ -126,6 +126,7 @@ class EntradasController extends Controller
      */
     public function create()
     {
+        // return 2;
         $entrada = new Entrada;
         $user_auth = Persona::where('user_id', Auth::user()->id)->first();
         $funcionario = $this->getFuncionario($user_auth->funcionario_id);
@@ -471,7 +472,7 @@ class EntradasController extends Controller
         }
         DB::beginTransaction();
         try {
-            $cont = 0;
+            $cont = 0; 
             foreach ($destinatarios as $valor) {
                 $user = Persona::where('funcionario_id', $valor)->first();
                 /*Si la derivación viene del RDE no se registra al funcionario de origen*/
@@ -479,6 +480,7 @@ class EntradasController extends Controller
                 $redirect = $request->redirect ?? 'entradas.index';
                 $entrada = Entrada::findOrFail($request->id);
                 $funcionario = $this->getFuncionario($valor);
+                // dd($funcionario);
                 if($funcionario){
                     // Actualizar estado de la correspondencia
                     $detaillast = array();
