@@ -72,7 +72,7 @@
                                     <div id="divcite" class="form-group tip col-md-6">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" name="cite" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
-                                        <input type="text" name="cite" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="DF-1/2022s">
+                                        <input type="text" name="cite" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022">
                                     
                                     </div>
                                     {{-- <div id="divext" class="form-group col-md-6">
