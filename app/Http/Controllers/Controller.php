@@ -83,10 +83,12 @@ class Controller extends BaseController
                             'da.ID as id_direccion',
                             'da.NOMBRE as direccion'
                         ])->first();
-        $contrato = DB::connection('mysqlgobe')->table('contratos')
+        if($contribuyente){
+            $contrato = DB::connection('mysqlgobe')->table('contratos')
                                     ->where('idContribuyente', $contribuyente->N_Carnet)
                                     ->where('Estado', '1')->orderBy('ID','DESC')->first();
-        $contribuyente->cargo = $contrato ? $contrato->DescripcionCargo : $contribuyente->cargo_auxiliar;
+            $contribuyente->cargo = $contrato ? $contrato->DescripcionCargo : $contribuyente->cargo_auxiliar;
+        }
         return $contribuyente;
     }
 
@@ -94,15 +96,10 @@ class Controller extends BaseController
     public function generateTreeview($data){
         $servername = "localhost";
         // configuracion 
-        // $username = "augusto";
-        // $password = "password";
-        // $dbname = "siscor_v2";
-
+        $username = env('DB_USERNAME');
+        $password = env('DB_PASSWORD');
+        $dbname = env('DB_DATABASE');
         
-        // configuracion en produccion
-        $username = "gadbeniadm";
-        $password = "gadbeniadm2020";
-        $dbname = "siscor_v2";
         $conn = mysqli_connect($servername, $username, $password, $dbname) or die("Connection failed: " . mysqli_connect_error());
 
         if (mysqli_connect_errno()) {
