@@ -142,6 +142,9 @@ class EntradasController extends Controller
     public function store(Request $request)
     {  
         $request->merge(['cite' =>  strtoupper($request->cite)]);
+         
+
+
         // $fecha = Carbon::today();
         // $anio = Carbon::today()->year;
         // $finddate = Carbon::parse($request->fecha_registro);
@@ -167,11 +170,12 @@ class EntradasController extends Controller
         //                             ->first();
         //     $currentnci = $oldtramite ? explode('/',$oldtramite->cite)[0] + 1 .'/'.$anio : 1 .'/'.$anio;
         // }
-        
+        return $request;
         $oldtramite = Entrada::where('tipo',$request->tipo)
                             ->where('cite',$request->cite)
                             ->where('deleted_at',NULL)
                             ->first();
+        return $oldtramite;
         
         if ($oldtramite) {
             return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);

@@ -71,14 +71,11 @@
                                     </div>
                                     <div id="divcite" class="form-group tip col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" name="cite" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
-                                        <input type="text" name="cite" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022">
+                                        <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
+                                        <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022">
                                     
                                     </div>
-                                    {{-- <div id="divext" class="form-group col-md-6">
-                                        <label class="control-label">Nro de cites</label>
-                                        <input type="text" name="cite" id="cite" maxlength="50" class="form-control" onkeypress="return check1(event)" style="text-transform:uppercase" placeholder="DF-1/2022" required>
-                                    </div> --}}
+                                    
                                     
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
@@ -224,8 +221,10 @@
                         $('#div-entity_id').fadeIn();
                         $('#input2').fadeIn();
                         $('#input2').attr('required', 'required');
+                        $('#input2').attr('name', 'cite');
                         $('#input1').fadeOut();
                         $('#input1').removeAttr('required');
+                        $('#input1').removeAttr('name', 'cite');
                         auxn =5;
                         auxl=5;
                         
@@ -236,8 +235,11 @@
                         $('#div-entity_id').fadeOut();
                         $('#input1').fadeIn();
                         $('#input1').attr('required', 'required');
+                        $('#input1').attr('name', 'cite');
+
                         $('#input2').fadeOut();
                         $('#input2').removeAttr('required');
+                        $('#input2').removeAttr('name', 'cite');
                         auxn =0;
                         auxl=0;
                     }
