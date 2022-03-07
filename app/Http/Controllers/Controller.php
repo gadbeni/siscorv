@@ -70,7 +70,7 @@ class Controller extends BaseController
         $contribuyente = DB::connection('mysqlgobe')->table('contribuyente as c')
                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                         ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                        ->where('c.Estado', '=', '1')
+                        // ->where('c.Estado', '=', '1')
                         ->where('c.id', '=', $id)
                         ->select([
                             'c.ID as id_funcionario',
