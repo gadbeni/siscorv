@@ -86,7 +86,8 @@ class Controller extends BaseController
         if($contribuyente){
             $contrato = DB::connection('mysqlgobe')->table('contratos')
                                     ->where('idContribuyente', $contribuyente->N_Carnet)
-                                    ->where('Estado', '1')->orderBy('ID','DESC')->first();
+                                    // ->where('Estado', '1')
+                                    ->orderBy('ID','DESC')->first();
             $contribuyente->cargo = $contrato ? $contrato->DescripcionCargo : $contribuyente->cargo_auxiliar;
         }
         return $contribuyente;
