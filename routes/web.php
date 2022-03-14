@@ -13,6 +13,7 @@ use App\Http\Controllers\ReservasController;
 use App\Http\Controllers\PersoneriasController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\TramiteController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,14 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
+
+    // Report
+    Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
+    Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
+
+
+
+    
 
     Route::middleware(['auth'])->group(function () {
         //rutas para los certificados

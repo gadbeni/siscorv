@@ -44,6 +44,7 @@ class EntradasController extends Controller
                                 ->where('c.id', $funcionario->funcionario_id)
                                 ->select('c.id', 'c.DA')
                                 ->first();
+        
 
         if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
             $query_filtro = 'registrado_por_id_direccion = '.$funcionariodea->DA;
@@ -63,8 +64,8 @@ class EntradasController extends Controller
                             'funcionario_id_destino'
                         ])
                         ->where('deleted_at', NULL)->take(10);
-         //return $data;
-
+        
+        
         return
             Datatables::of($data)
             ->addIndexColumn()

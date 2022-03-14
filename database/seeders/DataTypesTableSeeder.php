@@ -35,7 +35,7 @@ class DataTypesTableSeeder extends Seeder
                 'server_side' => 0,
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"desc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-06-02 17:55:30',
-                'updated_at' => '2021-07-16 13:43:34',
+                'updated_at' => '2022-02-09 11:21:54',
             ),
             1 => 
             array (
@@ -141,9 +141,9 @@ class DataTypesTableSeeder extends Seeder
                 'description' => NULL,
                 'generate_permissions' => 1,
                 'server_side' => 0,
-                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-07-09 16:53:03',
-                'updated_at' => '2021-07-09 16:53:03',
+                'updated_at' => '2021-09-20 14:00:56',
             ),
             7 => 
             array (
@@ -162,6 +162,24 @@ class DataTypesTableSeeder extends Seeder
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-07-09 17:11:58',
                 'updated_at' => '2021-07-09 17:13:32',
+            ),
+            8 => 
+            array (
+                'id' => 9,
+                'name' => 'categories',
+                'slug' => 'categories',
+                'display_name_singular' => 'Categoria',
+                'display_name_plural' => 'Categorias',
+                'icon' => NULL,
+                'model_name' => 'App\\Models\\Category',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
+                'created_at' => '2021-09-07 16:20:45',
+                'updated_at' => '2021-09-07 16:28:23',
             ),
         ));
         
