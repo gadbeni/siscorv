@@ -48,5 +48,19 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('estados');
         Permission::generateFor('tipos');
         Permission::generateFor('bandeja');
+
+
+
+
+        $keys = [
+            'print'
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => 'report',
+            ]);
+        }
     }
 }

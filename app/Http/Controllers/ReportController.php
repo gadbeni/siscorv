@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use App\Models\Entity;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Persona;
 use Illuminate\Support\Facades\DB;
 use App\Models\Entrada;
 use Dflydev\DotAccessData\Data;
+use Dotenv\Parser\Entry;
 
 class ReportController extends Controller
 {
@@ -16,9 +18,10 @@ class ReportController extends Controller
     {
         $categoria = Category::where('deleted_at', null)
                     ->get();
+        $entidad = Entity::where('deleted_at', null)->get();
 
                     // return $categoria;
-        return view('report.view.view_report_list', compact('categoria'));
+        return view('report.view.view_report_list', compact('categoria', 'entidad'));
     }
 
 
@@ -56,13 +59,35 @@ class ReportController extends Controller
                                 } 
         // return $funcionariodea;
         // return $query_filtro;
+
+        $cat='=';
+        if($request->category_id == 0)
+        {
+            $cat='!=';
+        }
+
+
+        $ori='=';
+        
+
+        if($request->origen == 0)
+        {
+            $ori='!=';
+            $name ='GENERAL';
+        }
+        else
+        {
+            $name=Entity::find($request->origen)->nombre;
+        }
+        // dd($cat);
         
         $data = DB::table('entradas as e')
             ->join('entities as t', 't.id', 'e.entity_id')
             ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia')
             // ->where('e.registrado_por_id_direccion', $funcionariodea->DA)
             ->whereRaw($query_filtro)
-            ->where('e.category_id', $request->category_id)
+            ->where('e.category_id',$cat, $request->category_id)
+            ->where('e.entity_id',$ori, $request->origen)
             ->where('e.fecha_registro', '>=', $request->start)
             ->where('e.fecha_registro', '<=', $request->finish)
             // ->where('e.id', 8539)
@@ -70,7 +95,7 @@ class ReportController extends Controller
             ->orderBy('e.id','desc')
             ->get();
 
-        // return $data;
+        // dd($data);
 
         // dd($data);
 
@@ -85,7 +110,7 @@ class ReportController extends Controller
 
 
         if($request->print){
-            return view('report.printf.report_list_printf', compact('data'));
+            return view('report.printf.report_list_printf', compact('data', 'name'));
 
         }else{
             return view('report.printf.report_list', compact('data'));

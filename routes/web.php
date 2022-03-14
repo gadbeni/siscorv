@@ -60,8 +60,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
 
     // Report
-    Route::get('report/view/list', [ReportController::class, 'view_report_list'])->name('view.report.list');
-    Route::post('reports/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
+    Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
+    Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
 
 
 

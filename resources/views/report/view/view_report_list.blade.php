@@ -1,8 +1,9 @@
 @extends('voyager::master')
 
 @section('page_title', 'Reporte de aniversarios')
+@if(auth()->user()->hasPermission('print')))
+@section('page_header')print
 
-@section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-12">
@@ -32,7 +33,17 @@
                                     {{-- Nota: En caso de obtener estos datos en más de una consulta se debe hacer un metodo para hacerlo --}}
                                     <select name="category_id" class="form-control select2" required>
                                         <option value=""  selected disabled>Tipo Trámite</option>
+                                        <option value="0">Todo los Tipo de Trámite</option>
                                         @foreach($categoria as $item)
+                                            <option value="{{$item->id}}">{{$item->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                    <br>
+                                    <br>
+                                    <select name="origen" class="form-control select2" required>
+                                        <option value=""  selected disabled>Origen</option>
+                                        <option value="0">Todos los Origen</option>
+                                        @foreach($entidad as $item)
                                             <option value="{{$item->id}}">{{$item->nombre}}</option>
                                         @endforeach
                                     </select>
@@ -66,6 +77,7 @@
 
 @section('javascript')
     <script src="{{ url('js/main.js') }}"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.js"></script> -->
     <script>
         $(document).ready(function() {
 
@@ -73,6 +85,9 @@
                 
                 e.preventDefault();
                 $('#div-results').empty();
+
+                // $('#div-results').html('<div class="loading"><img src="images/loader.gif" alt="loading" /><br/>Un momento, por favor...</div>');
+                // $('#div-results').html('<div class="loader"></div>');
                 // $('#div-results').loading({message: 'Cargando...'});
                 $.post($('#form-search').attr('action'), $('#form-search').serialize(), function(res){
                     $('#div-results').html(res);
@@ -98,3 +113,8 @@
         }
     </script>
 @stop
+@else
+    @section('content')
+        @include('errors.403')
+    @stop
+@endif
