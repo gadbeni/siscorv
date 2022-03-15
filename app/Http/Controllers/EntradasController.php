@@ -308,7 +308,10 @@ class EntradasController extends Controller
      */
     public function edit(Entrada $entrada)
     {
-        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        $user_auth = Persona::where('user_id', Auth::user()->id)->first();
+        $funcionario = $this->getFuncionario($user_auth->funcionario_id);
+
+        // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
         return view('entradas.edit-add', compact('entrada','funcionario'));
     }
 
