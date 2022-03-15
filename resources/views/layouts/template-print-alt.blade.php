@@ -51,7 +51,7 @@
         <button class="btn-print" onclick="window.print()"> Imprimir <i class="fa fa-print"></i></button>
     </div>
     <div id="watermark">
-        <img src="{{ asset('images/report.png') }}" /> 
+        <img src="{{ asset('images/icon.png') }}" /> 
     </div>
     
     <div class="content">

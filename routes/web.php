@@ -62,7 +62,7 @@ Route::group(['prefix' => 'admin'], function () {
     // Report
     Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
     Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
-
+    
 
 
     
