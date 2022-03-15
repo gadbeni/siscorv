@@ -383,7 +383,7 @@ class MenuItemsTableSeeder extends Seeder
                 'parent_id' => NULL,
                 'order' => 4,
                 'created_at' => '2022-03-10 14:21:00',
-                'updated_at' => '2022-03-10 14:21:37',
+                'updated_at' => '2022-03-14 15:14:20',
                 'route' => 'view.report.list',
                 'parameters' => 'null',
             ),
