@@ -104,7 +104,7 @@
                                         <div id="div-remitente" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                             
                                             <select name="funcionario_id_remitente" class="form-control select2">
-                                                <option value="{{ $funcionario->id_funcionario ? $funcionario->id_funcionario : $funcionario->funcionario_id }}">{{ $funcionario ? $funcionario->nombre : 'Admin' }}</option>
+                                                <option value="{{ $funcionario->id_funcionario ? $funcionario->id_funcionario : $funcionario->funcionario_id }}">{{ $funcionario ? $funcionario->nombre: 'Admin' }}</option>
                                             </select>
                                         </div>
                                         <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo : null}}">
@@ -295,7 +295,7 @@
                     auxn=numero;
                     // alert(letra)
                     // alert(numero)
-                    if(letra <= 5)
+                    if(letra <= 12)
                     {
                         okletra = true;
                     }
@@ -305,9 +305,9 @@
                     {
                         // alert(4
                         
-                        if(letra <= 5 && okletra == true)
+                        if(letra <= 12 && okletra == true)
                         {
-                            if(letra == 5)
+                            if(letra == 12)
                             {
                                 okletra = false;
                             }
