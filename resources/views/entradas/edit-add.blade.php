@@ -295,7 +295,7 @@
                     auxn=numero;
                     // alert(letra)
                     // alert(numero)
-                    if(letra <= 7)
+                    if(letra <= 12)
                     {
                         okletra = true;
                     }
@@ -305,9 +305,9 @@
                     {
                         // alert(4
                         
-                        if(letra <= 7 && okletra == true)
+                        if(letra <= 12 && okletra == true)
                         {
-                            if(letra == 7)
+                            if(letra == 12)
                             {
                                 okletra = false;
                             }
