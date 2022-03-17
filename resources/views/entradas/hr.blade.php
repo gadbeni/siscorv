@@ -130,10 +130,17 @@
                                 </td>
                             </tr>
                         </table>
+                        @php
+                            if($entrada->funcionario_id_remitente == 8000)
+                            {
+                                $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
+                            }
+         
+                        @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente }}.</td>
+                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente}}</td>
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
