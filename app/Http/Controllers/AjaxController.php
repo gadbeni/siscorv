@@ -103,7 +103,7 @@ class AjaxController extends Controller
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                // ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')   testeo
                 ->where('c.Estado', '=', '1')
                 // ->where('co.Estado', '1')
                 ->where('c.id', '<>', $persona->funcionario_id)
@@ -129,7 +129,7 @@ class AjaxController extends Controller
                 $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
                                     ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
                                     ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                                    ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+                                    // ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente') TESTEO
                                     ->where('c.Estado', '=', '1')
                                     // ->where('co.Estado', '1')
                                     ->where('c.id', '<>', $persona->funcionario_id)
