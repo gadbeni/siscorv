@@ -13,11 +13,14 @@
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
                     $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('deleted_at', NULL)->count();
+                    
                 @endphp
                 @if ($data->estado_id != 4 && $childrens == 0)
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
-                    <button type="button" data-toggle="modal" data-target="#modal-derivar" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
-                    <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
+                    @if($derivacion->via == 0)
+                        <button type="button" data-toggle="modal" data-target="#modal-derivar" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
+                        <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
+                    @endif
                 @endif
                 {{-- <button type="button" title="Anterio" class="btn btn-default"><i class="voyager-angle-left"></i> &nbsp;</button>
                 <button type="button" title="Siguiente" class="btn btn-default"><i class="voyager-angle-right"></i> &nbsp;</button> --}}
@@ -199,7 +202,7 @@
                                                 $cont = 1;
                                             @endphp
                                             @forelse ($data->derivaciones as $item)
-                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif @if ($item->via == 1) style="background-color: rgba(231, 217, 176)" @endif>
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->funcionario_direccion_para }}</td>
                                                     <td>{{ $item->funcionario_unidad_para }}</td>

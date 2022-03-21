@@ -481,12 +481,14 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
             $cont = 0; 
+            // return $request;
             foreach ($destinatarios as $valor) {
                 $user = Persona::where('funcionario_id', $valor)->first();
                 /*Si la derivación viene del RDE no se registra al funcionario de origen*/
                 $rde = $request->redirect ? null : 1;
                 $redirect = $request->redirect ?? 'entradas.index';
                 $entrada = Entrada::findOrFail($request->id);
+                // dd($valor);
                 $funcionario = $this->getFuncionario($valor);
                 // dd($funcionario);
                 if($funcionario){
@@ -513,6 +515,7 @@ class EntradasController extends Controller
                     $entrada->save();
                     $cont++;
                     $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
+
                     DB::commit();
                 }else{
                     return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
@@ -522,6 +525,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             // dd($th);
+        
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
@@ -552,8 +556,10 @@ class EntradasController extends Controller
 
     public function derivacion_show($id)
     {
+    
         try {
-            $derivacion =  Derivation::where('id',$id)->first();            
+            $derivacion =  Derivation::where('id',$id)->first();    
+    
             $derivacion->visto = Carbon::now();
             $derivacion->save();              
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
@@ -562,7 +568,12 @@ class EntradasController extends Controller
                             ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
                             ->first();
+            //testeo
+            
+            // $vias = Derivation::where('entrada_id', $id)->get();
+            // return $vias;
         
+                            // return $data;
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
@@ -576,6 +587,7 @@ class EntradasController extends Controller
                 }
                 $destino = $this->getFuncionario($data->funcionario_id_destino);
             }
+     
             
             return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
         } catch (\Throwable $th) {
@@ -655,6 +667,38 @@ class EntradasController extends Controller
 
     public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
         $persona = Persona::where('user_id', Auth::user()->id)->first();
+        // dd($request);
+
+        $vias = Via::where('entrada_id',$request->id)->where('deleted_at', null)->get();
+        // dd($funcionario->id_funcionario);
+        $cant = count(Derivation::where('entrada_id',$request->id)->where('via',1)->where('deleted_at', null)->get());
+        if($cant == 0)
+        {
+            foreach($vias as $data)
+            {
+                $viafuncionario = $this->getFuncionario($data->funcionario_id);
+                // dd($data->funcionario_id);
+                Derivation::create([
+                    'entrada_id' => $request->id,
+                    'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
+                    'funcionario_id_para' => $viafuncionario->id_funcionario,
+                    'funcionario_nombre_para' => $viafuncionario->nombre,
+                    'funcionario_cargo_para' => $viafuncionario->cargo,
+                    'funcionario_direccion_id_para' => $viafuncionario->id_direccion ?? null,
+                    'funcionario_direccion_para' => $viafuncionario->direccion ?? null,
+                    'funcionario_unidad_id_para' => $viafuncionario->id_unidad ?? null,
+                    'funcionario_unidad_para' => $viafuncionario->unidad ?? null,
+                    'responsable_actual' => 1,
+                    'rechazo' => $rechazo,
+                    'via'   => 1,
+                    'registro_por' => Auth::user()->email,
+                    'observacion' => $request->observacion,
+                    'parent_id' => $request->der_id ? $request->der_id : $request->id,
+                    'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
+                ]);
+            }
+        }
+
         return Derivation::create([
             'entrada_id' => $request->id,
             'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
@@ -667,6 +711,7 @@ class EntradasController extends Controller
             'funcionario_unidad_para' => $funcionario->unidad ?? null,
             'responsable_actual' => 1,
             'rechazo' => $rechazo,
+            'via'   => 0,
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion,
             'parent_id' => $request->der_id ? $request->der_id : $request->id,
