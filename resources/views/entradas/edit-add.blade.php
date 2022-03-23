@@ -182,6 +182,9 @@
             var auxl=0;
             var auxn=0;
             $(document).ready(function(){
+
+                
+
                // $('#divcite').fadeOut();
                 ruta = "{{ route('certificados.getFuncionario') }}";
                 $("#select-funcionario_id_destino").select2({
@@ -208,8 +211,45 @@
                     selector: 'textarea.richTextBox[name="detalles"]',
                 }
 
-                $('#input1').fadeIn();
-                $('#input2').fadeOut();
+                
+
+
+                edit = "<?php echo $entrada->id; ?>";
+                if(edit)
+                {
+                    tipo = "<?php echo $entrada->tipo; ?>";
+                    if(tipo == 'I')
+                    {
+                        $('#input2').fadeOut();
+                        $('#input2').removeAttr('required');
+                        $('#input2').removeAttr('name', 'cite');
+                        $('#input1').fadeIn();
+                        $('#input1').attr('required', 'required');
+                        $('#input1').attr('name', 'cite');
+                        auxn =0
+                        ;
+                        auxl=0
+                        ;
+                    }
+                    else
+                    {
+                        $('#input1').fadeOut();
+                        $('#input1').removeAttr('required');
+                        $('#input1').removeAttr('name', 'cite');
+                        $('#input2').fadeIn();
+                        $('#input2').attr('required', 'required');
+                        $('#input2').attr('name', 'cite');
+                        auxn =5;
+                        auxl=5;
+                    }
+                    // alert(edit)
+                }
+                else
+                {
+                    $('#input1').fadeIn();
+                    $('#input2').fadeOut();
+                }
+
                 tinymce.init(window.voyagerTinyMCE.getConfig(additionalConfig));
                 
                 $('#select-tipo').change(function(){

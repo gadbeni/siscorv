@@ -327,6 +327,8 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
 
+            $request->merge(['cite' =>  strtoupper($request->cite)]);
+
             $persona = Persona::where('user_id', Auth::user()->id)->first();
 
             $unidad_id_remitente = NULL;
