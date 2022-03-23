@@ -59,7 +59,7 @@
     $(document).ready(function () {
         ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
         $("#select-destinatario").select2({
-            maximumSelectionLength: 2,
+            maximumSelectionLength: 20,
             ajax: { 
                 allowClear: true,
                 url: ruta,
