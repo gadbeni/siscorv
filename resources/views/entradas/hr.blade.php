@@ -1,4 +1,48 @@
 <html mmoznomarginboxes="" mozdisallowselectionprint="">
+<style>
+        body{
+            margin: 0px auto;
+            font-family: Arial, sans-serif;
+            font-weight: 100;
+        }
+        .btn-print{
+            padding: 5px 10px
+        }
+        #watermark {
+            width: 100%;
+            position: fixed;
+            top: 300px;
+            opacity: 0.1;
+            z-index:  -1;
+            text-align: center
+        }
+        #watermark img{
+            position: relative;
+            width: 350px;
+        }
+        #label-location{
+            display: none;
+        }
+        @media print{
+            .hide-print{
+                display: none
+            }
+            .content{
+                padding: 0px 0px
+            }
+            #location-id{
+                display: none;
+            }
+            #label-location{
+                display: inline;
+            }
+        }
+        @media print and (min-width: 700px) and (orientation: landscape) {
+            #watermark {
+                top: 200px;
+            }
+        }
+    </style>
     <head>
         <title>HR</title>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -10,6 +54,20 @@
                 background-color: #FFFFFF; 
                 margin: 0px;  /* this affects the margin on the html before sending to printer */
             }
+            @media print{
+            .hide-print{
+                display: none
+            }
+            .content{
+                padding: 0px 0px
+            }
+            #location-id{
+                display: none;
+            }
+            #label-location{
+                display: inline;
+            }
+        }
             body {
                 font-size: 14px !important;
             }
@@ -54,6 +112,11 @@
                 IMPRIMIR
             </button>
         </div>
+        
+
+
+
+
         <div class="centrar">
             <div id="marcaAgua">
                 <div id="encabezado" style="padding:1">
@@ -117,12 +180,27 @@
                                 @endif
                             </tr>
                         </table>
+                        @php
+                            if($entrada->funcionario_id_destino == 6984)
+                            {
+                                $funcionario->nombre = 'GEISEL MARCELO OLIVA RUIZ ';
+                            }
+         
+                        @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
-                                    @if($entrada->funcionario_id_destino)
-                                    {{ $funcionario->nombre. ' '.$funcionario->cargo}}
+                                    @if($entrada->funcionario_id_destino)                               
+                                        {{ $funcionario->nombre}}
+                                        @if($entrada->funcionario_id_destino == 6984)                                   
+                                                <select id="location-id">
+                                                    <option value=" - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</option>
+                                                    <option value=" - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA"> - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA</option>
+                                                    <option value=" - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)"> - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)</option>
+                                                </select>
+                                            <span id="label-location"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</span>
+                                        @endif
                                     @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
@@ -135,14 +213,31 @@
                             {
                                 $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
                             }
+
+                            if($entrada->funcionario_id_remitente == 6984)
+                            {
+                                $entrada->remitente = 'GEISEL MARCELO OLIVA RUIZ ';
+                            }
          
                         @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente}}</td>
+                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente}}
+                                
+                                @if($entrada->funcionario_id_remitente == 6984)
+                                   
+                                        <select id="location-id">
+                                            <option value=" - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</option>
+                                            <option value=" - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA"> - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA</option>
+                                            <option value=" - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)"> - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)</option>
+                                        </select>
+                                    <span id="label-location"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</span>
+                                @endif
+                                </td>
                             </tr>
                         </table>
+                        
                             @if($entrada->tipo == 'I')
                                 @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
@@ -376,4 +471,12 @@
             </div>
         </div>
     </body>
+    <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#location-id').change(function () {
+                $('#label-location').html($(this).val());
+            });
+        });
+    </script>
 </html>
