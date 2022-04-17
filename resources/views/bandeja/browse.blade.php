@@ -23,7 +23,7 @@
                             <ul class="nav nav-tabs">
                                 <li class="active"><a data-toggle="tab" href="#home">Pendientes</a></li>
                                 <li><a data-toggle="tab" href="#urgente">Urgentes</a></li>
-                                <li><a data-toggle="tab" href="#archivados">Archivados</a></li>
+                                <li><a data-toggle="tab" href="#archivados">Archivado</a></li>
                             </ul>
                             
                             <div class="tab-content">
