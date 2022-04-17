@@ -104,10 +104,13 @@
                                         <div id="div-remitente" style="{{$entrada->tipo == null ||$entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                             
                                             <select name="funcionario_id_remitente" class="form-control select2">
-                                                <option value="{{ $funcionario->id_funcionario ? $funcionario->id_funcionario : $funcionario->funcionario_id }}">{{ $funcionario ? $funcionario->nombre: 'Admin' }}</option>
+                                                <option value="{{ $funcionario->id_funcionario ? $funcionario->id_funcionario : $funcionario->funcionario_id }}">{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo: 'Admin' }}</option>
                                             </select>
                                         </div>
-                                        <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo : null}}">
+                                        <!-- <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo : null}}"> -->
+                                        <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre : null}}">
+
+                                        
                                         <input 
                                             type="text" 
                                             name="remitente" 
@@ -139,8 +142,19 @@
                                     </div>
                                     <div class="form-group col-md-6" id="div-destinatario" >
                                         <label class="control-label">Destinatario</label>
-                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino"></select>
+                                        <input 
+                                        type="checkbox" 
+                                        
+                                        id="toggleswitch" 
+                                        data-toggle="toggle" 
+                                        data-on="Interno" 
+                                        data-off="Externo"
+                                        checked 
+                                        >
+                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;"></select>
+                                        
                                     </div>
+                                    
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
                                         <input type="file" name="archivos[]" multiple class="form-control" accept="application/pdf">
@@ -183,10 +197,10 @@
             var auxn=0;
             $(document).ready(function(){
 
-                
 
                // $('#divcite').fadeOut();
-                ruta = "{{ route('certificados.getFuncionario') }}";
+                ruta = "{{ route('mamore.getpeople') }}";
+                intern_externo=1;
                 $("#select-funcionario_id_destino").select2({
                     ajax: { 
                         allowClear: true,
@@ -196,7 +210,8 @@
                         delay: 250,
                         data: function (params) {
                             return {
-                                search: params.term // search term
+                                search: params.term, // search term
+                                externo: intern_externo
                             };
                         },
                         processResults: function (response) {
@@ -206,6 +221,16 @@
                         }
                     }
                 });
+                $('#toggleswitch').on('change', function() {
+                    if (this.checked) {
+                        intern_externo = 1;
+                    } else {
+                        intern_externo = 0;
+                    }
+                });
+
+
+
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',

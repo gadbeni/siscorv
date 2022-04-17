@@ -26,7 +26,9 @@ class Entrada extends Model
         'unidad_id_remitente', 'direccion_id_remitente', 'funcionario_id_destino', 'funcionario_id_responsable', 
         'registrado_por', 'registrado_por_id_direccion', 'registrado_por_id_unidad', 'actualizado_por', 
         'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id', 'tipo_id','details',
-        'urgent','category_id'
+        'urgent','category_id',
+
+        'people_id_de', 'job_de', 'people_id_para'
     ];
     
     // public function getFechaRegistrotAttribute($value)
@@ -51,7 +53,8 @@ class Entrada extends Model
     }
 
     public function destinatario(){
-        return $this->belongsTo(Persona::class,'funcionario_id_destino','funcionario_id');
+        // return $this->belongsTo(Persona::class,'funcionario_id_destino','funcionario_id');
+        return $this->belongsTo(Persona::class,'people_id_para','people_id');
     }
 
     function vias(){

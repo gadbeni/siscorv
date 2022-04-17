@@ -7,19 +7,39 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Derivation;
 use Carbon\Carbon;
+use App\Models\Person;
+use App\Models\PeopleExt;
+use App\Models\Persona;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function getIdDireccionFuncionario($id_funcionario) {
+
+    public function getIdDireccionPeople($people_id) {
         try {
-            return DB::connection('mysqlgobe')->table('contribuyente')
-                        ->where('ID', $id_funcionario)
-                        ->select('DA', 'idDependencia')
-                        ->first();
+            $people = DB::connection('mamore')->table('people as p')
+                        ->join('contracts as c', 'c.person_id', 'p.id')
+                        ->where('c.status', 'firmado')
+                        ->where('c.deleted_at', null)// add people_id contratcs_if
+                        ->where('p.id', $people_id)
+                        ->select('c.direccion_administrativa_id as DA', 'c.unidad_administrativa_id as idDependencia')
+                        ->first();            
+
+            // return $people;
+            if($people=='')
+            {
+                $people = PeopleExt::with(['person'])
+                    ->where('status',1)
+                    ->where('person_id', $people_id)
+                    ->select('direccion_id as DA', 'unidad_id as idDependencia')
+                    ->first();           
+            }
+            return $people;
+            
         } catch (\Throwable $th) {
             return null;
         }
@@ -27,7 +47,7 @@ class Controller extends BaseController
 
     public function getIdDireccionInfo($direccion_id) {
         try {
-            return DB::connection('mysqlgobe')->table('direccionadministrativa')
+            return DB::connection('mamore')->table('direcciones')
                         ->where('id', $direccion_id)
                         ->select('*')
                         ->first();
@@ -38,60 +58,152 @@ class Controller extends BaseController
 
     public function getIdUnidadInfo($unidad_id) {
         try {
-            return DB::connection('mysqlgobe')->table('unidadadminstrativa')
+            return DB::connection('mamore')->table('unidades')
                         ->where('id', $unidad_id)
                         ->select('*')
                         ->first();
+            
         } catch (\Throwable $th) {
             return null;
         }
     }
 
-    public function getFuncionario($id){
-        // dd($id);
-        // return DB::connection('mysqlgobe')->table('contribuyente as c')
-        //                 ->join('contratos as cr','cr.idContribuyente', 'c.N_Carnet')
-        //                 ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-        //                 ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-        //                 ->where('cr.Estado', '=', '1')
-        //                 ->where('c.ID', '=', $id)
-        //                 ->select([
-        //                     'c.ID as id_funcionario',
-        //                     'c.NombreCompleto as nombre',
-        //                     'c.Estado as estado',
-        //                     'cr.DescripcionCargo as cargo',
-        //                     'ua.ID as id_unidad',
-        //                     'ua.Nombre as unidad',
-        //                     'da.ID as id_direccion',
-        //                     'da.NOMBRE as direccion',
-        //                     'cr.Estado as contrato'
-        //                 ])->orderBy('cr.ID','DESC')
-        //                 ->first();
-        $contribuyente = DB::connection('mysqlgobe')->table('contribuyente as c')
-                        ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                        ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                        // ->where('c.Estado', '=', '1')
-                        ->where('c.id', '=', $id)
-                        ->select([
-                            'c.ID as id_funcionario',
-                            'c.N_Carnet',
-                            'c.NombreCompleto as nombre',
-                            'c.Estado as estado',
-                            'c.Cargo as cargo_auxiliar',
-                            'ua.ID as id_unidad',
-                            'ua.Nombre as unidad',
-                            'da.ID as id_direccion',
-                            'da.NOMBRE as direccion'
-                        ])->first();
-        if($contribuyente){
-            $contrato = DB::connection('mysqlgobe')->table('contratos')
-                                    ->where('idContribuyente', $contribuyente->N_Carnet)
-                                    // ->where('Estado', '1')
-                                    ->orderBy('ID','DESC')->first();
-            $contribuyente->cargo = $contrato ? $contrato->DescripcionCargo : $contribuyente->cargo_auxiliar;
+    //obtencioin de los funcionarios en la BD mamore
+    public function getPeople($id)
+    {        
+        
+        $funcionario = DB::connection('mamore')->table('people as p')
+            ->leftJoin('contracts as c', 'p.id', 'c.person_id')
+            // ->leftJoin('contracts as c', 'p.id', 'c.person_id')
+            ->leftJoin('direcciones as d', 'd.id', 'c.direccion_administrativa_id')
+            ->leftJoin('unidades as u', 'u.id', 'c.unidad_administrativa_id')
+            ->leftJoin('jobs as j', 'j.id', 'c.job_id')
+            ->where('c.status', 'firmado')
+            ->where('c.deleted_at', null)
+            ->where('p.id', $id)
+            ->where('p.deleted_at', null)
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo',
+                DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion',
+                    'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
+            ->first();
+
+        if($funcionario && $funcionario->cargo_id != NULL)
+        {
+            $cargo = DB::connection('mysqlgobe')->table('cargo')
+                ->where('id',$funcionario->cargo_id)
+                ->select('*')
+                ->first();
+    
+            $funcionario->cargo=$cargo->Descripcion;
         }
-        return $contribuyente;
+        if(!$funcionario)
+        {
+                $funcionario = PeopleExt::where('person_id', $id)
+                    ->where('status',1)
+                    ->select('direccion_id as id_direccion', 'unidad_id as id_unidad', 'cargo', 'person_id as id_funcionario')
+                    ->first();
+                $funcionario->unidad = $this->getIdUnidadInfo($funcionario->id_unidad)->nombre;
+                $funcionario->direccion= $this->getIdDireccionInfo($funcionario->id_direccion)->nombre;
+                $funcionario->nombre = $this->getPeopleSN($funcionario->id_funcionario)->nombre;
+            
+        }
+
+
+        return $funcionario;
     }
+
+    public function getPeopleSN($id)
+    {                
+        $funcionario = DB::connection('mamore')->table('people as p')
+            ->where('p.id', $id)
+            ->where('p.deleted_at', null)
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre"))
+            ->first();
+        return $funcionario;
+    }
+
+    // public function getPersona($id)
+    // {
+    //     return Persona::where('tipo', 'user')->where('deleted_ad', null)->first();
+    // }
+
+    public function getPeopleExt($id)
+    {     
+        $data = PeopleExt::with(['person'])
+            ->where('status',1)
+            ->where('person_id', $id)
+            ->select('*')
+            ->first();
+        
+        if($data)
+        {
+            // return $data[0]->person->first_name;
+            $unidad= DB::connection('mamore')->table('unidades')->find($data->unidad_id);
+            $direccion= DB::connection('mamore')->table('direcciones')->find($data->direccion_id);
+
+            $data->id_funcionario= $data->person_id;
+            // return $data;
+            $data->nombre = $data->person->first_name.' '.$data->person->last_name;
+            $data->unidad = $unidad->nombre? $unidad->nombre : '';
+            $data->id_unidad = $unidad->nombre? $unidad->id : '';
+
+            $data->direccion = $direccion->nombre? $direccion->nombre : '';
+            $data->id_direccion = $direccion->nombre? $direccion->id : '';
+            return $data;
+        }
+        else
+        {
+            return false;
+        }
+
+        // return $funcionario;
+    }
+
+    public function output()
+    {
+        $persona = Persona::where('user_id', Auth::user()->id)->first();
+
+        $funcionario = DB::connection('mamore')->table('people as p')
+                        ->join('contracts as c', 'p.id', 'c.person_id')
+                        // ->where('c.status', 'firmado')
+                        ->where('c.deleted_at', null)
+                        ->where('p.id', $persona->people_id)
+                        ->where('p.deleted_at', null)
+                        ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 
+                            DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre"))
+                        ->first();
+        $people_ext = PeopleExt::where('deleted_at', null)
+                ->where('status', 1)
+                ->where('person_id', $persona->people_id)
+                ->select('*')
+                ->first();
+
+        if($funcionario == null && $people_ext == null)
+        {
+            Auth::logout();
+            return 'admin';
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // funciones para las derivaciones dobles
     public function generateTreeview($data){

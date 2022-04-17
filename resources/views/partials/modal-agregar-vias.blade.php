@@ -32,7 +32,7 @@
 
 <script>
     $(document).ready(function () {
-        ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
+        ruta = "{{ route('mamore.getpeoplederivacion') }}";
         $("#select-via").select2({
             ajax: { 
                 allowClear: true,

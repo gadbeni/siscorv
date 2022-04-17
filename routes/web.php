@@ -14,6 +14,8 @@ use App\Http\Controllers\PersoneriasController;
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\TramiteController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PeopleExtController;
+use App\Http\Controllers\AdditionalJobController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,16 +66,28 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
     
 
+    //personas externas 
+    Route::resource('people_exts', PeopleExtController::class);
+
+    //Cargos Adicionales
+    Route::resource('additional_jobs', AdditionalJobController::class);
+
 
     
 
     Route::middleware(['auth'])->group(function () {
+        //rutas para la obtencion de people para crear un tramite
+        Route::get('/mamore/getpeople/',[AjaxController::class, 'getPeoples'])->name('mamore.getpeople');
+        Route::get('/mamore/getpeoplederivacion/',[AjaxController::class, 'getPeoplesDerivacion'])->name('mamore.getpeoplederivacion');
+
+
+
         //rutas para los certificados
         Route::get('certificates', CertificateController::class)->name('list.certificates');
         Route::get('certificates/create', CreateCertificate::class)->name('certificate.create');
         Route::get('/certificados/getpersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
-        Route::get('/certificados/getfuncionarios/',[AjaxController::class, 'getFuncionarios'])->name('certificados.getFuncionario');
-        Route::get('/certificados/getfuncionariosderivacion/',[AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion');
+        Route::get('/certificados/getfuncionarios/',[AjaxController::class, 'getFuncionarios'])->name('certificados.getFuncionario');// anular ruta
+        Route::get('/certificados/getfuncionariosderivacion/',[AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion'); //anular
 
         Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
 

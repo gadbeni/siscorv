@@ -11,6 +11,7 @@ class Via extends Model
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
-        'funcionario_id', 'nombre', 'cargo', 'entrada_id'
+        'funcionario_id', 'nombre', 'cargo', 'entrada_id',
+        'people_id'
     ];
 }

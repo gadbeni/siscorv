@@ -34,28 +34,7 @@
         </div>
         <ul class="nav navbar-nav @if (__('voyager::generic.is_rtl') == 'true') navbar-left @else navbar-right @endif">
             <li id="badge-notification">
-                @php
-                    $funcionario = \App\Models\Persona::where('user_id', Auth::user()->id)->first();
-                    $ingresos = [];
-                    if ($funcionario) {
-                        $funcionario_id = $funcionario->funcionario_id;
-                        $ingresos = \App\Models\Entrada::with(['entity', 'derivaciones'])
-                                    ->whereHas('derivaciones', function($q) use($funcionario_id){
-                                        $q->where('funcionario_id_para', $funcionario_id)->where('deleted_at', NULL);
-                                    })
-                                    ->where('deleted_at', NULL)->get();
-                    }
-                    $cont = 0;
-                    foreach ($ingresos as $item) {
-                        $derivacion = $item->derivaciones[count($item->derivaciones)-1];
-                        if ($funcionario_id == $derivacion->funcionario_id_para && $item->estado_id != 6 && !$derivacion->visto){
-                            $cont++;
-                        }
-                    }
-                @endphp
-                @if ($cont)
-                    <a href="{{ route('bandeja.index') }}"> <span class="voyager-bell text-danger" style="font-size: 25px"></span> <span class="badge" style="margin-left: -10px">{{ $cont }}</span> </a>                    
-                @endif
+                
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

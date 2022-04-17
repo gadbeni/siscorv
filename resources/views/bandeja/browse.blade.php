@@ -43,17 +43,15 @@
                                             <tbody>
                                                 
                                                 @forelse ($derivaciones as $item)
-                                                    @php                                                        
-                                                        $childrens = App\Models\Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
-                                                    @endphp
+                                                   
                                                     @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true)
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
                                                                 {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
-                                                                @if($childrens > 0)
+                                                                <!-- @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
-                                                                @endif
+                                                                @endif -->
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)
@@ -97,16 +95,16 @@
                                                         $difference = ($created <= $now)
                                                                         ? 'NOTA EXTEMPORÁNEA'
                                                                         : 'URGENTE';                                                     
-                                                        $childrens = App\Models\Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
+                                                       
                                                     @endphp
                                                     @if ($item->entrada->urgent)
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
                                                                 {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
-                                                                @if($childrens > 0)
+                                                                <!-- @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
-                                                                @endif
+                                                                @endif -->
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)

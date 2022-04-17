@@ -1,4 +1,57 @@
 <html mmoznomarginboxes="" mozdisallowselectionprint="">
+<style>
+        body{
+            margin: 0px auto;
+            font-family: Arial, sans-serif;
+            font-weight: 100;
+        }
+        .btn-print{
+            padding: 5px 10px
+        }
+        #watermark {
+            width: 100%;
+            position: fixed;
+            top: 300px;
+            opacity: 0.1;
+            z-index:  -1;
+            text-align: center
+        }
+        #watermark img{
+            position: relative;
+            width: 350px;
+        }
+        #label-location{
+            display: none;
+        }
+        #label-locations{
+            display: none;
+        }
+        @media print{
+            .hide-print{
+                display: none
+            }
+            .content{
+                padding: 0px 0px
+            }
+            #location-id{
+                display: none;
+            }
+            #label-location{
+                display: inline;
+            }
+            #location-ids{
+                display: none;
+            }
+            #label-locations{
+                display: inline;
+            }
+        }
+        @media print and (min-width: 700px) and (orientation: landscape) {
+            #watermark {
+                top: 200px;
+            }
+        }
+    </style>
     <head>
         <title>HR</title>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -121,8 +174,19 @@
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
-                                    @if($entrada->funcionario_id_destino)
-                                    {{ $funcionario->nombre. ' '.$funcionario->cargo}}
+                                    @if($entrada->people_id_para)
+                                        {{ $funcionario->funcionario_nombre_para}}
+                                            <select id="location-id" style="text-transform: uppercase;">
+                                                    <option value=" - {{$funcionario->funcionario_cargo_para}}"> - {{$funcionario->funcionario_cargo_para}}</option>
+                                                 
+                                                        @if(count($additional)>0)
+                                                            @foreach($additional as $item)
+                                                                <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                            @endforeach
+                                                        @endif
+                                        
+                                            </select>
+                                            <span id="label-location" style="text-transform: uppercase;"> - {{$funcionario->funcionario_cargo_para}}</span>
                                     @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
@@ -130,19 +194,7 @@
                                 </td>
                             </tr>
                         </table>
-                        @php
-                            if($entrada->funcionario_id_remitente == 8000)
-                            {
-                                $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
-                            }
-         
-                        @endphp
-                        <table class="alltables" style="margin-top: 5px;">
-                            <tr>
-                                <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente}}</td>
-                            </tr>
-                        </table>
+
                             @if($entrada->tipo == 'I')
                                 @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
@@ -154,6 +206,36 @@
                                 @empty
                                 @endforelse
                             @endif
+                        <!-- @php
+                            if($entrada->funcionario_id_remitente == 8000)
+                            {
+                                $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
+                            }
+         
+                        @endphp -->
+                        <table class="alltables" style="margin-top: 5px;">
+                            <tr>
+                                <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
+                                @if($entrada->tipo == 'I')
+                                    <td class="box-margin">{{ $de->first_name}} {{ $de->last_name}}
+
+                                        <select id="location-ids" style="text-transform: uppercase;">
+                                            <option value=" - {{$funcionarios->cargo}}"> - {{$funcionarios->cargo}}</option>
+                                            @if(count($additionals)>0)
+                                                @foreach($additionals as $item)
+                                                    <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$funcionarios->cargo}}</span>
+                                @else
+                                    <td class="box-margin">{{ $entrada->entity->nombre}}
+                          
+                                @endif
+                                </td>
+                            </tr>
+                        </table>
+                            
                         @if($entrada->tipo == 'E')
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
@@ -376,4 +458,15 @@
             </div>
         </div>
     </body>
+    <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('#location-id').change(function () {
+                $('#label-location').html($(this).val());
+            });
+            $('#location-ids').change(function () {
+                $('#label-locations').html($(this).val());
+            });
+        });
+    </script>
 </html>
