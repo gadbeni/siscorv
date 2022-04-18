@@ -49,9 +49,9 @@
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
                                                                 {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
-                                                                <!-- @if($item->okderivado > 0)
+                                                                @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
-                                                                @endif -->
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)
@@ -102,9 +102,9 @@
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
                                                                 {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
-                                                                <!-- @if($item->okderivado > 0)
+                                                                @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
-                                                                @endif -->
+                                                                @endif
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)

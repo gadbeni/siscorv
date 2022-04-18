@@ -217,6 +217,7 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
+
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
         $oldtramite = Entrada::where('tipo',$request->tipo)
@@ -226,7 +227,7 @@ class EntradasController extends Controller
         
         
         if ($oldtramite) {
-            return 'cite dupilicado';
+            // return 'cite dupilicado';
             return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
         }
 
@@ -680,10 +681,10 @@ class EntradasController extends Controller
                                 ->where('people_id_para', $funcionario_id)->get();
             
             // return $derivaciones;
-            // foreach($derivaciones as $item)
-            // {
-            //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
-            // }
+            foreach($derivaciones as $item)
+            {
+                $item->okderivado = Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
+            }
             // dd($derivaciones);
            
         }

@@ -24,7 +24,7 @@ class VoyagerAuthController extends BaseVoyagerAuthController
             
             $funcionario = DB::connection('mamore')->table('people as p')
                         ->join('contracts as c', 'p.id', 'c.person_id')
-                        // ->where('c.status', 'firmado')
+                        ->where('c.status', 'firmado')
                         ->where('c.deleted_at', null)
                         ->where('p.id', $persona->people_id)
                         ->where('p.deleted_at', null)
