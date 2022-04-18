@@ -39,12 +39,15 @@
             #label-location{
                 display: inline;
             }
+<<<<<<< HEAD
             #location-ids{
                 display: none;
             }
             #label-locations{
                 display: inline;
             }
+=======
+>>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         }
         @media print and (min-width: 700px) and (orientation: landscape) {
             #watermark {
@@ -63,6 +66,20 @@
                 background-color: #FFFFFF; 
                 margin: 0px;  /* this affects the margin on the html before sending to printer */
             }
+            @media print{
+            .hide-print{
+                display: none
+            }
+            .content{
+                padding: 0px 0px
+            }
+            #location-id{
+                display: none;
+            }
+            #label-location{
+                display: inline;
+            }
+        }
             body {
                 font-size: 14px !important;
             }
@@ -107,6 +124,11 @@
                 IMPRIMIR
             </button>
         </div>
+        
+
+
+
+
         <div class="centrar">
             <div id="marcaAgua">
                 <div id="encabezado" style="padding:1">
@@ -170,6 +192,13 @@
                                 @endif
                             </tr>
                         </table>
+                        @php
+                            if($entrada->funcionario_id_destino == 6984)
+                            {
+                                $funcionario->nombre = 'GEISEL MARCELO OLIVA RUIZ ';
+                            }
+         
+                        @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
@@ -194,7 +223,6 @@
                                 </td>
                             </tr>
                         </table>
-
                             @if($entrada->tipo == 'I')
                                 @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
@@ -206,13 +234,7 @@
                                 @empty
                                 @endforelse
                             @endif
-                        <!-- @php
-                            if($entrada->funcionario_id_remitente == 8000)
-                            {
-                                $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
-                            }
-         
-                        @endphp -->
+                    
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
@@ -464,9 +486,12 @@
             $('#location-id').change(function () {
                 $('#label-location').html($(this).val());
             });
+<<<<<<< HEAD
             $('#location-ids').change(function () {
                 $('#label-locations').html($(this).val());
             });
+=======
+>>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         });
     </script>
 </html>

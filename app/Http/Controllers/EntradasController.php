@@ -46,24 +46,24 @@ class EntradasController extends Controller
             ->get();
 
         $i=0;
-        while($i< count($usuario))
-        {
-            // return $usuario[$i];
-            Entrada::where('funcionario_id_remitente', $usuario[$i]->funcionario_id)
-                ->update(['people_id_de'=>$usuario[$i]->people_id]);
-            Entrada::where('funcionario_id_destino', $usuario[$i]->funcionario_id)
-                ->update(['people_id_para'=>$usuario[$i]->people_id]);
+        // while($i< count($usuario))
+        // {
+        
+        //     Entrada::where('funcionario_id_remitente', $usuario[$i]->funcionario_id)
+        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
+        //     Entrada::where('funcionario_id_destino', $usuario[$i]->funcionario_id)
+        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
             
-            Derivation::where('funcionario_id_de', $usuario[$i]->funcionario_id)
-                ->update(['people_id_de'=>$usuario[$i]->people_id]);
-            Derivation::where('funcionario_id_para', $usuario[$i]->funcionario_id)
-                ->update(['people_id_para'=>$usuario[$i]->people_id]);
+        //     Derivation::where('funcionario_id_de', $usuario[$i]->funcionario_id)
+        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
+        //     Derivation::where('funcionario_id_para', $usuario[$i]->funcionario_id)
+        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
 
-            Via::where('funcionario_id', $usuario[$i]->funcionario_id)
-                ->update(['people_id'=>$usuario[$i]->people_id]);
+        //     Via::where('funcionario_id', $usuario[$i]->funcionario_id)
+        //         ->update(['people_id'=>$usuario[$i]->people_id]);
 
-            $i++;
-        } 
+        //     $i++;
+        // } 
 
         // return $usuario;
 
@@ -812,17 +812,20 @@ class EntradasController extends Controller
 
     public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
         $persona = Persona::where('user_id', Auth::user()->id)->first();
-        // dd($rde);
+        // dd($request);
         // return $request;
 
         $vias = Via::where('entrada_id',$request->id)->where('deleted_at', null)->get();
         // dd($funcionario->id_funcionario);
         $cant = count(Derivation::where('entrada_id',$request->id)->where('via',1)->where('deleted_at', null)->get());
+        // dd($vias);
         if($cant == 0)
         {
             foreach($vias as $data)
-            {
-                $viafuncionario = $this->getPeople($data->funcionario_id);
+            {   
+                // dd($data->people_id);
+                $viafuncionario = $this->getPeople($data->people_id);
+                // dd($viafuncionario);
                 $a = Derivation::create([
                     'entrada_id' => $request->id,
                     // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
@@ -845,7 +848,8 @@ class EntradasController extends Controller
                 ]);
             }
         }
-        // dd($a);
+               
+
         return Derivation::create([
             'entrada_id' => $request->id,
             // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
