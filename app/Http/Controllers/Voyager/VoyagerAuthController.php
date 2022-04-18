@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 // Models
 use App\Models\Persona;
+use App\Models\PeopleExt;
 use App\Models\User;
 
 class VoyagerAuthController extends BaseVoyagerAuthController
@@ -20,31 +21,38 @@ class VoyagerAuthController extends BaseVoyagerAuthController
 
         
         try {
-            $func_externo = DB::connection('mysqlgobe')->table('contribuyente')
-                            ->where('Estado', 1)
-                            ->where('id', $persona->funcionario_id)
-                            ->select('idDependencia', 'DA','tipo')
-                            ->first();
-            $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
-                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-                                ->join('cargo as ca', 'ca.ID', 'co.idCargo')
-                                ->where('c.Estado', 1)
-                                // ->where('co.Estado', 1)
-                                ->where('ca.estado', 1)
-                                ->where('c.id', $persona->funcionario_id)
-                                ->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel','tipo')
-                                ->first();
-            if($funcionario || $func_externo->tipo == "externo"){
-                return config('voyager.user.redirect', route('voyager.dashboard'));
-            }else{
-                Auth::logout();
-                return 'admin';
-            }                    
+            
+            $funcionario = DB::connection('mamore')->table('people as p')
+                        ->join('contracts as c', 'p.id', 'c.person_id')
+                        ->where('c.status', 'firmado')
+                        ->where('c.deleted_at', null)
+                        ->where('p.id', $persona->people_id)
+                        ->where('p.deleted_at', null)
+                        ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 
+                            DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre"))
+                        ->first();
+            $people_ext = PeopleExt::where('deleted_at', null)
+                ->where('status', 1)
+                ->where('person_id', $persona->people_id)
+                ->select('*')
+                ->first();
+
+                if($funcionario || $people_ext)
+                {
+                    return config('voyager.user.redirect', route('voyager.dashboard'));
+                }
+                else
+                {
+                    Auth::logout();
+                    return 'admin';
+                }
         } catch (Illuminate\Database\QueryException $ex) {
             //dd($ex->getMessage()); 
             //dd($ex);
           // return back()->with(['message' => $th, 'alert-type' => 'success']);
         }
+
+        
         
     }
 }

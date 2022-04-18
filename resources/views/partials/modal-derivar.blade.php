@@ -45,8 +45,8 @@
                     </div>
                 </div>
                 <div class="modal-footer text-right">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-dark">Derivar</button>
+                    <button type="button" id="btn_block_cancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" onclick="func_block()" id="btn_block" class="btn btn-dark">Derivar</button>
                 </div>
             </div>
         </div>
@@ -57,7 +57,9 @@
 
 <script>
     $(document).ready(function () {
-        ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
+        
+        // ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
+        ruta = "{{ route('mamore.getpeoplederivacion') }}";
         $("#select-destinatario").select2({
             maximumSelectionLength: 20,
             ajax: { 
@@ -89,6 +91,11 @@
                 intern_externo = 0;
             }
         });
+
+        
     });
-    
+    function func_block() {
+        $('#btn_block').fadeOut();
+        $('#btn_block_cancel').fadeOut();
+    }
 </script>

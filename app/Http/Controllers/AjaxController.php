@@ -7,6 +7,7 @@ use App\Models\Persona;
 use Luecano\NumeroALetras\NumeroALetras;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OldData;
+use App\Models\PeopleExt;
 use DB;
 
 class AjaxController extends Controller
@@ -44,103 +45,129 @@ class AjaxController extends Controller
         return response()->json($response);
     }
 
-    public function getFuncionarios(Request $request){
+    public function getPeoples(Request $request)
+    {
         $search = $request->search;
-        $personas = [];
-        if($search) {
-            $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
-                                //->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
-                                ->where('c.Estado',1)
-                                //->where('cont.Estado',1)
-                                ->select([
-                                    'c.ID as id',
-                                    'c.NombreCompleto as text',
-                                    'c.APaterno as ap_paterno','c.alfanu as alfanum',
-                                    'c.Cargo as cargo',
-                                    'c.AMaterno as ap_materno','c.Expedido as departamento_id',
-                                    DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
-                                    'c.N_carnet as ci',
-                                ])
-                                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
-                                ->groupBy('text')
-                                ->limit(15)
-                                ->get();
-        }
-        return response()->json($personas);
-    }
+        // $type = $request->type;
+        $int_ext = $request->externo; //para saber si buscara funcionario interno u externo
+        $funcionarios = [];
 
-    public function getFuncionariosDerivacion(Request $request){
+        if($int_ext==1)
+        {
+           
+            $funcionarios = DB::connection('mamore')->table('people as p')
+                                    ->join('contracts as c', 'c.person_id', 'p.id')
+                                    ->where('c.status','firmado')
+                                    ->where('c.deleted_at', null)
+                                    ->where('p.deleted_at', null)
+                                    ->select([
+                                        'p.id',
+                                        DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
+                                        'p.first_name', 'last_name',
+                                        'p.ci',
+                                    ])
+                                    ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)").' like "%' .$search . '%")')
+                                    ->groupBy('text')
+                                    ->limit(5)
+                                    ->get(); 
+        }
+        else
+        {
+            $funcionarios = DB::table('siscorv2.people_exts as s')
+            ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+            ->select(
+                'm.id',
+                DB::raw("upper(CONCAT(m.first_name, ' ', m.last_name)) as text"),
+                'm.first_name', 'm.last_name',
+                'm.ci',
+            )
+            ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
+            ->limit(5)
+            // ->groupBy('text')
+            ->get();
+        }      
+        return response()->json($funcionarios);
+        // return response()->json($personas);
+    }
+   
+
+    public function getPeoplesDerivacion(Request $request){
         $persona = Persona::where('user_id', Auth::user()->id)->first();
-        // $funcionario = DB::connection('mysqlgobe')->table('contribuyente as c')
-        //                     ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-        //                     ->join('cargo as ca', 'ca.ID', 'co.idCargo')
-        //                     ->where('c.Estado', 1)->where('co.Estado', 1)->where('ca.estado', 1)
-        //                     ->where('c.id', $persona->funcionario_id)->select('c.idDependencia', 'c.DA', 'co.idCargo', 'ca.idNivel')
-        //                     ->orderBy('co.id','desc')
-        //                     ->first();
-        // if(!$funcionario){
-        //     return response()->json([
-        //         "text" => "usted no es un funcionario activo"
-        //     ]);
-        // }
+       
         $search = $request->search;
         $type = $request->type;
         $int_ext = $request->externo; //para saber si buscara funcionario interno u externo
         $funcionarios = [];
-       
-            if (!$search && $type > 0 && $int_ext != 0) {
-                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                // ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')       testeo
-                ->where('c.Estado', '=', '1')
-                // ->where('co.Estado', '1')
-                ->where('c.id', '<>', $persona->funcionario_id)
-                ->where('c.id',$type)
-                ->select('c.id', 'c.NombreCompleto as text')
-                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')->get();
-            }elseif ($search && auth()->user()->role_id == 2 && $int_ext != 0) {
-                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                // ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')   testeo
-                ->where('c.Estado', '=', '1')
-                // ->where('co.Estado', '1')
-                ->where('c.id', '<>', $persona->funcionario_id)
-                ->select('c.id', 'c.NombreCompleto as text')
-                ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
-                ->groupBy('text')
-                ->get();
-            }elseif ($search && $int_ext == 0) {
-                $funcionarios = DB::connection('mysqlgobe')->table('contribuyente')
-                            ->where('Estado', 1)
-                            ->where('tipo','externo')
-                            ->select('id','N_carnet','NombreCompleto as text','tipo')
-                            ->whereRaw('(N_carnet like "%' .$search . '%" or NombreCompleto like "%' .$search . '%")')
-                            ->get();
-            }else{
-                /*
-                    Si el funcionario no es director (idCargo=4) solo puede derivar
-                    a los funcionarios de su misma dirección 
-                */
-                //$query_filter_cargo = $funcionario->idNivel <= 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
-                //$query_filter_cargo = $funcionario->idCargo == 216 && $funcionario->idNivel == 4 ? 1 : 'ua.id = '.$funcionario->idDependencia;
-                //$query_filter_rol = Auth::user()->role_id == 2 ? 1 : 'c.DA = '.$funcionario->DA;
-                $funcionarios =  DB::connection('mysqlgobe')->table('contribuyente as c')
-                                    ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                                    ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                                    // ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente') TESTEO
-                                    ->where('c.Estado', '=', '1')
-                                    // ->where('co.Estado', '1')
-                                    ->where('c.id', '<>', $persona->funcionario_id)
-                                    ->select('c.id', 'c.NombreCompleto as text')
-                                    ->whereRaw('(c.N_carnet like "%' .$search . '%" or c.NombreCompleto like "%' .$search . '%")')
-                                    ->groupBy('text')
-                                    ->limit(5)
-                                    ->get();
+        if (!$search && $type > 0)
+        {
+            $funcionarios = DB::connection('mamore')->table('people as p')
+                                        ->join('contracts as c', 'c.person_id', 'p.id')
+                                        ->where('c.status','firmado')
+                                        ->where('c.deleted_at', null)
+                                        ->where('p.deleted_at', null)
+                                        ->where('p.id',$type)
+                                        ->select(
+                                            'p.id',
+                                            DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
+                                            'p.first_name', 'last_name',
+                                            'p.ci',
+                                        )
+                                        // ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)").' like "%' .$search . '%")')
+                                        // ->groupBy('text')
+                                        ->get();
+            if(count($funcionarios)==0)
+            {
+                $funcionarios = DB::table('siscorv2.people_exts as s')
+                    ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                    ->select(
+                        'm.id',
+                        DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
+                        'm.first_name', 'm.last_name',
+                        'm.ci',
+                    )
+                    ->where('s.person_id', $type)
+                    // ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
+                    // ->groupBy('text')
+                    ->get();
             }
-            return response()->json($funcionarios);
-        //}
+        }
+        else
+        {
+            if($int_ext==1)
+            {
+                $funcionarios = DB::connection('mamore')->table('people as p')
+                                        ->join('contracts as c', 'c.person_id', 'p.id')
+                                        ->where('c.status','firmado')
+                                        ->where('c.deleted_at', null)
+                                        ->where('p.deleted_at', null)
+                                        // ->where('p.id',$type)
+                                        ->select(
+                                            'p.id',
+                                            DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
+                                            'p.first_name', 'last_name',
+                                            'p.ci',
+                                        )
+                                        ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)").' like "%' .$search . '%")')
+                                        ->groupBy('text')
+                                        ->limit(10)
+                                        ->get();
+            }
+            else
+            {
+                $funcionarios = DB::table('siscorv2.people_exts as s')
+                ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                ->select(
+                    'm.id',
+                    DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
+                    'm.first_name', 'm.last_name',
+                    'm.ci',
+                )
+                ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
+                // ->groupBy('text')
+                ->get();
+            }      
+        }
+        return response()->json($funcionarios);
     }
 
     public function imprimir($id){

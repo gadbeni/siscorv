@@ -25,7 +25,9 @@ class Derivation extends Model
         'funcionario_cargo_para', 'funcionario_direccion_id_para', 'funcionario_direccion_para', 
         'funcionario_unidad_id_para', 'funcionario_unidad_para', 'responsable_actual', 'logico', 'fisico', 
         'fecha_fisico', 'observacion', 'estado', 'registro_por', 'actualizado_por', 'entrada_id', 'visto', 
-        'rechazo','parent_id','parent_type', 'via'
+        'rechazo','parent_id','parent_type', 'via',
+        'people_id_de', 'people_id_para'
+
     ];
 
     function entrada(){

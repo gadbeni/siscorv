@@ -56,17 +56,19 @@
                             <div class="form-group">
                                 <label for="funcionario_id">Funcionario</label>
                                 <select 
-                                    name="funcionario_id" 
+                                    name="people_id" 
                                     id="getfuncionario"
                                     class="form-control">
                                 </select>
                             </div>
-                            <input type="hidden" id="nombre" name="nombre">
-                            <input type="hidden" id="ap_paterno" name="ap_paterno">
-                            <input type="hidden" id="ap_materno" name="ap_materno">
+                            <input type="hidden" id="nombre" name="first_name">
+                            <input type="hidden" id="apellido" name="last_name">
+
+                            <!-- <input type="hidden" id="ap_paterno" name="ap_paterno">
+                            <input type="hidden" id="ap_materno" name="ap_materno"> -->
                             <input type="hidden" id="ci" name="ci">
-                            <input type="hidden" id="alfanum" name="alfanum">
-                            <input type="hidden" name="departamento_id" id="departamento_id">
+                            <!-- <input type="hidden" id="alfanum" name="alfanum">
+                            <input type="hidden" name="departamento_id" id="departamento_id"> -->
                             <div class="form-group">
                                 <label for="email">{{ __('Usuario') }}</label>
                                 <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}"
@@ -175,6 +177,7 @@
                  tipouser = 0;
             }
         });
+
          ruta = "{{ route('user.getFuncionario') }}";
         $('#getfuncionario').select2({
             placeholder: '<i class="fa fa-search"></i> Buscar...',
@@ -219,11 +222,11 @@
             var data = e.params.data;
             if (data) {
                 document.getElementById("nombre").value = data.nombre;
-                document.getElementById("ap_paterno").value = data.ap_paterno;
-                document.getElementById("ap_materno").value = data.ap_materno;
+                document.getElementById("apellido").value = data.apellido;
+                // document.getElementById("ap_materno").value = data.ap_materno;
                 document.getElementById("ci").value = data.ci;
-                document.getElementById("alfanum").value = data.alfanum;
-                document.getElementById("departamento_id").value = data.departamento_id;
+                // document.getElementById("alfanum").value = data.alfanum;
+                // document.getElementById("departamento_id").value = data.departamento_id;
             }					
 		});
 

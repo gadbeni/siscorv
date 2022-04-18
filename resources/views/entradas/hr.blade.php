@@ -23,6 +23,9 @@
         #label-location{
             display: none;
         }
+        #label-locations{
+            display: none;
+        }
         @media print{
             .hide-print{
                 display: none
@@ -36,6 +39,15 @@
             #label-location{
                 display: inline;
             }
+<<<<<<< HEAD
+            #location-ids{
+                display: none;
+            }
+            #label-locations{
+                display: inline;
+            }
+=======
+>>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         }
         @media print and (min-width: 700px) and (orientation: landscape) {
             #watermark {
@@ -191,16 +203,19 @@
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
-                                    @if($entrada->funcionario_id_destino)                               
-                                        {{ $funcionario->nombre}}
-                                        @if($entrada->funcionario_id_destino == 6984)                                   
-                                                <select id="location-id">
-                                                    <option value=" - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</option>
-                                                    <option value=" - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA"> - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA</option>
-                                                    <option value=" - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)"> - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)</option>
-                                                </select>
-                                            <span id="label-location"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</span>
-                                        @endif
+                                    @if($entrada->people_id_para)
+                                        {{ $funcionario->funcionario_nombre_para}}
+                                            <select id="location-id" style="text-transform: uppercase;">
+                                                    <option value=" - {{$funcionario->funcionario_cargo_para}}"> - {{$funcionario->funcionario_cargo_para}}</option>
+                                                 
+                                                        @if(count($additional)>0)
+                                                            @foreach($additional as $item)
+                                                                <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                            @endforeach
+                                                        @endif
+                                        
+                                            </select>
+                                            <span id="label-location" style="text-transform: uppercase;"> - {{$funcionario->funcionario_cargo_para}}</span>
                                     @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
@@ -208,36 +223,6 @@
                                 </td>
                             </tr>
                         </table>
-                        @php
-                            if($entrada->funcionario_id_remitente == 8000)
-                            {
-                                $entrada->remitente = 'EDITH  PANIAGUA GUZMAN';
-                            }
-
-                            if($entrada->funcionario_id_remitente == 6984)
-                            {
-                                $entrada->remitente = 'GEISEL MARCELO OLIVA RUIZ ';
-                            }
-         
-                        @endphp
-                        <table class="alltables" style="margin-top: 5px;">
-                            <tr>
-                                <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
-                                <td class="box-margin">{{ $entrada->entity->nombre ?? $entrada->remitente}}
-                                
-                                @if($entrada->funcionario_id_remitente == 6984)
-                                   
-                                        <select id="location-id">
-                                            <option value=" - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</option>
-                                            <option value=" - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA"> - RESP. PROCESOS DE CONTRATACION APOYO A LA PRODUCCIÓN Y EMPLEO - RPA</option>
-                                            <option value=" - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)"> - RESP. PROCESOS DE CONTRATACION PARA LICITACION PUBLICA (RPC)</option>
-                                        </select>
-                                    <span id="label-location"> - SECRETARIO DPTAL. DE ADMNINISTRACION Y FINANZA GAD - BENI</span>
-                                @endif
-                                </td>
-                            </tr>
-                        </table>
-                        
                             @if($entrada->tipo == 'I')
                                 @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
@@ -249,6 +234,30 @@
                                 @empty
                                 @endforelse
                             @endif
+                    
+                        <table class="alltables" style="margin-top: 5px;">
+                            <tr>
+                                <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
+                                @if($entrada->tipo == 'I')
+                                    <td class="box-margin">{{ $de->first_name}} {{ $de->last_name}}
+
+                                        <select id="location-ids" style="text-transform: uppercase;">
+                                            <option value=" - {{$funcionarios->cargo}}"> - {{$funcionarios->cargo}}</option>
+                                            @if(count($additionals)>0)
+                                                @foreach($additionals as $item)
+                                                    <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$funcionarios->cargo}}</span>
+                                @else
+                                    <td class="box-margin">{{ $entrada->entity->nombre}}
+                          
+                                @endif
+                                </td>
+                            </tr>
+                        </table>
+                            
                         @if($entrada->tipo == 'E')
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
@@ -477,6 +486,12 @@
             $('#location-id').change(function () {
                 $('#label-location').html($(this).val());
             });
+<<<<<<< HEAD
+            $('#location-ids').change(function () {
+                $('#label-locations').html($(this).val());
+            });
+=======
+>>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         });
     </script>
 </html>

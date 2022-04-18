@@ -93,7 +93,7 @@
                                     @if ($data->tipo == 'E')
                                     <p>{{ $data->entity->nombre ?? 'Sin Origen' }}</p>
                                     @else
-                                    <p>{{ $origen }}</p>
+                                 
                                     @endif
                                     
                                 </div>
@@ -104,7 +104,7 @@
                                     <h3 class="panel-title">Remitente</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->remitente }}</p>
+                                    <p>{{ strtoupper($data->remitente) }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -117,8 +117,7 @@
                                     @if ($destino)
                                         <p>
                                             {{ $destino->nombre }} <br>
-                                            <b style="font-weight: bold">{{ $destino->cargo }}</b> <br>
-                                            <b style="font-weight: bold">{{ $destino->unidad }} {{ $destino->direccion ? ' - '.$destino->direccion : '' }}</b>
+                                            
                                         </p>
                                     @endif
                                 </div>
@@ -130,7 +129,7 @@
                                     <h3 class="panel-title">Referencia</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->referencia }}</p>
+                                    <p>{{ strtoupper($data->referencia) }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
