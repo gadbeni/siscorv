@@ -46,24 +46,24 @@ class EntradasController extends Controller
             ->get();
 
         $i=0;
-        // while($i< count($usuario))
-        // {
-        //     // return $usuario[$i];
-        //     Entrada::where('funcionario_id_remitente', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
-        //     Entrada::where('funcionario_id_destino', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
+        while($i< count($usuario))
+        {
+            // return $usuario[$i];
+            Entrada::where('funcionario_id_remitente', $usuario[$i]->funcionario_id)
+                ->update(['people_id_de'=>$usuario[$i]->people_id]);
+            Entrada::where('funcionario_id_destino', $usuario[$i]->funcionario_id)
+                ->update(['people_id_para'=>$usuario[$i]->people_id]);
             
-        //     Derivation::where('funcionario_id_de', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
-        //     Derivation::where('funcionario_id_para', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
+            Derivation::where('funcionario_id_de', $usuario[$i]->funcionario_id)
+                ->update(['people_id_de'=>$usuario[$i]->people_id]);
+            Derivation::where('funcionario_id_para', $usuario[$i]->funcionario_id)
+                ->update(['people_id_para'=>$usuario[$i]->people_id]);
 
-        //     Via::where('funcionario_id', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id'=>$usuario[$i]->people_id]);
+            Via::where('funcionario_id', $usuario[$i]->funcionario_id)
+                ->update(['people_id'=>$usuario[$i]->people_id]);
 
-        //     $i++;
-        // } 
+            $i++;
+        } 
 
         // return $usuario;
 
