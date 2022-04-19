@@ -9,85 +9,64 @@ use DB;
 
 class UsersController extends Controller
 {
-
-    // public function getFuncionariotocreate(Request $request){
-    //     $search = $request->search;
-    //     $type = $request->type;
-    //     if ($type) {
-    //         $personas = DB::connection('mysqlgobe')->table('contribuyente as c')
-    //                     ->join('contratos as cont', 'c.N_Carnet', '=', 'cont.idContribuyente')
-    //                     ->where('c.Estado',1)
-    //                     ->where('cont.Estado',1)
-    //                     ->select([
-    //                         'c.ID as id_funcionario','c.Expedido',
-    //                         'c.NombreCompleto as nombre_completo','c.alfanu',
-    //                         'c.APaterno as paterno','c.AMaterno as materno',
-    //                         DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
-    //                         'c.N_carnet as ci',
-    //                         'c.Estado as estado',
-    //                     ])->where('c.N_carnet', 'like', '%' .$search . '%')
-    //                       ->orWhere('c.NombreCompleto', 'like', '%' . $search . '%')
-    //                       ->groupBy('c.NombreCompleto')
-    //                       ->limit(5)->get();
-    //     } else {
-    //         $personas = DB::connection('mysqlgobe')->table('contribuyente')
-    //                         ->where('Estado',1)
-    //                         ->select([
-    //                             'ID as id_funcionario','Expedido',
-    //                             'NombreCompleto as nombre_completo','alfanu',
-    //                             'APaterno as paterno','AMaterno as materno',
-    //                             DB::raw("CONCAT(PNombre, ' ', SNombre) as nombre"),
-    //                             'N_carnet as ci','tipo'
-    //                         ])
-    //                         ->where('N_carnet', 'like', '%' .$search . '%')
-    //                         ->orWhere('NombreCompleto', 'like', '%' . $search . '%')
-    //                         ->where('tipo','=','externo')
-    //                         ->groupBy('NombreCompleto')
-    //                         ->limit(5)->get();
-    //     }
-    //     $response = array();
-    //     foreach($personas as $persona){
-    //         $response[] = array(
-    //                 "id"=>$persona->id_funcionario,
-    //                 "text"=>$persona->nombre_completo,
-    //                 "nombre" => $persona->nombre,
-    //                 "ap_paterno" => $persona->paterno,
-    //                 "ap_materno" => $persona->materno,
-    //                 "ci" => $persona->ci,
-    //                 "alfanum" => $persona->alfanu,
-    //                 "departamento_id" => $persona->Expedido
-    //     );
-    //     }
-    //     return response()->json($response);
-    // }
-
     public function getFuncionariotocreate(Request $request){
         $search = $request->search;
         $type = $request->type;
+            if($type==1)
+            {
+                $personas = DB::connection('mamore')->table('people as p')
+                    ->join('contracts as c', 'c.person_id', 'p.id')
+                    ->select('p.id', 'p.first_name as nombre', 'p.last_name as apellido', 'p.ci' , DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre_completo"))
+                    ->where('c.status', 'firmado')
+                    ->where('p.deleted_at', null)
+                    ->where('c.deleted_at', null)
+                    // ->where('p.ci', 'like', '%' .$search . '%')
+                    ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)"). 'like "%' . $search . '%")')
+                    ->get();
+                    $response = array();
+                foreach($personas as $persona){
 
-        $personas = DB::connection('mamore')->table('people as p')
-            ->join('contracts as c', 'c.person_id', 'p.id')
-            ->select('p.id', 'p.first_name as nombre', 'p.last_name as apellido', 'p.ci' , DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre_completo"))
-            ->where('p.ci', 'like', '%' .$search . '%')
-            ->orWhere(DB::raw("CONCAT(p.first_name, ' ', p.last_name)"), 'like', '%' . $search . '%')
-            ->where('p.deleted_at', null)
-            ->where('c.deleted_at', null)
-            ->get();
+                    $response[] = array(
+                        "id"=>$persona->id,
+                        "text"=>$persona->nombre_completo,
+                        "nombre" => $persona->nombre,
+                        "apellido" => $persona->apellido,
+                        // "ap_materno" => $persona->apellido,
+                        "ci" => $persona->ci,
+                        // "alfanum" => $persona->alfanu,
+                        // "departamento_id" => $persona->Expedido
+                    );
+                }
+            }
+            else
+            {
+                $personas = DB::table('siscorv2.people_exts as s')
+                ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                ->select(
+                    'm.id',
+                    DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
+                    'm.first_name as nombre', 'm.last_name as apellido',
+                    'm.ci',
+                )
+                ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
+                // ->groupBy('text')
+                ->get();
 
-        $response = array();
-        foreach($personas as $persona){
+                $response = array();
+                foreach($personas as $persona){
 
-            $response[] = array(
-                "id"=>$persona->id,
-                "text"=>$persona->nombre_completo,
-                "nombre" => $persona->nombre,
-                "apellido" => $persona->apellido,
-                // "ap_materno" => $persona->apellido,
-                "ci" => $persona->ci,
-                // "alfanum" => $persona->alfanu,
-                // "departamento_id" => $persona->Expedido
-        );
-        }
+                    $response[] = array(
+                        "id"=>$persona->id,
+                        "text"=>$persona->text,
+                        "nombre" => $persona->nombre,
+                        "apellido" => $persona->apellido,
+                        // "ap_materno" => $persona->apellido,
+                        "ci" => $persona->ci,
+                        // "alfanum" => $persona->alfanu,
+                        // "departamento_id" => $persona->Expedido
+                    );
+                }
+            }  
         return response()->json($response);
     }
 
@@ -196,7 +175,16 @@ class UsersController extends Controller
             $input['last_name'] = $request->last_name;
             $input['full_name'] = $input['first_name'] . ' ' . $input['last_name'];
           
-            // return $input;
+
+            // $exis = Persona::where('ci', $input['ci'])->where('tipo','user')->where('deleted_at', null)->first();
+            // if(count($exis) > 0){
+            //     return redirect()
+            //     ->route('voyager.users.index')
+            //     ->with([
+            //             'message' => "El usuario ya existe.",
+            //             'alert-type' => 'error'
+            //         ]);
+            // }
             Persona::create($input);
 
             if ($request->warehouses[0]) {
