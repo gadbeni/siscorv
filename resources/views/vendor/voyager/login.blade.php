@@ -14,14 +14,23 @@
                 </div>
             </div>
 
-            <div class="form-group form-group-default" id="passwordGroup">
+            {{-- <div class="form-group form-group-default" id="passwordGroup">
                 <label>{{ __('voyager::generic.password') }}</label>
                 <div class="controls">
                     <input type="password" name="password" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
                 </div>
+            </div> --}}
+            <div class="form-group form-group-default" id="passwordGroup">
+                <label>{{ __('voyager::generic.password') }}</label>
+                <div class="input-group controls">
+                    <input type="password" id="input-password" name="password" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
+                    <span class="input-group-addon" style="background:#fff;border:0px;font-size:25px;cursor:pointer;padding:0px;position: relative;bottom:10px" id="btn-verpassword">
+                        <span class="fa fa-eye"></span>
+                    </span>
+                </div>
             </div>
 
-            @if (env('APP_DEMO', false))
+            {{-- @if (env('APP_DEMO', false))
                 <div class="row">
                     <div class="col-md-12" style="margin-bottom: 0px">
                         <div class="alert alert-info" style="margin-bottom: 5px">
@@ -31,7 +40,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             <div class="form-group" id="rememberMeGroup">
                 <div class="controls">
@@ -62,7 +71,7 @@
 @endsection
 
 @section('post_js')
-
+<script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
     <script>
         var btn = document.querySelector('button[type="submit"]');
         var form = document.forms[0];
@@ -94,5 +103,19 @@
             document.getElementById('passwordGroup').classList.remove("focused");
         });
 
+        $(document).ready(function(){
+            let ver_pass = false;
+            $('#btn-verpassword').click(function(){
+                if(ver_pass){
+                    ver_pass = false;
+                    $(this).html('<span class="fa fa-eye"></span>');
+                    $('#input-password').prop('type', 'password');
+                }else{
+                    ver_pass = true;
+                    $(this).html('<span class="fa fa-eye-slash"></span>');
+                    $('#input-password').prop('type', 'text');
+                }
+            });
+        });
     </script>
 @endsection
