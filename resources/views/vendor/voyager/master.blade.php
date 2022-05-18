@@ -20,7 +20,6 @@
     @endif
 
 
-
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
     @stack('css')

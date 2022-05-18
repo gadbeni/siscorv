@@ -105,6 +105,13 @@ Route::group(['prefix' => 'admin'], function () {
 
         //ruta para mostrar los tramites pronto a expiracion
         Route::get('getdocumexpired',[HomeController::class,'documents_expired'])->name('documents_expired');
+
+
+
+
+
+        //peticiones ajax
+        Route::get('cite/{id?}/{cite?}',[AjaxController::class,'getCite'])->name('cite.get');
     });
 });
 
@@ -113,6 +120,7 @@ Route::get('consultas/{search?}', [AjaxController::class,'consultareservas']);
 //importar datos antiguos
 Route::get('/import', [ImportController::class,'import']);
 // Clear cache
+
 Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');
     return redirect('/admin/profile')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);

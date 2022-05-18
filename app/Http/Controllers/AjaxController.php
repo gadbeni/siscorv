@@ -8,6 +8,7 @@ use Luecano\NumeroALetras\NumeroALetras;
 use Illuminate\Support\Facades\Auth;
 use App\Models\OldData;
 use App\Models\PeopleExt;
+use App\Models\Entrada;
 use DB;
 
 class AjaxController extends Controller
@@ -204,4 +205,45 @@ class AjaxController extends Controller
             'cont' => $cont
         ]);
     }
+
+
+
+     // para saber si el cite ya se encuentra registrado 
+     public function getCite($id,$cite)
+     {
+        $aux ='';
+        $i =0;
+        $cite = strtoupper($cite);
+
+        while($i < strlen($cite))
+        {
+            if($cite[$i]=='&')
+            {
+                $aux = $aux.'/';
+            }
+            else
+            {
+                $aux = $aux.$cite[$i];
+            }
+            $i++;
+        }
+
+        if($id == 1)
+        {
+            $ok = Entrada::where('cite', $aux)->where('deleted_at', null)->first();
+        }
+        else
+        {
+            $ok = Entrada::where('id', '!=', $id)->where('cite', $aux)->where('deleted_at', null)->first();
+        }
+        if($ok)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+     }
+ 
 }

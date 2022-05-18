@@ -55,7 +55,7 @@ class PermissionsTableSeeder extends Seeder
 
 
         $keys = [
-            'print'
+            'browse_report'
         ];
 
         foreach ($keys as $key) {

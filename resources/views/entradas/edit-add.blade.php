@@ -4,6 +4,12 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.css" rel="stylesheet" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+
+
 @extends('voyager::master')
 
 @section('css')
@@ -73,9 +79,15 @@
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
                                         <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022">
-                                    
+                                        <span id="icon"  style="display: none; color:red">
+                                            <b>El cite  ya se encuentra registrado</b>
+                                        </span>
                                     </div>
                                     
+
+
+
+
                                     
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Fecha Registro</label>
@@ -179,7 +191,7 @@
                             </div> --}}
 
                             <div class="panel-footer text-right">
-                                <button type="submit" class="btn btn-primary save">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
+                                <button type="submit" id="btn_save" class="btn btn-primary save">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
                             </div>
                         </div>
                     </form>
@@ -191,6 +203,76 @@
 
     @section('javascript')
         <script>
+            entrada_id = "<?php echo $entrada->id; ?>"; 
+            input1.oninput = function() {
+                // result.innerHTML = input1.value;
+                var cite ="";
+                var aux = '';
+                var i =0;
+                cite = input1.value;
+
+                while(i < cite.length){
+                    if(cite.charAt(i) == '/'){
+                        aux = aux + '&';   
+                    }
+                    else
+                    {
+                        aux = aux + cite.charAt(i);
+                    }
+                    i++;
+                }
+                if(!entrada_id)
+                {
+                    entrada_id=1;
+                }
+                $.get('{{route('cite.get')}}/'+entrada_id+'/'+aux, function(data){ 
+                    if(data == 1)
+                    {
+                        $('#icon').fadeIn();         
+                        $('#btn_save').attr('disabled', true);           
+                    }      
+                    else
+                    {
+                        $('#icon').fadeOut();
+                        $('#btn_save').attr('disabled', false);
+                    }
+                });
+            };
+            input2.oninput = function() {
+                // result.innerHTML = input1.value;
+                var cite ="";
+                var aux = '';
+                var i =0;
+                cite = input2.value;
+
+                while(i < cite.length){
+                    if(cite.charAt(i) == '/'){
+                        aux = aux + '&';   
+                    }
+                    else
+                    {
+                        aux = aux + cite.charAt(i);
+                    }
+                    i++;
+                }
+                if(!entrada_id)
+                {
+                    entrada_id=1;
+                }
+                $.get('{{route('cite.get')}}/'+entrada_id+'/'+aux, function(data){ 
+                    if(data == 1)
+                    {
+                        $('#icon').fadeIn();         
+                        $('#btn_save').attr('disabled', true);           
+                    }      
+                    else
+                    {
+                        $('#icon').fadeOut();
+                        $('#btn_save').attr('disabled', false);
+                    }
+                });
+            };
+
             var okletra = true;
             var oknumero = true;
             var auxl=0;

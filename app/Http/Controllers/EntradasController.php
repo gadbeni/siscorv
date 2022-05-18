@@ -65,7 +65,6 @@ class EntradasController extends Controller
         //     $i++;
         // } 
 
-        // return $usuario;
 
         return view('entradas.browse');
     }

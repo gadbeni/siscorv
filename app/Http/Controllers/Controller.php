@@ -9,6 +9,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Derivation;
+use App\Models\Entrada;
 use Carbon\Carbon;
 use App\Models\Person;
 use App\Models\PeopleExt;
@@ -186,6 +187,8 @@ class Controller extends BaseController
     }
 
 
+
+   
 
 
 
