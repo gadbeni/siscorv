@@ -1,8 +1,8 @@
 @extends('voyager::master')
 
 @section('page_title', 'Reporte de aniversarios')
-@if(auth()->user()->hasPermission('print')))
-@section('page_header')print
+@if(auth()->user()->hasPermission('browse_report'))
+@section('page_header')
 
     <div class="container-fluid">
         <div class="row">

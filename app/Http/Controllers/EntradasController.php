@@ -45,7 +45,7 @@ class EntradasController extends Controller
             ->orderBy('ci', 'ASC')
             ->get();
 
-        $i=0;
+        // $i=0;
         // while($i< count($usuario))
         // {
         
@@ -65,7 +65,6 @@ class EntradasController extends Controller
         //     $i++;
         // } 
 
-        // return $usuario;
 
         return view('entradas.browse');
     }
@@ -681,10 +680,10 @@ class EntradasController extends Controller
                                 ->where('people_id_para', $funcionario_id)->get();
             
             // return $derivaciones;
-            foreach($derivaciones as $item)
-            {
-                $item->okderivado = Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
-            }
+            // foreach($derivaciones as $item)
+            // {
+            //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
+            // }
             // dd($derivaciones);
            
         }

@@ -19,7 +19,7 @@
     @else
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {{-- SEO --}}
     <meta property="og:title"         content="{{ Voyager::setting('admin.title') }}" />
     <meta property="og:description"   content="{{ Voyager::setting('admin.description') }}" />
