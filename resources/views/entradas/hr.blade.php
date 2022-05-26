@@ -197,14 +197,21 @@
                             {
                                 $funcionario->nombre = 'GEISEL MARCELO OLIVA RUIZ ';
                             }
-         
+                            // dd($entrada);
                         @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
                                     @if($entrada->people_id_para)
-                                        {{ $funcionario->funcionario_nombre_para}}
+                                        @if($entrada->derivaciones[0]->people_id_para != $entrada->people_id_para && $entrada->tipo == 'E')
+                                        {{-- para RDE personederia juridica --}}
+                                            @php
+                                            $name = \DB::connection('mamore')->table('people')->where('id', $entrada->people_id_para)->first();
+                                            @endphp
+                                            {{ $name->first_name }} {{ $name->last_name }}
+                                        @else
+                                            {{ $funcionario->funcionario_nombre_para}}
                                             <select id="location-id" style="text-transform: uppercase;">
                                                     <option value=" - {{$funcionario->funcionario_cargo_para}}"> - {{$funcionario->funcionario_cargo_para}}</option>
                                                  
@@ -216,6 +223,7 @@
                                         
                                             </select>
                                             <span id="label-location" style="text-transform: uppercase;"> - {{$funcionario->funcionario_cargo_para}}</span>
+                                        @endif
                                     @else
                                     {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
                                     <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>

@@ -37,13 +37,13 @@ class EntradasController extends Controller
     {        
 
  
-        $usuario = DB::table('personas')
-            ->where('people_id','!=', null)
-            ->where('deleted_at',null)
-            ->where('tipo','user')
-            ->select('*')
-            ->orderBy('ci', 'ASC')
-            ->get();
+        // $usuario = DB::table('personas')
+        //     ->where('people_id','!=', null)
+        //     ->where('deleted_at',null)
+        //     ->where('tipo','user')
+        //     ->select('*')
+        //     ->orderBy('ci', 'ASC')
+        //     ->get();
 
         // $i=0;
         // while($i< count($usuario))
@@ -471,7 +471,7 @@ class EntradasController extends Controller
 
     public function print(Entrada $entrada){
 
-        
+        // return $entrada;
         if($entrada->people_id_de != null && $entrada->people_id_para != null)
         {
             $destino = $entrada->people_id_para;
@@ -532,7 +532,7 @@ class EntradasController extends Controller
 
                 
         $view = view('entradas.hr',['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
-            //$q->where('funcionario_id_para','!=',$destino)->get();
+            $q->where('deleted_at', null)->where('via', 0)->get();
             }],'entity'),'funcionario' =>$funcionario
         ], compact('additional', 'funcionarios', 'additionals', 'de'));
         // return $funcionario;
