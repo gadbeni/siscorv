@@ -39,15 +39,12 @@
             #label-location{
                 display: inline;
             }
-<<<<<<< HEAD
             #location-ids{
                 display: none;
             }
             #label-locations{
                 display: inline;
             }
-=======
->>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         }
         @media print and (min-width: 700px) and (orientation: landscape) {
             #watermark {
@@ -177,19 +174,31 @@
                                      2021
                                     @endif
                                 </td>
-                                @if($entrada->tipo == 'E')
-                                <td WIDTH="8%">&nbsp;HORA</td>
-                                <td class="caja" WIDTH="5%">
-                                    {{ date('H:i', strtotime($entrada->created_at)) }}
-                                </td>
-                                <td WIDTH="10%">&nbsp;Nº HOJAS</td>
-                                <td class="caja"  WIDTH="33%">{{ $entrada->nro_hojas }}</td>
+                                {{-- @if($entrada->tipo == 'E')
+                                    <td WIDTH="8%">&nbsp;HORA</td>
+                                    <td class="caja" WIDTH="5%">
+                                        {{ date('H:i', strtotime($entrada->created_at)) }}
+                                    </td>
+                                    <td WIDTH="10%">&nbsp;Nº HOJAS</td>
+                                    <td class="caja"  WIDTH="33%">{{ $entrada->nro_hojas }}</td>
                                 @else
-                                <td WIDTH="8%"></td>
-                                <td WIDTH="5%"></td>
-                                <td WIDTH="10%"></td>
-                                <td WIDTH="33%"></td>
+                                    <td WIDTH="8%"></td>
+                                    <td WIDTH="5%"></td>
+                                    <td WIDTH="10%"></td>
+                                    <td WIDTH="33%"></td>
+                                @endif --}}
+
+                                @if($entrada->tipo == 'E')
+                                    <td WIDTH="8%">&nbsp;HORA</td>
+                                    <td class="caja" WIDTH="5%">
+                                        {{ date('H:i', strtotime($entrada->created_at)) }}
+                                    </td>                                    
+                                @else
+                                    <td WIDTH="8%"></td>
+                                    <td WIDTH="5%"></td>
                                 @endif
+                                <td WIDTH="10%">&nbsp;Nº HOJAS</td>
+                                <td class="caja"  WIDTH="33%">{{ $entrada->nro_hojas != null? $entrada->nro_hojas:'S/N' }}</td>
                             </tr>
                         </table>
                         @php
@@ -250,7 +259,7 @@
                                     <td class="box-margin">{{ $de->first_name}} {{ $de->last_name}}
 
                                         <select id="location-ids" style="text-transform: uppercase;">
-                                            <option value=" - {{$funcionarios->cargo}}"> - {{$funcionarios->cargo}}</option>
+                                            <option value=""> - {{$funcionarios->cargo}}</option>
                                             @if(count($additionals)>0)
                                                 @foreach($additionals as $item)
                                                     <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
@@ -494,12 +503,9 @@
             $('#location-id').change(function () {
                 $('#label-location').html($(this).val());
             });
-<<<<<<< HEAD
             $('#location-ids').change(function () {
                 $('#label-locations').html($(this).val());
             });
-=======
->>>>>>> e82fe030b193ee273d7bbf8d7fcf0fd07ea03447
         });
     </script>
 </html>
