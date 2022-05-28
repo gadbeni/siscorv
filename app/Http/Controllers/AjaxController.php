@@ -74,6 +74,7 @@ class AjaxController extends Controller
         }
         else
         {
+            // $funcionarios = DB::table('siscor2021.people_exts as s')
             $funcionarios = DB::table('siscor_v2.people_exts as s')
             ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
             ->select(
@@ -118,7 +119,8 @@ class AjaxController extends Controller
                                         ->get();
             if(count($funcionarios)==0)
             {
-                $funcionarios = DB::table('siscorv2.people_exts as s')
+                // $funcionarios = DB::table('siscor2021.people_exts as s')
+                $funcionarios = DB::table('siscor_v2.people_exts as s')
                     ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
                     ->select(
                         'm.id',
@@ -155,7 +157,8 @@ class AjaxController extends Controller
             }
             else
             {
-                $funcionarios = DB::table('siscorv2.people_exts as s')
+                // $funcionarios = DB::table('siscor2021.people_exts as s')
+                $funcionarios = DB::table('siscor_v2.people_exts as s')
                 ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
                 ->select(
                     'm.id',

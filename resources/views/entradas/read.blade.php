@@ -29,7 +29,7 @@
                                 <li>
                                     <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
                                         <span class="glyphicon glyphicon-print"></span>&nbsp;
-                                            Imprimir Hoda de Ruta
+                                            Imprimir Hoja de Ruta
                                     </a>
                                 </li>
                             </ul>
@@ -228,7 +228,7 @@
                                                 $cont = 1;
                                             @endphp
                                             @forelse ($data->vias as $item)
-                                                <tr>
+                                                <tr style="text-transform: uppercase;">
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->nombre }}</td>
                                                     <td>{{ $item->cargo }}</td>

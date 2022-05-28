@@ -188,7 +188,7 @@
                                     <td WIDTH="33%"></td>
                                 @endif --}}
 
-                                @if($entrada->tipo == 'E')
+                                {{-- @if($entrada->tipo == 'E')
                                     <td WIDTH="8%">&nbsp;HORA</td>
                                     <td class="caja" WIDTH="5%">
                                         {{ date('H:i', strtotime($entrada->created_at)) }}
@@ -196,7 +196,11 @@
                                 @else
                                     <td WIDTH="8%"></td>
                                     <td WIDTH="5%"></td>
-                                @endif
+                                @endif --}}
+                                <td WIDTH="8%">&nbsp;HORA</td>
+                                <td class="caja" WIDTH="5%">
+                                    {{ date('H:i', strtotime($entrada->created_at)) }}
+                                </td>   
                                 <td WIDTH="10%">&nbsp;Nº HOJAS</td>
                                 <td class="caja"  WIDTH="33%">{{ $entrada->nro_hojas != null? $entrada->nro_hojas:'S/N' }}</td>
                             </tr>
@@ -243,9 +247,9 @@
                             @if($entrada->tipo == 'I')
                                 @forelse($entrada->vias as $der)
                                     <table class="alltables" style="margin-top: 5px;">
-                                        <tr>
+                                        <tr style="text-transform: uppercase;">
                                             <td style="width: 20%">VIA</td>
-                                            <td class="box-margin">{{ $der->nombre }} {{$der->cargo}}</td>
+                                            <td class="box-margin">{{ $der->nombre }} - {{$der->cargo}}</td>
                                         </tr>
                                     </table>
                                 @empty
@@ -483,7 +487,7 @@
                         </table>
                     </div>
                     <div class="text-center">
-                        <p style="font-size: 13px;"><b>NOTA:</b> Esta Papeleta no debera ser separada ni extraviada del documento al cual se encuentra adherida por constituir parde del mismo</p>
+                        <p style="font-size: 13px;"><b>NOTA:</b> Esta Papeleta no debera ser separada ni extraviada del documento al cual se encuentra adherida por constituir parte del mismo</p>
                     </div>
                     <div>
                         <table style="width: 100%;">
