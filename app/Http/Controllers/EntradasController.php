@@ -727,7 +727,7 @@ class EntradasController extends Controller
                     $origen = $unidad->nombre;
                 }
                 // return $data->people_id_para;
-                $destino = $this->getPeople($data->people_id_para);
+                // $destino = $this->getPeople($data->people_id_para);
             }
             
             return view('bandeja.read', compact('data', 'origen', 'destino','derivacion'));
