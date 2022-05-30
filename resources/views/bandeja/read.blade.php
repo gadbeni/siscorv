@@ -99,13 +99,13 @@
                                     <h3 class="panel-title">Destino</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    @if ($destino)
+                                    {{-- @if ($destino)
                                         <p>
                                             {{ $destino->nombre }} <br>
                                             <b style="font-weight: bold">{{ $destino->cargo }}</b> <br>
                                             <b style="font-weight: bold">{{ $destino->unidad }} {{ $destino->direccion ? ' - '.$destino->direccion : '' }}</b>
                                         </p>
-                                    @endif
+                                    @endif --}}
                                 </div>
                                 <hr style="margin:0;">
                             </div>
