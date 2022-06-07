@@ -85,9 +85,9 @@
                 
                 e.preventDefault();
                 $('#div-results').empty();
-                alert('Generando Reporte...');
+                // alert('Generando Reporte...');
 
-                // $('#div-results').html('<div class="loading"><img src="images/loader.gif" alt="loading" /><br/>Un momento, por favor...</div>');
+                // $('#div-results').html('<div class="loading"><img src="https://w7.pngwing.com/pngs/477/964/png-transparent-wait-load" alt="loading" /><br/>Un momento, por favor...</div>');
                 // $('#div-results').html('<div class="loader"></div>');
                 // $('#div-results').loading({message: 'Cargando...'});
                 $.post($('#form-search').attr('action'), $('#form-search').serialize(), function(res){

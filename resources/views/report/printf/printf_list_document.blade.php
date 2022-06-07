@@ -39,7 +39,7 @@
             @forelse ($data as $item)
                 <tr>
                     <td>{{ $count }}</td>
-                    <td>{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}</td>                               
+                    <td>{{date('d/m/Y H:i:s', strtotime($item->created_at))}}</td>                               
                     <td>{{ $item->funcionario_nombre_para }} - {{ $item->funcionario_cargo_para }}</td>    
                     <td>{{ $item->origen }}</td>  
                     <td>{{ $item->remitente }}</td>                               
