@@ -61,6 +61,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
 
+    //Report RDE
+    Route::get('report_list-document', [ReportController::class, 'view_list_document'])->name('view.list-document');
+    Route::post('report/list-document', [ReportController::class, 'printf_list_document'])->name('prinft.list-document');
+
     // Report
     Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
     Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
