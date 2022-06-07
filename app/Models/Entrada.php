@@ -30,6 +30,10 @@ class Entrada extends Model
 
         'people_id_de', 'job_de', 'people_id_para'
     ];
+
+    public function person(){
+        return $this->belongsTo(Person::class, 'people_id_para', 'id');
+    }
     
     // public function getFechaRegistrotAttribute($value)
     // {

@@ -11,9 +11,47 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Entrada;
 use Dflydev\DotAccessData\Data;
 use Dotenv\Parser\Entry;
+use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class ReportController extends Controller
 {
+    
+    public function view_list_document()
+    {
+        // $data = Entrada::with(['entity', 'person'])->get();
+        // return $data;
+        return view('report.view.view_list-document');
+    }
+
+    public function printf_list_document(Request $request)
+    {
+        // dd($request);
+        $data = Entrada::with(['entity', 'person'])->get();
+        $data = DB::table('entradas as e')
+            ->join('entities as en', 'e.entity_id', 'en.id')
+            ->join('derivations as d', 'e.id', 'd.parent_id')
+            ->select('e.fecha_registro', 'e.remitente', 'en.nombre as origen', 'e.referencia', 'd.funcionario_nombre_para', 'd.funcionario_cargo_para')
+            ->where('e.deleted_at', null)
+            ->where('d.via', 0)
+            ->where('e.fecha_registro', '>=', $request->start)
+            ->where('e.fecha_registro', '<=', $request->finish)
+            // ->where('e.id', 'd.parte_id')
+            ->get();
+        // dd($data);
+        // return view('report.printf.printf_list-document', compact('data'));
+        
+        if($request->print){
+            return view('report.printf.printf_list_document', compact('data'));
+        }else
+        {            
+            return view('report.printf.report_list_document', compact('data'));
+        }
+    }
+
+
+
+
+
     public function view_report_list()
     {
         $categoria = Category::where('deleted_at', null)
