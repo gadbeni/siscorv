@@ -163,7 +163,7 @@
                                         data-off="Externo"
                                         checked 
                                         >
-                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;"></select>
+                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;" required></select>
                                         
                                     </div>
                                     
