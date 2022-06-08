@@ -26,6 +26,7 @@
             <tr>
                 <th>NRO&deg;</th>
                 <th>FECHA</th>
+                <th>CITE</th>
                 <th>DESTINATARIO</th>
                 <th>ORIGEN</th>
                 <th>REMITENTE</th>
@@ -39,7 +40,8 @@
             @forelse ($data as $item)
                 <tr>
                     <td>{{ $count }}</td>
-                    <td>{{date('d/m/Y H:i:s', strtotime($item->created_at))}}</td>                               
+                    <td>{{date('d/m/Y H:i:s', strtotime($item->created_at))}}</td>    
+                    <td>{{ $item->cite }}</td>                            
                     <td>{{ $item->funcionario_nombre_para }} - {{ $item->funcionario_cargo_para }}</td>    
                     <td>{{ $item->origen }}</td>  
                     <td>{{ $item->remitente }}</td>                               
