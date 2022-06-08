@@ -127,7 +127,7 @@
 /* LOADER 8 */
 
 #loader-8:before{
-  content: "";
+  /* content: ""; */
   position: absolute;
   width: 10px;
   height: 10px;
