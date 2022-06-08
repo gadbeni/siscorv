@@ -28,19 +28,19 @@ class ReportController extends Controller
         // dd($request
         $people = persona::where('user_id', Auth::user()->id)->first();
         // $data = Entrada::with(['entity', 'person'])->get();
-        $data = DB::table('entradas as e')
-            // ->leftJoin('entities as en', 'e.entity_id', 'en.id')
-            ->leftJoin('derivations as d', 'e.id', 'd.parent_id')
-            ->select('e.fecha_registro', 'e.cite', 'e.remitente', 'e.referencia')
-            ->where('e.deleted_at', null)
-            // ->where('d.deleted_at', null)
-            ->where('e.people_id_de', $people->people_id)
-            // ->where('d.via', 0)
-            // ->where('e.tipo', 'I')
-            // ->where('e.fecha_registro', '>=', $request->start)
-            // ->where('e.fecha_registro', '<=', $request->finish)
-            ->groupBy('e.id')
-            ->get();
+        // $data = DB::table('entradas as e')
+        //     // ->leftJoin('entities as en', 'e.entity_id', 'en.id')
+        //     ->leftJoin('derivations as d', 'e.id', 'd.parent_id')
+        //     ->select('e.fecha_registro', 'e.cite', 'e.remitente', 'e.referencia')
+        //     ->where('e.deleted_at', null)
+        //     // ->where('d.deleted_at', null)
+        //     ->where('e.people_id_de', $people->people_id)
+        //     // ->where('d.via', 0)
+        //     // ->where('e.tipo', 'I')
+        //     // ->where('e.fecha_registro', '>=', $request->start)
+        //     // ->where('e.fecha_registro', '<=', $request->finish)
+        //     ->groupBy('e.id')
+        //     ->get();
 
 
 
@@ -51,7 +51,7 @@ class ReportController extends Controller
                 })
             ->select('e.created_at', 'e.cite', 'en.nombre as origen', 'e.remitente', 'e.referencia', 'd.funcionario_nombre_para', 'd.funcionario_cargo_para')
             ->where('e.deleted_at', null)
-            ->where('e.people_id_de', $people->people_id)
+            // ->where('e.people_id_de', $people->people_id)
             ->where('e.tipo', 'E')
             ->where('e.created_at', '>=', $request->start)
             ->where('e.created_at', '<=', $request->finish)
