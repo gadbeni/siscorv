@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Persona;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
@@ -40,7 +40,7 @@ class UsersController extends Controller
             }
             else
             {
-                $personas = DB::table('siscorv2.people_exts as s')
+                $personas = DB::table('siscor_v2.people_exts as s')
                 ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
                 ->select(
                     'm.id',
