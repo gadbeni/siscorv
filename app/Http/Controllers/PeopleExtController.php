@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\People;
 use App\Models\PeopleExt;
 use App\Models\Person;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Stmt\Return_;
@@ -74,7 +75,7 @@ class PeopleExtController extends Controller
 
 
         // dd(\App\Models\PeopleExt::with('person')->get());
-        $data = PeopleExt::with(['person'])->where('status',1)->get();
+        $data = PeopleExt::with(['person'])->where('deleted_at', null)->get();
 
 
         $people = DB::connection('mamore')->table('people')
@@ -116,24 +117,30 @@ class PeopleExtController extends Controller
     public function create()
     {
         //
-    }
+    } 
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
         // return $request;
         DB::beginTransaction();
         try {
 
-            $request->merge(['status'=>1]);
-            PeopleExt::create($request->all());
-            DB::commit();
-            return redirect()->route('people_exts.index')->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success']);
+            $ok = PeopleExt::where('person_id', $request->person_id)->where('status', 1)->first();
+
+            if($ok)
+            {
+                 return redirect()->route('people_exts.index')->with(['message' => 'La Persona se encuentra registrada', 'alert-type' => 'error']);
+            }
+            else
+            {
+                $request->merge(['status'=>1]);
+                PeopleExt::create($request->all());
+                DB::commit();
+                return redirect()->route('people_exts.index')->with(['message' => 'Registro creado satisfactoriamente', 'alert-type' => 'success']);
+            }
+            
+            // return redirect()->route('people_exts.index')->with(['message' => 'Persona Externa Registrada Exitosamente.', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -141,38 +148,30 @@ class PeopleExtController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\PeopleExt  $peopleExt
-     * @return \Illuminate\Http\Response
-     */
-    public function show(PeopleExt $peopleExt)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\PeopleExt  $peopleExt
-     * @return \Illuminate\Http\Response
-     */
     public function edit(PeopleExt $peopleExt)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\PeopleExt  $peopleExt
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, PeopleExt $peopleExt)
+    public function baja(Request $request)
     {
-        //
+        // return $request;
+        try {
+            DB::beginTransaction();
+            $peopleExt = PeopleExt::find($request->id);
+            $peopleExt->update(['status'=>0]);
+            DB::commit();
+            return redirect()->route('people_exts.index')->with(['message' => 'Registro dado de baja satisfactoriamente', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function update(Request $request)
+    {
+        return $request;
     }
 
     /**
@@ -181,8 +180,19 @@ class PeopleExtController extends Controller
      * @param  \App\Models\PeopleExt  $peopleExt
      * @return \Illuminate\Http\Response
      */
-    public function destroy(PeopleExt $peopleExt)
+    public function destroy(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $peopleExt = PeopleExt::find($request->id);
+            // return $peopleExt;
+            $peopleExt->update(['deleted_at' => Carbon::now()]);
+            DB::commit();
+            return redirect()->route('people_exts.index')->with(['message' => 'Registro eliminado satisfactoriamente', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            // return $th;
+            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+        }
     }
 }
