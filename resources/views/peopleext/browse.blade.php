@@ -2,7 +2,7 @@
 
 @section('page_title', 'Viendo People')
 
-@if(auth()->user()->hasPermission('browse_people_exts'))
+{{-- @if(auth()->user()->hasPermission('browse_people_exts')) --}}
 
     @section('page_header')
         <div class="container-fluid">
@@ -314,8 +314,8 @@
         </script>
     @stop
 
-@else
+{{-- @else
     @section('content')
         <h1>No tienes permiso</h1>
     @stop
-@endif
+@endif --}}
