@@ -41,14 +41,14 @@
                     <div class="panel panel-bordered">
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table id="dataTable" class="table table-hover">
+                                <table id="dataTable" class="dataTable table-hover">
                                     <thead>
                                         <tr>
                                             <th>Id&deg;</th>
                                             <th>Funcionario</th>
                                             <th>Cargo</th>
-                                            <th>Observación</th>
                                             <th>Estado</th>
+                                            <th></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -57,7 +57,6 @@
                                                     <td>{{$item->id}}</td>
                                                     <td>{{$item->person->first_name}} {{$item->person->last_name}}</td>
                                                     <td>{{$item->cargo}}</td>
-                                                    <td>{{$item->observacion}}</td>
                                                     <td>
                                                         @if ($item->status == 0)
                                                             <label class="label label-danger">Inactivo</label>
@@ -65,6 +64,17 @@
                                                             <label class="label label-success">Activo</label>
                                                         @endif
                                                     </td>
+                                                    <th style="text-align: right">
+                                                        @if ($item->status == 1)
+                                                            <a href="" data-toggle="modal" data-target="#modalBaja" data-id="{{$item->id}}" class="btn btn-sm btn-warning">
+                                                                <i class="voyager-edit"></i> <span>Baja</span>
+                                                            </a>
+                                                            <a href="" data-toggle="modal" data-target="#modalDelete" data-id="{{$item->id}}" class="btn btn-sm btn-danger">
+                                                                <i class="voyager-trash"></i> <span>Eliminar</span>
+                                                            </a>
+                                                        @endif
+                                                        
+                                                    </th>
                                                 </tr>
                                             @endforeach
                                     </tbody>
@@ -138,82 +148,24 @@
         </div>
 
 
-        <div class="modal fade" role="dialog" id="delete_editar">
+        <div class="modal fade" role="dialog" id="modalBaja">
             <div class="modal-dialog">
                 <div class="modal-content">
                 
                     <!-- Modal Header -->
-                    <div class="modal-header btn-success">
-                        <h4 class="modal-title"><i class="voyager-edit"></i>Editar Planilla</h4>
+                    <div class="modal-header btn-warning">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><i class="voyager-edit"></i> Dar de Baja</h4>
                     </div>
-                    {!! Form::open(['route' => 'people_exts.store','class' => 'was-validated'])!!}
+                    {!! Form::open(['route' => 'additional_jobs.baja', 'class' => 'was-validated'])!!}
                     <!-- Modal body -->
                     <div class="modal-body">
                         <input type="hidden" name="id" id="id">
-                        <div class="row">
-                            <div class="col-md-4">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><b>CI:</b></span>
-                            </div>
-                            <input type="text" class="form-control" id="ci" name="ci"required>
-                            </div>
-                            <div class="col-md-8">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Funcionario:</b></span>
-                            </div>
-                            <input type="text" class="form-control" id="funcionario" name="funcionario" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Sueldo Bs:</b></span>
-                                </div>
-                                <input type="number" step="any" class="form-control" id="sueldo" name="sueldo" required>
-                            </div>
-                            <div class="col-md-8">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Cargo:</b></span>
-                            </div>
-                            <input type="text" class="form-control" id="cargo" name="cargo"required>
-                            </div>                        
-                        </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Dias Trabajados:</b></span>
-                                </div>
-                                <input type="number" step="any" class="form-control" id="dia" name="dia" required>
-                            </div>
-                            <div class="col-md-4">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Monto Factura:</b></span>
-                            </div>
-                            <input type="number" step="any" class="form-control" id="montofactura" name="montofactura"required>
-                            </div> 
-                            <div class="col-md-4">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text"><b>RC-IVA:</b></span>
-                                </div>
-                                <input type="number" step="any" class="form-control" id="rciva" name="rciva"required>
-                            </div>                
-                        </div>
-                        <div class="row">    
-                            <div class="col-md-4">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Total:</b></span>
-                                </div>
-                                <input type="number" step="any" class="form-control" id="total" name="total"required>
-                            </div>        
-                            <div class="col-md-4">
-                                <div class="input-group-prepend">
-                                <span class="input-group-text"><b>Liquido Pagable:</b></span>
-                                </div>
-                                <input type="number" step="any" class="form-control" id="liqpagable" name="liqpagable"required>
-                            </div>                
-                        </div>
-                        
+                        <div class="text-center" style="text-transform:uppercase">
+                            <i class="voyager-warning" style="color: orange; font-size: 5em;"></i>
+                            <br>
+                            <p><b>Dar de Baja....!</b></p>
+                        </div>                      
                         
                         
                     </div>
@@ -222,8 +174,8 @@
                     <div class="modal-footer justify-content-between">
                         <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
                         </button>
-                        <button type="submit" class="btn btn-success btn-sm" title="Registrar..">
-                            Registrar
+                        <button type="submit" class="btn btn-warning btn-sm" title="Baja..">
+                            Baja
                         </button>
                     </div>
                     {!! Form::close()!!} 
@@ -232,14 +184,13 @@
             </div>
         </div>
 
-        {{-- Single delete modal --}}
-        <div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">
+        <div class="modal fade modal-danger" tabindex="-1" id="modalDelete" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    {!! Form::open(['route' => 'people_exts.store', 'method' => 'DELETE']) !!}
+                    {!! Form::open(['route' => 'additional_jobs.delete', 'method' => 'DELETE']) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><i class="voyager-trash"></i> Desea eliminar el siguiente registro?</h4>
+                        <h4 class="modal-title"><i class="voyager-trash"></i> Eliminar</h4>
                     </div>
                     <div class="modal-body">
                         <input type="hidden" name="id" id="id">
@@ -271,11 +222,60 @@
         <script src="{{ url('js/main.js') }}"></script>
         <script>
             $(document).ready(() => {
-                $('#dataTable').DataTable({
-                    language
-                });
+                $('.dataTable').DataTable({
+                    language: {
+                        // "order": [[ 0, "desc" ]],
+                        sProcessing: "Procesando...",
+                        sLengthMenu: "Mostrar _MENU_ registros",
+                        sZeroRecords: "No se encontraron resultados",
+                        sEmptyTable: "Ningún dato disponible en esta tabla",
+                        sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                        sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+                        sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+                        sSearch: "Buscar:",
+                        sInfoThousands: ",",
+                        sLoadingRecords: "Cargando...",
+                        oPaginate: {
+                            sFirst: "Primero",
+                            sLast: "Último",
+                            sNext: "Siguiente",
+                            sPrevious: "Anterior"
+                        },
+                        oAria: {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        },
+                        buttons: {
+                            copy: "Copiar",
+                            colvis: "Visibilidad"
+                        }
+                    },
+                    order: [[ 0, 'desc' ]],
+                })
             });
 
+            $('#modalBaja').on('show.bs.modal', function (event) {
+                // alert('hola');
+                var button = $(event.relatedTarget) 
+
+                var id = button.data('id')
+
+                var modal = $(this)
+                modal.find('.modal-body #id').val(id)
+                
+            });
+
+            $('#modalDelete').on('show.bs.modal', function (event) {
+                // alert('hola');
+                var button = $(event.relatedTarget) 
+
+                var id = button.data('id')
+                // alert(34)
+
+                var modal = $(this)
+                modal.find('.modal-body #id').val(id)
+                
+            });
            
 
         </script>

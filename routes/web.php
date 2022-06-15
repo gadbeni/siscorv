@@ -77,6 +77,8 @@ Route::group(['prefix' => 'admin'], function () {
 
     //Cargos Adicionales
     Route::resource('additional_jobs', AdditionalJobController::class);
+    Route::post('additional_jobs/baja', [AdditionalJobController::class, 'baja'])->name('additional_jobs.baja');
+    Route::delete('additional_jobs/delete', [AdditionalJobController::class, 'destroy'])->name('additional_jobs.delete');
 
 
     
