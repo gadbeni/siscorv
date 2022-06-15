@@ -41,15 +41,13 @@
                     <div class="panel panel-bordered">
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table id="dataTable" class="table table-hover">
+                                <table id="dataTable" class="dataTable table-hover">
                                     <thead>
                                         <tr>
                                             <th>Id&deg;</th>
                                             <th>C.I.</th>
                                             <th>Funcionario</th>
                                             <th>Cargo</th>
-                                            <!-- <th>Direccion</th>
-                                            <th>Unidad</th> -->
                                             <th>Estado</th>
                                             <th></th>
                                         </tr>
@@ -61,7 +59,7 @@
                                                     <td>{{$item->person->ci}}</td>
                                                     <td>{{$item->person->first_name}} {{$item->person->last_name}}</td>
                                                     <td>{{$item->cargo}}</td>
-                                                    <td>{{$item->observacion}}</td>
+                                                    {{-- <td>{{$item->observacion}}</td> --}}
                                                     <td>
                                                         @if ($item->status == 0)
                                                             <label class="label label-danger">Inactivo</label>
@@ -257,9 +255,36 @@
         {{-- <script src="{{ url('js/main.js') }}"></script> --}}
         <script>
             $(document).ready(() => {
-                $('#dataTable').DataTable({
-                    language
-                });
+                $('.dataTable').DataTable({
+                    language: {
+                        // "order": [[ 0, "desc" ]],
+                        sProcessing: "Procesando...",
+                        sLengthMenu: "Mostrar _MENU_ registros",
+                        sZeroRecords: "No se encontraron resultados",
+                        sEmptyTable: "Ningún dato disponible en esta tabla",
+                        sInfo: "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                        sInfoEmpty: "Mostrando registros del 0 al 0 de un total de 0 registros",
+                        sInfoFiltered: "(filtrado de un total de _MAX_ registros)",
+                        sSearch: "Buscar:",
+                        sInfoThousands: ",",
+                        sLoadingRecords: "Cargando...",
+                        oPaginate: {
+                            sFirst: "Primero",
+                            sLast: "Último",
+                            sNext: "Siguiente",
+                            sPrevious: "Anterior"
+                        },
+                        oAria: {
+                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                        },
+                        buttons: {
+                            copy: "Copiar",
+                            colvis: "Visibilidad"
+                        }
+                    },
+                    order: [[ 0, 'desc' ]],
+                })
             });
 
             $('#modalBaja').on('show.bs.modal', function (event) {
