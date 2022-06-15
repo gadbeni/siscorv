@@ -280,13 +280,14 @@
                         </table>
                             
                         @if($entrada->tipo == 'E')
-                        <table class="alltables" style="margin-top: 5px;">
-                            <tr>
-                                <td style="width: 20%">REMITENTE</td>
-                                <td class="box-margin">{{ $entrada->remitente }}</td>
-                            </tr>
-                        </table>
+                           <table class="alltables" style="margin-top: 5px;">
+                                <tr>
+                                    <td style="width: 20%">REMITENTE</td>
+                                    <td class="box-margin">{{ $entrada->remitente }}</td>
+                                </tr>
+                            </table>
                         @endif
+                        
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">REF</td>
