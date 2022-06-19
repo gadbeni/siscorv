@@ -7,7 +7,7 @@
         <div class="container" data-aos="fade-up">
 
             <div class="section-title">
-            <h2>SERVICIOS</h2>
+            <h2>SERVICIOSs</h2>
             <h3>¿Qué <span>Necesitás Hacer?</span></h3>
             </div>
 

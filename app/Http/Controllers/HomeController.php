@@ -9,6 +9,8 @@ use App\Models\Entrada;
 use App\Models\RequestsClient;
 use App\Models\Derivation;
 use Carbon\Carbon;
+use App\Models\OldData;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -20,6 +22,7 @@ class HomeController extends Controller
                 'user_agent' => $_SERVER['HTTP_USER_AGENT']
             ]);
         } catch (\Throwable $th) {}
+
         return view('welcome');
     }
 

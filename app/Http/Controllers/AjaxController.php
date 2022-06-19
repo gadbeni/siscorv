@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\OldData;
 use App\Models\PeopleExt;
 use App\Models\Entrada;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
@@ -195,9 +195,36 @@ class AjaxController extends Controller
         $data = [];
         $msg = '';
         $cont = 0;
+
+        $data = OldData::select('razon_social','provincia','municipio','localidad')->get();
+
+        $datas = DB::connection('sidepej')->table('reservacoormunicipals as r')
+                ->join('provincias as p', 'r.provincia_id', 'p.id')
+                ->join('municipios as m', 'r.municipio_id', 'm.id')
+                ->select('r.nombre as razon_social', 'p.nombre as provincia', 'm.municipio as municipio', 'r.localidad')->get();
+
+      
+
+        
+
         if ($search) {
-           $data = OldData::where('razon_social','like','%'.$search.'%')
+            $data = OldData::where('razon_social','like','%'.$search.'%')
                             ->select('razon_social','provincia','municipio','localidad')->get();
+
+            $datas = DB::connection('sidepej')->table('reservacoormunicipals as r')
+                            ->join('provincias as p', 'r.provincia_id', 'p.id')
+                            ->join('municipios as m', 'r.municipio_id', 'm.id')
+                            ->where('r.nombre','like','%'.$search.'%')
+                            ->select('r.nombre as razon_social', 'p.nombre as provincia', 'm.municipio as municipio', 'r.localidad')->get();
+
+            $j= count($data);
+
+            $i = 0;
+            while ($i < count($datas)) {
+                $data->push($datas[$i]);
+                $i++;
+            }
+            
             $msg = $data->count() ? 'El nombre existe en la sgte lista:' : 'El nombre no existe puede proceder a realizar su tramite';
             $cont = $data->count() ? 1 : 0;
         }
