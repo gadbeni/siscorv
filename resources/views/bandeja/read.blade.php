@@ -12,8 +12,8 @@
         <div class="col-md-6 text-right" style="margin-top: 40px;">
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
-                    $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('deleted_at', NULL)->count();
-                    
+                    $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('entrada_id',$data->id)->where('deleted_at', NULL)->count();
+                    // dd($data);
                 @endphp
                 @if ($data->estado_id != 4 && $childrens == 0)
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
