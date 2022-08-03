@@ -69,13 +69,22 @@
                                                     </td>
                                                     <th style="text-align: right">
                                                         @if ($item->status == 1)
+                                                            <a href="" data-toggle="modal" data-target="#modalEditar" data-id="{{$item->id}}" class="btn btn-sm btn-primary">
+                                                                <i class="voyager-edit"></i> <span>Editar</span>
+                                                            </a>
                                                             <a href="" data-toggle="modal" data-target="#modalBaja" data-id="{{$item->id}}" class="btn btn-sm btn-warning">
                                                                 <i class="voyager-edit"></i> <span>Baja</span>
                                                             </a>
                                                             <a href="" data-toggle="modal" data-target="#modalDelete" data-id="{{$item->id}}" class="btn btn-sm btn-danger">
                                                                 <i class="voyager-trash"></i> <span>Eliminar</span>
                                                             </a>
+                                                        @else
+
+                                                            <a href="" data-toggle="modal" data-target="#modalActivo" data-id="{{$item->id}}" class="btn btn-sm btn-success">
+                                                                <i class="voyager-check"></i> <span>Habilitar</span>
+                                                            </a>
                                                         @endif
+
                                                         
                                                     </th>
                                                 </tr>
@@ -217,6 +226,42 @@
             </div>
         </div>
 
+        <div class="modal fade" role="dialog" id="modalActivo">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header btn-success">
+                        <h4 class="modal-title"><i class="voyager-check"></i> Habilitar Persona</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    {!! Form::open(['route' => 'people_exts.activo', 'class' => 'was-validated'])!!}
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="id">
+                        <div class="text-center" style="text-transform:uppercase">
+                            <i class="voyager-check" style="color: rgb(31, 142, 0); font-size: 5em;"></i>
+                            <br>
+                            <p><b>Habilitar Persona....!</b></p>
+                        </div>                      
+                        
+                        
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-success btn-sm" title="Baja..">
+                            Habilitar
+                        </button>
+                    </div>
+                    {!! Form::close()!!} 
+                    
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade modal-danger" tabindex="-1" id="modalDelete" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -288,6 +333,16 @@
             });
 
             $('#modalBaja').on('show.bs.modal', function (event) {
+                // alert('hola');
+                var button = $(event.relatedTarget) 
+
+                var id = button.data('id')
+
+                var modal = $(this)
+                modal.find('.modal-body #id').val(id)
+                
+            });
+            $('#modalActivo').on('show.bs.modal', function (event) {
                 // alert('hola');
                 var button = $(event.relatedTarget) 
 

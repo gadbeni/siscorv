@@ -169,6 +169,21 @@ class PeopleExtController extends Controller
         }
     }
 
+    public function activo(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $peopleExt = PeopleExt::find($request->id);
+            $peopleExt->update(['status'=>1]);
+            DB::commit();
+            return redirect()->route('people_exts.index')->with(['message' => 'Exitos..', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollBack();
+            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+        }
+    }
+
     public function update(Request $request)
     {
         return $request;
