@@ -16,6 +16,8 @@ use App\Http\Controllers\TramiteController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PeopleExtController;
 use App\Http\Controllers\AdditionalJobController;
+use App\Http\Controllers\CategoryController;
+use App\Models\Category;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,8 +84,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('additional_jobs/baja', [AdditionalJobController::class, 'baja'])->name('additional_jobs.baja');
     Route::delete('additional_jobs/delete', [AdditionalJobController::class, 'destroy'])->name('additional_jobs.delete');
 
-
-    
+    Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
 
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite

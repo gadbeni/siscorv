@@ -64,7 +64,7 @@
                                             </option>
                                         </select>
                                     </div>
-                                    <div id="div_category" class="form-group col-md-6">
+                                    <div id="div_category" @if(auth()->user()->hasRole(['ventanilla'])) class="form-group col-md-4" @else class="form-group col-md-6" @endif>
                                         <label class="control-label">Tipo Trámite</label>
                                         <select name="category_id" class="form-control select2" id="select-category" required>
                                             <option value="" selected>Seleccione el tipo</option>
@@ -75,6 +75,26 @@
                                             @endforeach                                        
                                         </select>
                                     </div>
+                                    {{-- <div id="div_category" @if(auth()->user()->hasRole(['ventanilla'])) class="form-group col-md-4" @else class="form-group col-md-6" @endif>
+                                        <label class="control-label">Tipo Trámite</label>
+                                        <select name="category_id" class="form-control select2" id="select-category" required>
+                                            <option value="" selected>Seleccione el tipo</option>
+                                            @foreach ($category as $item)
+                                            <option {{(int)old('category_id') === $item->id ||$entrada->category_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->organization->count() > 0) ? substr($item->organization->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option> 
+                                            @endforeach                                        
+                                        </select>
+                                    </div> --}}
+                                    @if (auth()->user()->hasRole(['ventanilla']))
+                                        <div class="form-group col-md-2">
+                                        <label class="control-label">Tipo Trámite</label>
+                                        <br>
+                                            <a href="#" title="Nuevo cliente" data-target="#modal-create-customer" data-toggle="modal" class="btn btn-primary">
+                                                <i class="fa-solid fa-person-circle-plus"></i> <span>Persona</span>
+                                            </a>
+                                        </div>
+                                    @endif
+                                    
+
                                     <div id="divcite" class="form-group tip col-md-6">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
@@ -198,6 +218,54 @@
                 </div>
             </div>
         </div>
+
+
+
+
+
+        <form action="{{route('categories.store')}}" id="form-create-customer" method="POST">
+            <div class="modal fade" tabindex="-1" id="modal-create-customer" role="dialog">
+                <div class="modal-dialog modal-primary">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><i class="fa-solid fa-person-circle-plus"></i> Agregar Tipos de Tramites</h4>
+                        </div>
+                        <div class="modal-body">
+                            @csrf
+                           
+    
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <small>Categoria</small>
+                                        <select name="organization_id" id="organization_id" class="form-control select2"  required>
+                                            <option value="" selected>Seleccione el tipo</option>
+                                            @foreach (\App\Models\Organization::where('tipo','tptramites')->get() as $item)
+                                            <option value="{{ $item->id }}">{{ $item->nombre}}</option> 
+                                            @endforeach                                        
+                                        </select>
+                                    </div>
+                                </div> 
+                            </div>  
+    
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="form-group">
+                                        <small>Nombre.</small>
+                                        <input type="text" name="nombre" id="nombre" class="form-control">
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <input type="submit" class="btn btn-primary btn-save-customer" value="Guardar">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     @stop
 
 
@@ -278,6 +346,34 @@
             var auxl=0;
             var auxn=0;
             $(document).ready(function(){
+
+                $('#form-create-customer').submit(function(e){
+                    e.preventDefault();
+                    $('.btn-save-customer').attr('disabled', true);
+                    $('.btn-save-customer').val('Guardando...');
+                    $.post($(this).attr('action'), $(this).serialize(), function(data){
+                        if(data.category.id){
+                            // $('#select-category').trigger('reset');
+                            // $('#div_category').load()
+                            toastr.success('Categoria Registrada..', 'Éxito');
+                            $(this).trigger('reset');
+                        }else{
+                            toastr.error(data.error, 'Error');
+                        }
+                    })
+                    .always(function(){
+                        $('.btn-save-customer').attr('disabled', false);
+                        $('.btn-save-customer').val('Guardar');
+                        $('#nombre').val('');
+                        $('#organization_id').val('').trigger('change');
+
+
+                        $('#modal-create-customer').modal('hide');
+                    });
+                });
+
+
+
 
 
                // $('#divcite').fadeOut();

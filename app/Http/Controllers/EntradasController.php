@@ -17,6 +17,7 @@ use App\Models\Archivo;
 use App\Models\Derivation;
 use App\Models\Persona;
 use App\Models\PeopleExt;
+use App\Models\Category;
 use App\Models\Person;
 use Database\Seeders\PersonasTableSeeder;
 use PhpParser\Node\Stmt\Return_;
@@ -203,9 +204,12 @@ class EntradasController extends Controller
             
             $funcionario = $this->getPeopleExt($user_auth->people_id);
         }
-        // return $funcionario;
+        
+        $category = Category::with(['organization' => function($q){
+            $q->where('tipo','tptramites');
+        }])->get() ;
      
-        return view('entradas.edit-add', compact('entrada','funcionario'));
+        return view('entradas.edit-add', compact('entrada','funcionario', 'category'));
     }
 
     /**
