@@ -186,7 +186,37 @@ class PeopleExtController extends Controller
 
     public function update(Request $request)
     {
-        return $request;
+        // return $request;
+        DB::beginTransaction();
+        try {
+            $ok = PeopleExt::where('id', $request->id)->first();
+            if($ok->person_id == $request->person_id)
+            {
+                $ok->update(['observacion'=>$request->observacion, 'unidad_id'=>$request->unidad_id, 'direccion_id'=> $request->direccion_id, 'cargo'=>$request->cargo]);
+                // DB::commit();
+                // return redirect()->route('people_exts.index')->with(['message' => 'Registro editado satisfactoriamente', 'alert-type' => 'success']);
+            }
+            else
+            {
+                $aux = PeopleExt::where('person_id', $request->person_id)->where('status', 1)->first();
+
+                if($aux)
+                {
+                    return redirect()->route('people_exts.index')->with(['message' => 'La Persona se encuentra registrada y con cargo activo', 'alert-type' => 'error']);
+                }
+                else
+                {
+                    $ok->update(['observacion'=>$request->observacion, 'unidad_id'=>$request->unidad_id, 'direccion_id'=> $request->direccion_id, 'cargo'=>$request->cargo, 'person_id'=>$request->person_id]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('people_exts.index')->with(['message' => 'Registro editado satisfactoriamente', 'alert-type' => 'success']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+        }
     }
 
     /**

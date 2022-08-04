@@ -69,7 +69,7 @@
                                                     </td>
                                                     <th style="text-align: right">
                                                         @if ($item->status == 1)
-                                                            <a href="" data-toggle="modal" data-target="#modalEditar" data-id="{{$item->id}}" class="btn btn-sm btn-primary">
+                                                            <a href="" data-toggle="modal" data-target="#modalEditar" data-item="{{$item}}" class="btn btn-sm btn-primary">
                                                                 <i class="voyager-edit"></i> <span>Editar</span>
                                                             </a>
                                                             <a href="" data-toggle="modal" data-target="#modalBaja" data-id="{{$item->id}}" class="btn btn-sm btn-warning">
@@ -104,8 +104,8 @@
                 
                     <!-- Modal Header -->
                     <div class="modal-header btn-success">
-                        <h4 class="modal-title"><i class="voyager-plus"></i>Registrar Personal Externo</h4>
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><i class="voyager-plus"></i> Registrar Personal Externo</h4>
                     </div>
                     {!! Form::open(['route' => 'people_exts.store','class' => 'was-validated'])!!}
                     <!-- Modal body -->
@@ -181,6 +181,99 @@
                         </button>
                         <button type="submit" class="btn btn-success btn-sm" title="Registrar..">
                             Registrar
+                        </button>
+                    </div>
+                    {!! Form::close()!!} 
+                    
+                </div>
+            </div>
+        </div>
+
+        {{-- modal Editar --}}
+        <div class="modal fade" role="dialog" id="modalEditar">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                
+                    <!-- Modal Header -->
+                    <div class="modal-header btn-primary">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><i class="voyager-edit"></i> Editar Persona</h4>                        
+                    </div>
+                    {!! Form::open(['route' => 'people_exts.update','class' => 'was-validated'])!!}
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <input type="text" id="id" name="id">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><b>Persona:</b></span>
+                                    </div>
+                                    <select name="person_id" id="person_id" class="form-control select2" required>
+                                        <option value="">Seleccione una opcion</option>
+                                        @foreach($people as $data)
+                                            <option value="{{$data->id}}">{{$data->first_name}} {{$data->last_name}}</option>
+                                        @endforeach
+                                    </select>          
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><b>Direccion:</b></span>
+                                    </div>
+                                    <select name="direccion_id" id="direccion_id" class="form-control select2" required>
+                                        <option value="">Seleccione una opcion</option>
+                                        @foreach($direcciones as $data)
+                                            <option value="{{$data->id}}">{{$data->nombre}}</option>
+                                        @endforeach
+                                    </select>          
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><b>Unidad:</b></span>
+                                    </div>
+                                    <select name="unidad_id" id="unidad_id" class="form-control select2" required>
+                                        <option value="">Seleccione una opcion</option>
+                                        @foreach($unidades as $data)
+                                            <option value="{{$data->id}}">{{$data->nombre}}</option>
+                                        @endforeach
+                                    </select>          
+                                </div>
+                            </div> 
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text"><b>Cargo:</b></span>
+                                </div>
+                                <input type="text" class="form-control" id="cargo" name="cargo" required>
+                            </div>                      
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="input-group-prepend">
+                                <span class="input-group-text"><b>Observación:</b></span>
+                                </div>
+                                <textarea name="observacion" id="observacion" class="form-control" rows="3"></textarea>
+                            </div>             
+                        </div>    
+                        
+                        
+                    </div>
+                    
+                    <!-- Modal footer -->
+                    <div class="modal-footer justify-content-between">
+                        <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-sm" title="Registrar..">
+                            Editar
                         </button>
                     </div>
                     {!! Form::close()!!} 
@@ -340,6 +433,21 @@
 
                 var modal = $(this)
                 modal.find('.modal-body #id').val(id)
+                
+            });
+            $('#modalEditar').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget) 
+
+                var item = button.data('item')
+                // alert(item)
+
+                var modal = $(this)
+                modal.find('.modal-body #id').val(item.id)
+                modal.find('.modal-body #person_id').val(item.person_id).trigger('change')   
+                modal.find('.modal-body #direccion_id').val(item.direccion_id).trigger('change')   
+                modal.find('.modal-body #unidad_id').val(item.unidad_id).trigger('change')   
+                modal.find('.modal-body #observacion').val(item.observacion)
+                modal.find('.modal-body #cargo').val(item.cargo)
                 
             });
             $('#modalActivo').on('show.bs.modal', function (event) {

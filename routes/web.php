@@ -74,6 +74,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('people_exts', PeopleExtController::class);
     Route::post('people_exts/baja', [PeopleExtController::class, 'baja'])->name('people_exts.baja');
     Route::post('people_exts/activo', [PeopleExtController::class, 'activo'])->name('people_exts.activo');
+    Route::post('people_exts/update', [PeopleExtController::class, 'update'])->name('people_exts.update');
     Route::delete('people_exts/delete', [PeopleExtController::class, 'destroy'])->name('people_exts.delete');
 
     //Cargos Adicionales
