@@ -86,10 +86,10 @@
                                     </div> --}}
                                     @if (auth()->user()->hasRole(['ventanilla']))
                                         <div class="form-group col-md-2">
-                                        <label class="control-label">Tipo Trámite</label>
+                                        {{-- <label class="control-label">Tipo Trámite</label> --}}
                                         <br>
                                             <a href="#" title="Nuevo cliente" data-target="#modal-create-customer" data-toggle="modal" class="btn btn-primary">
-                                                <i class="fa-solid fa-person-circle-plus"></i> <span>Persona</span>
+                                                <i class="voyager-plus"></i><span> Nuevo</span>
                                             </a>
                                         </div>
                                     @endif
@@ -366,7 +366,6 @@
                         $('.btn-save-customer').val('Guardar');
                         $('#nombre').val('');
                         $('#organization_id').val('').trigger('change');
-
 
                         $('#modal-create-customer').modal('hide');
                     });
