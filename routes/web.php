@@ -18,6 +18,7 @@ use App\Http\Controllers\PeopleExtController;
 use App\Http\Controllers\AdditionalJobController;
 use App\Http\Controllers\CategoryController;
 use App\Models\Category;
+use App\Http\Controllers\MaintenanceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,10 @@ Route::get('login', function () {
 Route::get('/', [HomeController::class, 'index']);
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 Route::get('/buscartramite', [HomeController::class, 'searchtramite']);
+Route::get('/maintenance', [MaintenanceController::class , 'maintenance']);
 
 Route::group(['prefix' => 'admin'], function () {
+    
     Voyager::routes();
 
     // Entradas

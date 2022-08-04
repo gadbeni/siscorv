@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Persona;
 use App\Models\PeopleExt;
 use App\Models\User;
+use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class VoyagerAuthController extends BaseVoyagerAuthController
 {
     public function redirectTo(){
+        // return 1;
+        if(env('APP_MAINTENANCE') )
+        {
+            // return 1;
+            Auth::logout();
+            return 'maintenance';
+        }
+        return 0;
         if(Auth::user()->role_id == 1){
             return 'admin';
         }
