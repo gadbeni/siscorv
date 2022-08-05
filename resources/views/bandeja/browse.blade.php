@@ -108,6 +108,7 @@
                                                                 @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
                                                                 @endif
+                                                                
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)

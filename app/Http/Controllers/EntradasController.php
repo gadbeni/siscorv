@@ -637,6 +637,10 @@ class EntradasController extends Controller
                     return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
                 }
             }
+            if($request->der_id)
+            {
+                Derivation::where('id', $request->der_id)->update(['derivation' => 1, 'ok' => 'SI']);
+            }
             return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             DB::rollback();
@@ -681,11 +685,7 @@ class EntradasController extends Controller
                                     'parents'
                                 ])
                                 ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation')
-                                ->where('ok', '=', 'NO')
-                                ->where('id', '>=', 1)
-                                ->where('id', '<=', 50821)->get();
-                                // ->where('people_id_para', 1142)->get();
-                                // ->where('people_id_para', $funcionario_id)->get();1158
+                                ->where('people_id_para', $funcionario_id)->get();
             
             // return $derivaciones;
             // foreach($derivaciones as $item)
@@ -693,29 +693,29 @@ class EntradasController extends Controller
             //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
             // }
             
-            DB::beginTransaction();    
-            try {
-                foreach($derivaciones as $item)
-                {
-                    $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
-                    if($item->okderivado > 0)
-                    {
-                        Derivation::where('id', $item->id)->update(['derivation'=> 1, 'ok'=>'SI']);
-                        // return $item->id;
-                    }
-                    else
-                    {
-                        // $item->update(['ok'=>'SI']);
-                        Derivation::where('id', $item->id)->update(['ok'=>'SI']);
+            // DB::beginTransaction();    
+            // try {
+            //     foreach($derivaciones as $item)
+            //     {
+            //         $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
+            //         if($item->okderivado > 0)
+            //         {
+            //             Derivation::where('id', $item->id)->update(['derivation'=> 1, 'ok'=>'SI']);
+            //             // return $item->id;
+            //         }
+            //         else
+            //         {
+            //             // $item->update(['ok'=>'SI']);
+            //             Derivation::where('id', $item->id)->update(['ok'=>'SI']);
 
-                    }
-                }
-                DB::commit();
+            //         }
+            //     }
+            //     DB::commit();
              
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                return 0;
-            }
+            // } catch (\Throwable $th) {
+            //     DB::rollBack();
+            //     return 0;
+            // }
            
         }
         // return $derivaciones;
