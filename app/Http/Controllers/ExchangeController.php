@@ -100,7 +100,7 @@ class ExchangeController extends Controller
 
             } catch (\Throwable $th) {
                 DB::rollBack();
-                return 0;
+                // return 0;
                 return redirect()->route('exchange.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
             }
         }
