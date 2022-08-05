@@ -681,9 +681,10 @@ class EntradasController extends Controller
                                     'parents'
                                 ])
                                 ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation')
-                                // ->where('id', '>=', 18000)
-                                // ->where('id', '<=', 25000)->get();
-                                ->where('people_id_para', 1142)->get();
+                                ->where('ok', '=', 'NO')
+                                ->where('id', '>=', 1)
+                                ->where('id', '<=', 10000)->get();
+                                // ->where('people_id_para', 1142)->get();
                                 // ->where('people_id_para', $funcionario_id)->get();1158
             
             // return $derivaciones;
