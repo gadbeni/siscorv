@@ -11,7 +11,7 @@
     <div class="panel panel-bordered">
         <div class="panel-body">
             <div class="table-responsive">
-                <table style="width:100%"  class="table table-bordered table-striped table-sm">
+                <table style="width:100%"  class="table dataTable table-bordered table-striped table-sm">
                     <thead>
                         <tr>
                             <th><label>
@@ -19,7 +19,7 @@
                                 Marcar Todo
                             </label></th>
                             {{-- <th>Item</th> --}}
-                            <th>ID</th>
+                            {{-- <th>ID</th> --}}
                             <th>HR</th>
                             <th>Fecha de derivación</th>
                             <th>Nro. de cite</th>
@@ -41,7 +41,7 @@
                                     </label>
                                 </td>
                                 {{-- <td>{{ $i}}</td> --}}
-                                <td>{{ $item->entrada->id }}</td>
+                                {{-- <td>{{ $item->entrada->id }}</td> --}}
                                 <td style="min-width: 100px !important">
                                     {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
                                     {{-- @if($item->okderivado > 0)
