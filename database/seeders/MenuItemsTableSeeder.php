@@ -463,8 +463,8 @@ class MenuItemsTableSeeder extends Seeder
                 'parent_id' => 14,
                 'order' => 1,
                 'created_at' => '2022-08-05 09:11:17',
-                'updated_at' => '2022-08-05 09:15:56',
-                'route' => 'exchange.index',
+                'updated_at' => '2022-08-05 14:03:43',
+                'route' => 'exchanges.index',
                 'parameters' => 'null',
             ),
         ));

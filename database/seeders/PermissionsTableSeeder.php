@@ -68,14 +68,14 @@ class PermissionsTableSeeder extends Seeder
 
         //para transferencia de mensaje de persona a persona
         $keys = [
-            'browse_exchange',
+            'browse_exchanges',
             // 'browse_report'
         ];
 
         foreach ($keys as $key) {
             Permission::firstOrCreate([
                 'key'        => $key,
-                'table_name' => 'exchange',
+                'table_name' => 'exchanges',
             ]);
         }
     }
