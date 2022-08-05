@@ -1,7 +1,7 @@
 @extends('voyager::master')
 
 @section('page_title', 'Transferencia de Mensaje')
-@if(auth()->user()->hasPermission('browse_exchange'))
+@if(auth()->user()->hasPermission('browse_exchanges'))
 
 @section('page_header')
 
