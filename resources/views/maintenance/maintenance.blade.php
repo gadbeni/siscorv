@@ -24,7 +24,9 @@
                 <h1 class="display-1 fw-bold">403</h1>
                 <p class="fs-3"> <span class="text-danger">Aviso!</span> Sistema en mantenimiento.</p>
                 <p class="lead">
-                    En estos momentos el sistema se encuentra en mantenimiento, por favor intente más tarde.
+                    {{-- En estos momentos el sistema se encuentra en mantenimiento, por favor intente más tarde. --}}
+                    En estos momentos el sistema se encuentra en mantenimiento, por favor intente dentro de 15 minutos :).
+
                 </p>
                 <img src="images/maintenance.gif" width="250" height="200" border="0">
                 <br>
