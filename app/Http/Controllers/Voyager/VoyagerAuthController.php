@@ -16,13 +16,13 @@ class VoyagerAuthController extends BaseVoyagerAuthController
 {
     public function redirectTo(){
         // return 1;
-        if(env('APP_MAINTENANCE') )
+        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
             // return 1;
             Auth::logout();
             return 'maintenance';
         }
-        return 0;
+       
         if(Auth::user()->role_id == 1){
             return 'admin';
         }
