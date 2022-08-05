@@ -19,6 +19,7 @@ use App\Http\Controllers\AdditionalJobController;
 use App\Http\Controllers\CategoryController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\ExchangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -88,6 +89,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::delete('additional_jobs/delete', [AdditionalJobController::class, 'destroy'])->name('additional_jobs.delete');
 
     Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
+
+    Route::resource('exchange', ExchangeController::class);
+    Route::post('exchange/search/print', [ExchangeController::class, 'print'])->name('exchange-search.print');
+    Route::post('exchange/search/transfer', [ExchangeController::class, 'transfer'])->name('exchange-search.transfer');
 
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite

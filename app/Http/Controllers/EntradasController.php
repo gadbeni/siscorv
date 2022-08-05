@@ -310,7 +310,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             //  dd($th);
             DB::rollback();
-            return 00;
+            // return 00;
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
 
@@ -685,6 +685,7 @@ class EntradasController extends Controller
                                     'parents'
                                 ])
                                 ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation')
+                                ->where('transferred', 0)
                                 ->where('people_id_para', $funcionario_id)->get();
             
             // return $derivaciones;

@@ -16,7 +16,7 @@ class UpdatePermissionsSeeder extends Seeder
         $this->call([
             // RolesTableSeeder::class,
             PermissionsTableSeeder::class,
-            // PermissionRoleTableSeeder::class
+            PermissionRoleTableSeeder::class
         ]);
     }
 }

@@ -26,9 +26,12 @@ class Derivation extends Model
         'funcionario_unidad_id_para', 'funcionario_unidad_para', 'responsable_actual', 'logico', 'fisico', 
         'fecha_fisico', 'observacion', 'estado', 'registro_por', 'actualizado_por', 'entrada_id', 'visto', 
         'rechazo','parent_id','parent_type', 'via',
-        'people_id_de', 'people_id_para'
+        'people_id_de', 'people_id_para',
+        'derivation', 'ok', 'transferred', 'transferredUser_id', 'transferredDetails', 'transferredPeople_id', 'transferredDate'
 
     ];
+
+
 
     function entrada(){
         return $this->belongsTo(Entrada::class, 'entrada_id')->withTrashed();

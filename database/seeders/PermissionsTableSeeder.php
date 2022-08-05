@@ -65,5 +65,18 @@ class PermissionsTableSeeder extends Seeder
                 'table_name' => 'report_rde',
             ]);
         }
+
+        //para transferencia de mensaje de persona a persona
+        $keys = [
+            'browse_exchange',
+            // 'browse_report'
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => 'exchange',
+            ]);
+        }
     }
 }
