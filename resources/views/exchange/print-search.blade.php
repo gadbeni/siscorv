@@ -18,7 +18,7 @@
                                 <input type="checkbox" value="" id="checkAll" onchange="toggleCheckbox(this)">
                                 Marcar Todo
                             </label></th>
-                            <th>Item</th>
+                            {{-- <th>Item</th> --}}
                             <th>ID</th>
                             <th>HR</th>
                             <th>Fecha de derivación</th>
@@ -40,7 +40,7 @@
                                         <input type="checkbox" name="derivation_id[]" id="{{ 'check-'.$i}}" value="{{$item->id}}">
                                     </label>
                                 </td>
-                                <td>{{ $i}}</td>
+                                {{-- <td>{{ $i}}</td> --}}
                                 <td>{{ $item->entrada->id }}</td>
                                 <td style="min-width: 100px !important">
                                     {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>

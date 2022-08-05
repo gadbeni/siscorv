@@ -90,9 +90,9 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::post('categories/store', [CategoryController::class, 'store'])->name('categories.store');
 
-    Route::resource('exchange', ExchangeController::class);
-    Route::post('exchange/search/print', [ExchangeController::class, 'print'])->name('exchange-search.print');
-    Route::post('exchange/search/transfer', [ExchangeController::class, 'transfer'])->name('exchange-search.transfer');
+    Route::resource('exchanges', ExchangeController::class);
+    Route::post('exchanges/search/print', [ExchangeController::class, 'print'])->name('exchange-search.print');
+    Route::post('exchanges/search/transfer', [ExchangeController::class, 'transfer'])->name('exchange-search.transfer');
 
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite
