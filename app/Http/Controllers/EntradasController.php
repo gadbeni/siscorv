@@ -680,15 +680,41 @@ class EntradasController extends Controller
                                     'derivationparent:id,tipo,gestion,cite,remitente,urgent',
                                     'parents'
                                 ])
-                                ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type')
-                                ->where('people_id_para', $funcionario_id)->get();
+                                ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation')
+                                // ->where('id', '>=', 18000)
+                                // ->where('id', '<=', 25000)->get();
+                                ->where('people_id_para', 1142)->get();
+                                // ->where('people_id_para', $funcionario_id)->get();1158
             
             // return $derivaciones;
             // foreach($derivaciones as $item)
             // {
-            //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('deleted_at', NULL)->count();
+            //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
             // }
-            // dd($derivaciones);
+            
+            DB::beginTransaction();    
+            try {
+                foreach($derivaciones as $item)
+                {
+                    $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
+                    if($item->okderivado > 0)
+                    {
+                        Derivation::where('id', $item->id)->update(['derivation'=> 1, 'ok'=>'SI']);
+                        // return $item->id;
+                    }
+                    else
+                    {
+                        // $item->update(['ok'=>'SI']);
+                        Derivation::where('id', $item->id)->update(['ok'=>'SI']);
+
+                    }
+                }
+                DB::commit();
+             
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                return 0;
+            }
            
         }
         // return $derivaciones;
