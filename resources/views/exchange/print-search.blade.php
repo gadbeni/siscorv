@@ -98,7 +98,7 @@
                             <span class="input-group-text"><b>Destino:</b></span>
                         </div>
                         <select name="people_id" id="person" class="form-control select2" required>
-                            <option value=""  selected disabled>Origen</option>
+                            {{-- <option value=""  selected disabled>Origen</option> --}}
                             @foreach($people as $item)
                                 <option value="{{$item->id}}">{{$item->first_name}} {{$item->last_name}}</option>
                             @endforeach
@@ -125,6 +125,11 @@
     </div>
 </div>
 {!! Form::close() !!}
+<style>
+    .select2{
+        width: 100% !important;
+    }
+</style>
 <script>
 $(document).ready(function(){
     $('.dataTable').DataTable({
@@ -157,7 +162,8 @@ $(document).ready(function(){
                     },
                     order: [[ 0, 'desc' ]],
                 })
-})
+                $('#person').select2();
+});
 function toggleCheckbox(element)
     {
         var data = '{{$i}}';
