@@ -77,7 +77,7 @@
     </div>
 </div>
 
-<div class="modal modal-primary fade" tabindex="-1" id="modal_solicituds" role="dialog">
+<div class="modal modal-primary" id="modal_solicituds" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
                  
@@ -97,7 +97,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text"><b>Destino:</b></span>
                         </div>
-                        <select name="people_id" id="person" class="form-control select2" required>
+                        <select name="people_id" id="persons" class="form-control select2" required>
                             {{-- <option value=""  selected disabled>Origen</option> --}}
                             @foreach($people as $item)
                                 <option value="{{$item->id}}">{{$item->first_name}} {{$item->last_name}}</option>
@@ -162,7 +162,7 @@ $(document).ready(function(){
                     },
                     order: [[ 0, 'desc' ]],
                 })
-                $('#person').select2();
+                $('#persons').select2();
 });
 function toggleCheckbox(element)
     {
