@@ -20,6 +20,7 @@ use App\Models\PeopleExt;
 use App\Models\Category;
 use App\Models\Person;
 use Database\Seeders\PersonasTableSeeder;
+use phpDocumentor\Reflection\Types\Nullable;
 use PhpParser\Node\Stmt\Return_;
 use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
@@ -684,7 +685,7 @@ class EntradasController extends Controller
                                     'derivationparent:id,tipo,gestion,cite,remitente,urgent',
                                     'parents'
                                 ])
-                                ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation')
+                                ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation', 'ok')
                                 ->where('transferred', 0)
                                 ->where('people_id_para', $funcionario_id)->get();
             
@@ -781,37 +782,145 @@ class EntradasController extends Controller
         }
     }
 
+    public function add_rechazo($funcionario, $request){
+        $persona = Persona::where('user_id', Auth::user()->id)->first();
+                       
+
+        return Derivation::create([
+            'entrada_id' => $request->id,
+            // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
+            'people_id_de' => $rde ? null : $persona->people_id,
+            // 'funcionario_id_para' => $funcionario->id_funcionario,
+            'people_id_para' => $funcionario->id_funcionario,
+            'funcionario_nombre_para' => $funcionario->nombre,
+            'funcionario_cargo_para' => $funcionario->cargo,
+            'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
+            'funcionario_direccion_para' => $funcionario->direccion ?? null,
+            'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
+            'funcionario_unidad_para' => $funcionario->unidad ?? null,
+            'responsable_actual' => 1,
+            'rechazo' => 1,
+            'via'   => 0,
+            'registro_por' => Auth::user()->email,
+            'observacion' => $request->observacion,
+            'parent_id' => $request->der_id ? $request->der_id : $request->id,
+            'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
+        ]);
+        // dd($si);
+    }
     public function derivacion_rechazar($id, Request $request)
     {
+        // return $id;
+        // return $request;
+        DB::beginTransaction();
         try {
-            $persona = Persona::where('user_id', Auth::user()->id)->first();
-            // Obtener la última derivación que se realizo al usuario actual
-            $derivacion = Derivation::where('entrada_id', $id)
-                                ->where('people_id_para', $persona->people_id)
-                                ->where('deleted_at', NULL)->where('rechazo', NULL)->orderBy('id', 'DESC')->first();
 
-            
-            if(!$derivacion){
-                // return 1;
-                return redirect()->route('bandeja.index')->with(['message' => 'No puedes rechazar un un tramite creado por ti mismo.', 'alert-type' => 'error']);
-            }            
-            // return $derivacion;
-            // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
-            if ($derivacion->people_id_de) {
+            $persona = Persona::where('user_id', Auth::user()->id)->first();
+
+            $derivacion = Derivation::where('id', $request->derivacion_id)->first();
+
+            if ($derivacion->people_id_de)
+            {
+                // return $derivacion;
                 $funcionario = $this->getPeople($derivacion->people_id_de);
-                // return $funcionario;
-                if($funcionario){
-                    $this->add_derivacion($funcionario, $request, 1);
-                }else{
-                    return redirect()->route('bandeja.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+                if($funcionario =='Error')
+                {
+                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador.', 'alert-type' => 'error']);
                 }
-            } else {
-                Entrada::where('id', $derivacion->entrada_id)->update(['estado_id' => 6, 'referencia' => $request->observacion]);
+                Derivation::create([
+                    'entrada_id' => $id,
+                    // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
+                    'people_id_de' => $derivacion->people_id_para,
+                    // 'funcionario_id_para' => $funcionario->id_funcionario,
+                    'people_id_para' => $funcionario->id_funcionario,
+                    'funcionario_nombre_para' => $funcionario->nombre,
+                    'funcionario_cargo_para' => $funcionario->cargo,
+                    'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
+                    'funcionario_direccion_para' => $funcionario->direccion ?? null,
+                    'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
+                    'funcionario_unidad_para' => $funcionario->unidad ?? null,
+                    'responsable_actual' => 1,
+                    'rechazo' => 1,
+                    'via'   => 0,
+                    'registro_por' => Auth::user()->email,
+                    'observacion' => $request->observacion,
+                    'parent_id' => $request->derivacion_id,
+                    'parent_type' => 'App\Models\Derivation'
+                ]);
+            }
+            else
+            {
+                $entrada = Entrada::where('id', $id)->where('deleted_at', null)->first();
+                $funcionario = $this->getPeople($entrada->people_id_de);
+                // return $funcionario;
+                if($funcionario =='Error')
+                {
+                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador.', 'alert-type' => 'error']);
+                }
+                // return $entrada;
+                Derivation::create([
+                    'entrada_id' => $id,
+                    // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
+                    'people_id_de' => $entrada->people_id_para,
+                    // 'funcionario_id_para' => $funcionario->id_funcionario,
+                    'people_id_para' => $funcionario->id_funcionario,
+                    'funcionario_nombre_para' => $funcionario->nombre,
+                    'funcionario_cargo_para' => $funcionario->cargo,
+                    'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
+                    'funcionario_direccion_para' => $funcionario->direccion ?? null,
+                    'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
+                    'funcionario_unidad_para' => $funcionario->unidad ?? null,
+                    'responsable_actual' => 1,
+                    'rechazo' => 1,
+                    'via'   => 0,
+                    'registro_por' => Auth::user()->email,
+                    'observacion' => $request->observacion,
+                    'parent_id' => $request->derivacion_id,
+                    'parent_type' => 'App\Models\Derivation'
+                ]);
             }
 
+            Derivation::where('id', $request->derivacion_id)->update(['derivation' => 1, 'ok' => 'RECHAZADO']);
+            DB::commit();
             return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+
+
+
+
+
+
+
+            // return $derivacion;
+            // if($request->der_id)
+            // {
+            //     Derivation::where('id', $request->der_id)->update(['derivation' => 1, 'ok' => 'SI']);
+            // }
+
+            
+            // if(!$derivacion){
+            //     // return 1;
+            //     return redirect()->route('bandeja.index')->with(['message' => 'No puedes rechazar un un tramite creado por ti mismo.', 'alert-type' => 'error']);
+            // }            
+            // // return $derivacion;
+            // // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
+            // if ($derivacion->people_id_de) {
+            //     return $request;
+            //     $funcionario = $this->getPeople($derivacion->people_id_de);
+            //     // return $funcionario;
+            //     if($funcionario){
+            //         $this->add_derivacion($funcionario, $request, 1);
+            //     }else{
+            //         return redirect()->route('bandeja.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            //     }
+            // } else {
+            //     return 2;
+            //     Entrada::where('id', $derivacion->entrada_id)->update(['estado_id' => 6, 'referencia' => $request->observacion]);
+            // }
+
+            // return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
+            DB::rollBack();
+            dd($th);
             return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }

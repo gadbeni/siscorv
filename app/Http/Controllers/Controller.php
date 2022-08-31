@@ -72,7 +72,7 @@ class Controller extends BaseController
     //obtencioin de los funcionarios en la BD mamore
     public function getPeople($id)
     {        
-        
+        $funcionario = 'null';
         $funcionario = DB::connection('mamore')->table('people as p')
             ->leftJoin('contracts as c', 'p.id', 'c.person_id')
             // ->leftJoin('contracts as c', 'p.id', 'c.person_id')
@@ -103,10 +103,16 @@ class Controller extends BaseController
                     ->where('status',1)
                     ->select('direccion_id as id_direccion', 'unidad_id as id_unidad', 'cargo', 'person_id as id_funcionario')
                     ->first();
-                $funcionario->unidad = $this->getIdUnidadInfo($funcionario->id_unidad)->nombre;
-                $funcionario->direccion= $this->getIdDireccionInfo($funcionario->id_direccion)->nombre;
-                $funcionario->nombre = $this->getPeopleSN($funcionario->id_funcionario)->nombre;
-            
+                if($funcionario)
+                {
+                    $funcionario->unidad = $this->getIdUnidadInfo($funcionario->id_unidad)->nombre;
+                    $funcionario->direccion= $this->getIdDireccionInfo($funcionario->id_direccion)->nombre;
+                    $funcionario->nombre = $this->getPeopleSN($funcionario->id_funcionario)->nombre;
+                }            
+        }
+        if(!$funcionario)
+        {
+            return "Error";
         }
         return $funcionario;
     }

@@ -40,6 +40,20 @@ class CreateDerivationsTable extends Migration
                   ->constrained();
             $table->timestamps();
             $table->softDeletes();
+            
+            $table->smallInteger('via')->nullable();
+            $table->integer('people_id_de')->nullable();
+            $table->integer('people_id_para')->nullable();
+
+            $table->integer('derivation')->default(0);
+            $table->string('ok')->default('NO');
+
+            $table->smallInteger('transferred')->default(0);
+            $table->text('transferredDetails')->nullable();
+            $table->integer('transferredPeople_id')->nullable();
+            $table->dateTime('transferredDate')->nullable();
+            $table->foreignId('transferredUser_id')->nullable()->constrained('users');
+            
         });
     }
 

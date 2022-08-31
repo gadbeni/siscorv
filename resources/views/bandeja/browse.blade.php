@@ -52,9 +52,18 @@
                                                                 {{-- @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
                                                                 @endif --}}
-                                                                @if($item->derivation == 1)
-                                                                    <span class="badge badge-danger">Derivado</span>
+                                                                @if(!$item->visto)
+                                                                    <span class="badge badge-primary"><i class="fa-solid fa-eye-low-vision"></i></span>
+                                                                @else
+                                                                    @if($item->ok == 'SI')
+                                                                        <span class="badge badge-success"><i class="fa-solid fa-check-to-slot"></i> Derivado</span>
+                                                                    @endif
+                                                                    @if($item->ok == 'RECHAZADO')
+                                                                        <span class="badge badge-danger"><i class="fa-solid fa-reply-all"></i> Rechazado</span>
+                                                                    @endif
                                                                 @endif
+
+                                                                
                                                             </td>
                                                             <td>
                                                                 @if ($item->created_at)

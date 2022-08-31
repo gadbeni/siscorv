@@ -13,7 +13,7 @@
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
                     $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('entrada_id',$data->id)->where('deleted_at', NULL)->count();
-                    // dd($data);
+                    // dd($derivacion->id);
                 @endphp
                 @if ($data->estado_id != 4 && $childrens == 0)
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
@@ -268,7 +268,7 @@
                         </div>
                         <div class="modal-body">
                             @csrf
-                            <input type="hidden" name="id" value="{{ $data->id }}">
+                            <input type="hidden" name="derivacion_id" value="{{ $derivacion->id }}">
                             <div class="form-group">
                                 <label>Motivo del rechazo</label>
                                 <textarea name="observacion" class="form-control" rows="5" required></textarea>
