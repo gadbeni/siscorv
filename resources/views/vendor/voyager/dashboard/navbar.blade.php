@@ -38,13 +38,13 @@
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <img src="{{ $user_avatar }}" width="40px" class="profile-img"> <span class="caret"></span>
+                    <img src="{{ asset('storage/users/default.png') }}" width="40px" class="profile-img"> <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-animated">
                     <li class="profile-img">
                         <div class="row">
                             <div class="col-md-4" style="padding: 0px">
-                                <img src="{{ $user_avatar }}" width="60px" class="profile-img">
+                                <img src="{{ asset('storage/users/default.png') }}" width="60px" class="profile-img">
                             </div>
                             <div class="col-md-8" style="margin: 0px">
                                 <h5>{{ Auth::user()->name }}</h5>
