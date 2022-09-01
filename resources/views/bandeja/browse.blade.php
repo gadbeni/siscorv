@@ -112,7 +112,7 @@
                                                                         : 'URGENTE';                                                     
                                                        
                                                     @endphp
-                                                    @if ($item->entrada->urgent)
+                                                    @if ($item->entrada->urgent && $item->ok!="ARCHIVADO")
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
@@ -120,8 +120,21 @@
                                                                 {{-- @if($item->okderivado > 0)
                                                                     <span class="badge badge-danger">Derivado</span>
                                                                 @endif --}}
-                                                                @if($item->derivation == 1)
+                                                                {{-- @if($item->derivation == 1)
                                                                     <span class="badge badge-danger">Derivado</span>
+                                                                @endif --}}
+                                                                @if(!$item->visto)
+                                                                    <span class="badge badge-primary"><i class="fa-solid fa-eye-low-vision"></i></span>
+                                                                @else
+                                                                    @if($item->ok == 'SI')
+                                                                        <span class="badge badge-success"><i class="fa-solid fa-check-to-slot"></i> Derivado</span>
+                                                                    @else
+                                                                        @if($item->ok == 'RECHAZADO')
+                                                                            <span class="badge badge-danger"><i class="fa-solid fa-reply-all"></i> Rechazado</span>
+                                                                        @else
+                                                                            <span class="badge badge-dark"><i class="fa-solid fa-envelope-open-text"></i></span>
+                                                                        @endif                                                            
+                                                                    @endif
                                                                 @endif
                                                                 
                                                             </td>
