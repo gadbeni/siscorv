@@ -44,22 +44,25 @@
                                                 
                                                 @forelse ($derivaciones as $item)
                                                    
-                                                    @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true)
+                                                    {{-- @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true) --}}
+                                                    @if ($item->entrada->estado_id != 6 && $item->entrada->estado_id != 4 && $item->entrada->urgent != true && $item->ok!="ARCHIVADO")
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">
                                                                 {{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }} <br>
-                                                                {{-- @if($item->okderivado > 0)
-                                                                    <span class="badge badge-danger">Derivado</span>
-                                                                @endif --}}
+                                                                {{-- <i class="fa-solid fa-envelope-open-text"></i> --}}
+                                                                
                                                                 @if(!$item->visto)
                                                                     <span class="badge badge-primary"><i class="fa-solid fa-eye-low-vision"></i></span>
                                                                 @else
                                                                     @if($item->ok == 'SI')
                                                                         <span class="badge badge-success"><i class="fa-solid fa-check-to-slot"></i> Derivado</span>
-                                                                    @endif
-                                                                    @if($item->ok == 'RECHAZADO')
-                                                                        <span class="badge badge-danger"><i class="fa-solid fa-reply-all"></i> Rechazado</span>
+                                                                    @else
+                                                                        @if($item->ok == 'RECHAZADO')
+                                                                            <span class="badge badge-danger"><i class="fa-solid fa-reply-all"></i> Rechazado</span>
+                                                                        @else
+                                                                            <span class="badge badge-dark"><i class="fa-solid fa-envelope-open-text"></i></span>
+                                                                        @endif                                                            
                                                                     @endif
                                                                 @endif
 
@@ -164,7 +167,7 @@
                                             </thead>
                                             <tbody>
                                                 @forelse ($derivaciones as $item)
-                                                    @if ($item->entrada->estado_id == 4)
+                                                    @if ($item->entrada->estado_id == 4 || $item->ok=="ARCHIVADO")
                                                         <tr class="entrada @if(!$item->visto) unread @endif" title="Ver" onclick="read({{ $item->id }})">
                                                             <td>{{ $item->entrada->id }}</td>
                                                             <td style="min-width: 100px !important">{{ $item->entrada->tipo.'-'.$item->entrada->gestion.'-'.$item->entrada->id }}</td>
@@ -196,7 +199,7 @@
                 opacity: .7;
             }
             .unread{
-                background-color: rgba(9,132,41,0.2) !important
+                background-color: rgba(135, 183, 148, 0.2) !important
             }
         </style>
     @endsection

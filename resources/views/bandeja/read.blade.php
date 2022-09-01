@@ -244,6 +244,7 @@
                         <div class="modal-body">
                             @csrf
                             <input type="hidden" name="id" value="{{ $data->id }}">
+                            <input type="hidden" name="derivacion_id" value="{{ $derivacion->id }}">
                         </div>
                         <div class="modal-footer text-right">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
@@ -264,17 +265,24 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title"><i class="voyager-warning"></i> Rechazar correspondencia</h4>
+                            <h4 class="modal-title"><i class="fa-brands fa-whatsapp"></i> Rechazar correspondencia</h4>
                         </div>
                         <div class="modal-body">
                             @csrf
                             <input type="hidden" name="derivacion_id" value="{{ $derivacion->id }}">
+
+                            <div class="text-center">
+                                <i class="fa-brands fa-whatsapp" style="color: rgb(78,203,92); font-size: 4em;"></i>
+                                <br>
+                                <p><b>Se enviara una notificación vía WhatsApp?</b></p>
+                            </div>
                             <div class="form-group">
                                 <label>Motivo del rechazo</label>
                                 <textarea name="observacion" class="form-control" rows="5" required></textarea>
                             </div>
                         </div>
                         <div class="modal-footer text-right">
+                            {{-- <a href="https://api.ideacreativa.dev?number=591&message=texto"></a> --}}
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-danger">Rechazar</button>
                         </div>

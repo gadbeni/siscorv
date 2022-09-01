@@ -771,10 +771,11 @@ class EntradasController extends Controller
     }
 
     public function derivacion_archivar(Request $request){
-        // dd($request);
+        // return $request;
         try {
             /* CAmbiar el estado de la entrada a finalizada */
-            Entrada::where('id', $request->id)->update(['estado_id' => 4]);
+            // Entrada::where('id', $request->id)->update(['estado_id' => 4]);
+            Derivation::where('id',$request->derivacion_id)->update(['ok'=>'ARCHIVADO']);
             return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
@@ -812,6 +813,7 @@ class EntradasController extends Controller
     {
         // return $id;
         // return $request;
+        
         DB::beginTransaction();
         try {
 
