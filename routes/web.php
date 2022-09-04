@@ -20,6 +20,7 @@ use App\Http\Controllers\CategoryController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
+use App\Models\Derivation;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,6 +41,11 @@ Route::get('/', [HomeController::class, 'index']);
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 Route::get('/buscartramite', [HomeController::class, 'searchtramite']);
 Route::get('/maintenance', [MaintenanceController::class , 'maintenance']);
+
+Route::get('/prueba', function()
+{
+    return view('prueba');
+});
 
 Route::group(['prefix' => 'admin'], function () {
     
@@ -62,6 +68,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
     Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
     Route::post('bandeja/{id}/archivar', [EntradasController::class, 'derivacion_archivar'])->name('bandeja.archivar');
+
+    Route::get('treejs/{id?}', [EntradasController::class, 'treeAjax'])->name('tree-ajax');
     
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');

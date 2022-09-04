@@ -13,7 +13,7 @@
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
                     $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('entrada_id',$data->id)->where('deleted_at', NULL)->count();
-                    // dd($derivacion);
+                    // dd($data->id);
                 @endphp
                 @if ($data->estado_id != 4 && $childrens == 0 && $derivacion->ok != 'ARCHIVADO' && $derivacion->ok != 'SI' && $derivacion->ok != 'RECHAZADO')
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
@@ -177,6 +177,16 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        $dates = date("d-m-Y", strtotime($data->created_at));
+                        // dd($data->created_at);
+                    @endphp
+              
+                    @if ($data->created_at >= '2022-09-01' )
+                        <div style="width:100%;" id="tree">
+                        </div>
+                    @endif
+                    
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
                             <div class="col-md-12">
@@ -226,6 +236,31 @@
                             </div>
                         </div>
                     </div>
+                    
+
+                    {{-- <div class="panel panel-bordered" style="padding-bottom:5px;">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Historial de derivaciones</h3>
+                                </div>
+                                @if ($data->derivaciones->count() > 0)
+                                <div class="panel-body" style="padding-top:0;">
+                                    
+                                    <div class="row">
+        
+                                        <div style="width:100%; height:700px;" id="tree">
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                                @endif
+                                 
+                            </div>
+                        </div>
+                    </div> --}}
                 </div>
             </div>
         </div>
@@ -376,6 +411,12 @@
             .li input:checked + ol > .li:last-child { 
                     margin: 8px 0 0.063em;
             }
+
+
+            #tree {
+                width: 100%;
+                height: 100%;
+            }
         </style>
         
     @section('javascript')
@@ -398,6 +439,49 @@
             });
 
         </script>
+        
+
+        {{-- tree --}}
+        <script type="text/javascript" src="{{ asset('balkan/orgchart.js') }}"></script>
+        {{-- <script src="https://balkan.app/js/OrgChart.js"></script> --}}
+<script>
+    // alert(11)
+
+    var charts = new OrgChart(document.getElementById("tree"), {
+        // template: "ula",
+        mouseScrool: OrgChart.none,
+        nodeBinding: {
+            field_0: "Nombre",
+            field_1: "Cargo",
+            img_0: "Photo"
+        },
+        // nodeMenu: {
+        //     details: { text: "Details" },
+        //     edit: { text: "Edit" },
+        //     add: { text: "Add" },
+        //     remove: { text: "Remove" }
+        // }
+    });
+
+    // chart.on('init', function (sender) {
+    //     sender.editUI.show(1);
+    // });   
+    var entrada_id = '{{$data->id}}';
+
+      $.get('{{route('tree-ajax')}}/'+entrada_id, function(data){
+            // alert(data[0].cite)
+            var datas= [
+                { id: data[0].entrada, "Nombre": data[0].remitente, Cargo: data[0].cargo, email: "jay@domain.com", Photo: "https://siscor.beni.gob.bo/images/icon.png" },
+            ]
+
+                for(var i=0; i<data.length; ++i)
+                {
+                    datas.push({ id: data[i].derivacion, pid: data[i].parent, "Nombre": data[i].para, Cargo: data[i].cargos, Photo: "https://siscor.beni.gob.bo/images/icon.png" })
+                }
+            charts.load(datas);
+          });
+    console.log(data);
+</script>
     @stop
     
 @else

@@ -741,7 +741,13 @@ class EntradasController extends Controller
                             ->where('deleted_at', NULL)
                             ->first();
             
+                        
+            $ok = date("d-m-Y", strtotime($data->created_at));
             
+            
+                //  return $ok;
+      
+           
             // $vias = Derivation::where('entrada_id', $id)->get();
             // return $vias;
         
@@ -763,11 +769,23 @@ class EntradasController extends Controller
                 // $destino = $this->getPeople($data->people_id_para);
             }
             
-            return view('bandeja.read', compact('data', 'origen','derivacion'));
+            return view('bandeja.read', compact('data', 'origen','derivacion', ));
         } catch (\Throwable $th) {
             //  dd($th);
             return redirect()->route('voyager.dashboard');
         }
+    }
+
+    public function treeAjax($id)
+    {
+        return DB::table('entradas as e')
+                        ->join('derivations as d', 'd.entrada_id', 'e.id')
+                        ->where('d.deleted_at', null)
+                        ->where('e.deleted_at', null)
+                        ->where('e.id', $id)
+                        ->select('e.id as entrada', 'e.remitente', 'e.cite', 'job_de as cargo', 'd.funcionario_nombre_para as para',
+                            'd.funcionario_cargo_para as cargos', 'd.id as derivacion', 'd.parent_id as parent')
+                        ->get();
     }
 
     public function derivacion_archivar(Request $request){
