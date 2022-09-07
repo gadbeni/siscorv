@@ -803,34 +803,34 @@ class EntradasController extends Controller
         }
     }
 
-    public function add_rechazo($funcionario, $request){
-        $persona = Persona::where('user_id', Auth::user()->id)->first();
+    // public function add_rechazo($funcionario, $request){
+    //     $persona = Persona::where('user_id', Auth::user()->id)->first();
                        
 
-        return Derivation::create([
-            'entrada_id' => $request->id,
-            // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
-            'people_id_de' => $rde ? null : $persona->people_id,
-            // 'funcionario_id_para' => $funcionario->id_funcionario,
-            'people_id_para' => $funcionario->id_funcionario,
-            'funcionario_nombre_para' => $funcionario->nombre,
-            'funcionario_cargo_para' => $funcionario->cargo,
-            'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
-            'funcionario_direccion_para' => $funcionario->direccion ?? null,
-            'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
-            'funcionario_unidad_para' => $funcionario->unidad ?? null,
-            'responsable_actual' => 1,
-            'rechazo' => 1,
-            // 'via'   => 0,
-            // 'ok'=> 'NO',
-            'derivation'=>0,
-            'registro_por' => Auth::user()->email,
-            'observacion' => $request->observacion,
-            'parent_id' => $request->der_id ? $request->der_id : $request->id,
-            'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
-        ]);
-        // dd($si);
-    }
+    //     return Derivation::create([
+    //         'entrada_id' => $request->id,
+    //         // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
+    //         'people_id_de' => $rde ? null : $persona->people_id,
+    //         // 'funcionario_id_para' => $funcionario->id_funcionario,
+    //         'people_id_para' => $funcionario->id_funcionario,
+    //         'funcionario_nombre_para' => $funcionario->nombre,
+    //         'funcionario_cargo_para' => $funcionario->cargo,
+    //         'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
+    //         'funcionario_direccion_para' => $funcionario->direccion ?? null,
+    //         'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
+    //         'funcionario_unidad_para' => $funcionario->unidad ?? null,
+    //         'responsable_actual' => 1,
+    //         'rechazo' => 1,
+    //         // 'via'   => 0,
+    //         // 'ok'=> 'NO',
+    //         'derivation'=>0,
+    //         'registro_por' => Auth::user()->email,
+    //         'observacion' => $request->observacion,
+    //         'parent_id' => $request->der_id ? $request->der_id : $request->id,
+    //         'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
+    //     ]);
+    //     // dd($si);
+    // }
     public function derivacion_rechazar($id, Request $request)
     {
         // return $id;
@@ -952,7 +952,15 @@ class EntradasController extends Controller
     public function delete_derivacion(Request $request){
         // dd($request);
         try {
-            Derivation::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
+            // Derivation::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
+
+            $ok = Derivation::where('id', $request->id)->where('deleted_at', null)->first();
+
+            Derivation::where('id', $ok->parent_id)->where('deleted_at', null)
+                ->update(['derivation'=>0, 'ok'=>'NO']);
+
+            $ok->update(['deleted_at' => Carbon::now()]);
+
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);

@@ -291,9 +291,10 @@
                                                     <td>{{ $item->observacion }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td>
-                                                        @if ($cont == count($data->derivaciones))
+                                                        {{-- @if ($cont == count($data->derivaciones)) --}}
+                                                        {{-- @if (auth()->user()->hasRole('admin'))
                                                             <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                        @endif
+                                                        @endif --}}
                                                     </td> 
                                                 </tr>
                                                 @php

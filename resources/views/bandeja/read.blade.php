@@ -1,6 +1,6 @@
 @extends('voyager::master')
 
-@section('page_title', 'Ver Ingresos')
+@section('page_title', 'Ver Detalle de Bandeja')
 
 @if(auth()->user()->hasPermission('read_bandeja'))
 
