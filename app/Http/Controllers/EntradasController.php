@@ -24,6 +24,8 @@ use phpDocumentor\Reflection\Types\Nullable;
 use PhpParser\Node\Stmt\Return_;
 use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
+use function PHPSTORM_META\map;
+
 class EntradasController extends Controller
 {
     public function __construct()
@@ -819,7 +821,9 @@ class EntradasController extends Controller
             'funcionario_unidad_para' => $funcionario->unidad ?? null,
             'responsable_actual' => 1,
             'rechazo' => 1,
-            'via'   => 0,
+            // 'via'   => 0,
+            // 'ok'=> 'NO',
+            'derivation'=>0,
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion,
             'parent_id' => $request->der_id ? $request->der_id : $request->id,
