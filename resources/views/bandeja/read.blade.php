@@ -15,13 +15,13 @@
                     // $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('entrada_id',$data->id)->where('deleted_at', NULL)->count();
                     // dd($data->id);
                 @endphp
-                @if ($data->estado_id != 4 && $derivacion->ok != 'ARCHIVADO' && $derivacion->ok != 'SI' && $derivacion->ok != 'RECHAZADO')
+                {{-- @if ($data->estado_id != 4 && $derivacion->ok != 'ARCHIVADO' && $derivacion->ok != 'SI' && $derivacion->ok != 'RECHAZADO') --}}
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
                     @if($derivacion->via == 0)
                         <button type="button" data-toggle="modal" data-target="#modal-derivar" title="Derivar" class="btn btn-default"><i class="voyager-forward"></i> Derivar</button>
                         <button type="button" data-toggle="modal" data-target="#modal-rechazar" title="Rechazar" class="btn btn-default"><i class="voyager-warning"></i> Rechazar</button>
                     @endif
-                @endif
+                {{-- @endif --}}
                 {{-- <button type="button" title="Anterio" class="btn btn-default"><i class="voyager-angle-left"></i> &nbsp;</button>
                 <button type="button" title="Siguiente" class="btn btn-default"><i class="voyager-angle-right"></i> &nbsp;</button> --}}
             </div>
