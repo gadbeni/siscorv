@@ -46,7 +46,7 @@ class Controller extends BaseController
         }
     }
 
-    public function getIdDireccionInfo($direccion_id) {
+    static function getIdDireccionInfo($direccion_id) {
         try {
             return DB::connection('mamore')->table('direcciones')
                         ->where('id', $direccion_id)
@@ -57,7 +57,7 @@ class Controller extends BaseController
         }
     }
 
-    public function getIdUnidadInfo($unidad_id) {
+    static function getIdUnidadInfo($unidad_id) {
         try {
             return DB::connection('mamore')->table('unidades')
                         ->where('id', $unidad_id)

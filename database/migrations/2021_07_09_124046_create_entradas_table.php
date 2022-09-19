@@ -28,6 +28,10 @@ class CreateEntradasTable extends Migration
             $table->integer('direccion_id_remitente')->nullable();
             $table->integer('funcionario_id_destino')->nullable();
 
+            $table->integer('people_id_de')->nullable();
+            $table->string('job_de')->nullable();
+            $table->integer('people_id_para')->nullable();
+
             $table->string('funcionario_id_responsable', 10)->nullable();
             //$table->string('estado', 20)->nullable();
 

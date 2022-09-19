@@ -5,41 +5,35 @@
 @if(auth()->user()->hasPermission('read_entradas'))
 
     @section('page_header')
-    <div class="col-md-12" style="padding: 10px;">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="javascript:;">
-                <i class="voyager-credit-cards"></i> Viendo Ingreso
-            </a>
-            <div class="container-fluid">
-                <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav">
-                        <li><a href="{{ route('entradas.index') }}"> <span class="glyphicon glyphicon-list"></span>&nbsp;Volver a la lista</a></li>
-                        @if($data->derivaciones->count() > 0)
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimir <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
-                                        <span class="glyphicon glyphicon-print"></span>&nbsp;
-                                            Imprimir Comprobante
-                                    </a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
-                                        <span class="glyphicon glyphicon-print"></span>&nbsp;
-                                            Imprimir Hoja de Ruta
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        @endif
+        <div class="col-md-6 col-xs-6" style="margin-top: 20px;">
+            <a href="{{ route('entradas.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+        </div>
+        <div class="col-md-6 col-xs-6 text-right" style="margin-top: 20px;">
+            @if($data->derivaciones->count() > 0)
+                <div class="dropdown">
+                    <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu pull-right">
+                      <li>
+                        <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
+                            <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                Comprobante
+                        </a>
+                      </li>
+                      <li>
+                        <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
+                            <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                Hoja de Ruta
+                        </a>
+                      </li>
                     </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
-    </div>    
+                </div>
+            @endif
+        </div>
+        <div class="clearfix"></div>
+        <div class="col-md-12" style="margin-bottom: 20px">
+            <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+        </div>
     @stop
 
     @section('content')
@@ -72,7 +66,7 @@
                                     <h3 class="panel-title">Número de Cite</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->cite }}</p>
+                                    <p>{{ $data->cite ?? '' }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -81,7 +75,7 @@
                                     <h3 class="panel-title">Número de hojas</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->nro_hojas }}</p>
+                                    <p>{{ $data->nro_hojas ?? 'No definida' }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -93,7 +87,7 @@
                                     @if ($data->tipo == 'E')
                                     <p>{{ $data->entity->nombre ?? 'Sin Origen' }}</p>
                                     @else
-                                 
+                                        No definido
                                     @endif
                                     
                                 </div>
@@ -104,7 +98,7 @@
                                     <h3 class="panel-title">Remitente</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ strtoupper($data->remitente) }}</p>
+                                    <p>{{ $data->remitente ? strtoupper($data->remitente) : '' }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -114,25 +108,22 @@
                                     <h3 class="panel-title">Destino</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    @if ($destino)
-                                        <p>
-                                            {{ $destino->nombre }} <br>
-                                            
-                                        </p>
-                                    @endif
+                                    <p>
+                                        {{ $data->person ? $data->person->first_name.' '.$data->person->last_name : '' }}
+                                    </p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
                             @endif
-                            <div class="col-md-12">
+                            {{-- <div class="col-md-12">
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Referencia</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ strtoupper($data->referencia) }}</p>
+                                    <p>{{ $data->referencia ? strtoupper($data->referencia) : 'NN' }}</p>
                                 </div>
                                 <hr style="margin:0;">
-                            </div>
+                            </div> --}}
                         </div>
                     </div>
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -152,40 +143,42 @@
                                     </div>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <table class="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>N&deg;</th>
-                                                <th>Título</th>
-                                                <th>Adjuntado por</th>
-                                                <th>Fecha de registro</th>
-                                                <th>Archivo</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $cont = 1;
-                                            @endphp
-                                            @forelse ($data->archivos as $item)
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $cont }}</td>
-                                                    <td>{{ $item->nombre_origen }}</td>
-                                                    <td>{{ $item->user->name ?? '' }}</td>
-                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    <td><a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a></td>
-                                                    <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
+                                                    <th>N&deg;</th>
+                                                    <th>Título</th>
+                                                    <th>Adjuntado por</th>
+                                                    <th>Fecha de registro</th>
+                                                    <th>Archivo</th>
+                                                    <th>Acciones</th>
                                                 </tr>
+                                            </thead>
+                                            <tbody>
                                                 @php
-                                                    $cont++;
+                                                    $cont = 1;
                                                 @endphp
-                                            @empty
-                                                <tr>
-                                                    <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                                @forelse ($data->archivos as $item)
+                                                    <tr>
+                                                        <td>{{ $cont }}</td>
+                                                        <td>{{ $item->nombre_origen }}</td>
+                                                        <td>{{ $item->user->name ?? '' }}</td>
+                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                        <td><a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a></td>
+                                                        <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
+                                                    </tr>
+                                                    @php
+                                                        $cont++;
+                                                    @endphp
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -214,45 +207,47 @@
                                     </div>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <table class="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>ID&deg;</th>
-                                                <th>Nombre</th>
-                                                <th>Cargo</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $cont = 1;
-                                            @endphp
-                                            @forelse ($data->vias as $item)
-                                                <tr style="text-transform: uppercase;">
-                                                    <td>{{ $cont }}</td>
-                                                    <td>{{ $item->nombre }}</td>
-                                                    <td>{{ $item->cargo }}</td>
-                                                    <td>
-                                                        <button type="button" 
-                                                        data-toggle="modal" 
-                                                        data-target="#delete-via-modal" 
-                                                        data-id="{{ $item->id }}" 
-                                                        data-entrada_id="{{ $data->id }}"
-                                                        class="btn btn-danger btn-sm btn-delete-via">
-                                                            <span class="voyager-trash"></span>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                                @php
-                                                    $cont++;
-                                                @endphp
-                                            @empty
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                    <th>ID&deg;</th>
+                                                    <th>Nombre</th>
+                                                    <th>Cargo</th>
+                                                    <th>Acciones</th>
                                                 </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $cont = 1;
+                                                @endphp
+                                                @forelse ($data->vias as $item)
+                                                    <tr style="text-transform: uppercase;">
+                                                        <td>{{ $cont }}</td>
+                                                        <td>{{ $item->nombre }}</td>
+                                                        <td>{{ $item->cargo }}</td>
+                                                        <td>
+                                                            <button type="button" 
+                                                            data-toggle="modal" 
+                                                            data-target="#delete-via-modal" 
+                                                            data-id="{{ $item->id }}" 
+                                                            data-entrada_id="{{ $data->id }}"
+                                                            class="btn btn-danger btn-sm btn-delete-via">
+                                                                <span class="voyager-trash"></span>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    @php
+                                                        $cont++;
+                                                    @endphp
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
@@ -266,47 +261,49 @@
                                     <h3 class="panel-title">Historial de derivaciones</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <table class="table table-bordered-table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>N&deg;</th>
-                                                <th>Dirección</th>
-                                                <th>Unidad</th>
-                                                <th>Funcionario</th>
-                                                <th>Observaciones</th>
-                                                <th>Fecha de derivación</th>
-                                                {{-- <th>Fecha de recepción</th> --}}
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $cont = 1;
-                                            @endphp
-                                            @forelse ($data->derivaciones as $item)
-                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
-                                                    <td>{{ $cont }}</td>
-                                                    <td>{{ $item->funcionario_direccion_para }}</td>
-                                                    <td>{{ $item->funcionario_unidad_para }}</td>
-                                                    <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
-                                                    <td>{{ $item->observacion }}</td>
-                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    <td>
-                                                        {{-- @if ($cont == count($data->derivaciones)) --}}
-                                                        {{-- @if (auth()->user()->hasRole('admin'))
-                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                        @endif --}}
-                                                    </td> 
-                                                </tr>
-                                                @php
-                                                    $cont++;
-                                                @endphp
-                                            @empty
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered-table-hover">
+                                            <thead>
                                                 <tr>
-                                                    <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
+                                                    <th>N&deg;</th>
+                                                    <th>Dirección</th>
+                                                    <th>Unidad</th>
+                                                    <th>Funcionario</th>
+                                                    <th>Observaciones</th>
+                                                    <th>Fecha de derivación</th>
+                                                    {{-- <th>Fecha de recepción</th> --}}
                                                 </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $cont = 1;
+                                                @endphp
+                                                @forelse ($data->derivaciones as $item)
+                                                    <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                                        <td>{{ $cont }}</td>
+                                                        <td>{{ $item->funcionario_direccion_para }}</td>
+                                                        <td>{{ $item->funcionario_unidad_para }}</td>
+                                                        <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
+                                                        <td>{{ $item->observacion }}</td>
+                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                        <td>
+                                                            {{-- @if ($cont == count($data->derivaciones)) --}}
+                                                            {{-- @if (auth()->user()->hasRole('admin'))
+                                                                <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
+                                                            @endif --}}
+                                                        </td> 
+                                                    </tr>
+                                                    @php
+                                                        $cont++;
+                                                    @endphp
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                                 
                             </div>

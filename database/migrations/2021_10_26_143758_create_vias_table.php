@@ -16,6 +16,7 @@ class CreateViasTable extends Migration
         Schema::create('vias', function (Blueprint $table) {
             $table->id();
             $table->integer('funcionario_id');
+            $table->integer('people_id')->nullable();
             $table->string('nombre');
             $table->string('cargo');
             $table->foreignId('entrada_id')->constrained();

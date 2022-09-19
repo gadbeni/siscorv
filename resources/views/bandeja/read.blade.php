@@ -5,11 +5,10 @@
 @if(auth()->user()->hasPermission('read_bandeja'))
 
     @section('page_header')
-        <div class="col-md-6" style="margin: 20px 0px;">
+        <div class="col-md-6" style="margin-top: 20px;">
             <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
-            <h3 class="text-muted" style="padding-left: 20px">{{ $data->referencia }}</h3>
         </div>
-        <div class="col-md-6 text-right" style="margin-top: 40px;">
+        <div class="col-md-6 text-right" style="margin-top: 20px;">
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
                     // $childrens = App\Models\Derivation::where('parent_id', $derivacion->id)->where('entrada_id',$data->id)->where('deleted_at', NULL)->count();
@@ -25,6 +24,9 @@
                 {{-- <button type="button" title="Anterio" class="btn btn-default"><i class="voyager-angle-left"></i> &nbsp;</button>
                 <button type="button" title="Siguiente" class="btn btn-default"><i class="voyager-angle-right"></i> &nbsp;</button> --}}
             </div>
+        </div>
+        <div class="col-md-12" style="margin-bottom: 20px">
+            <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
         </div>
     @stop
 
@@ -236,31 +238,6 @@
                             </div>
                         </div>
                     </div>
-                    
-
-                    {{-- <div class="panel panel-bordered" style="padding-bottom:5px;">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Historial de derivaciones</h3>
-                                </div>
-                                @if ($data->derivaciones->count() > 0)
-                                <div class="panel-body" style="padding-top:0;">
-                                    
-                                    <div class="row">
-        
-                                        <div style="width:100%; height:700px;" id="tree">
-                                        </div>
-                                    </div>
-
-
-
-                                </div>
-                                @endif
-                                 
-                            </div>
-                        </div>
-                    </div> --}}
                 </div>
             </div>
         </div>
@@ -418,6 +395,7 @@
                 height: 100%;
             }
         </style>
+    @endsection
         
     @section('javascript')
         <script>
@@ -444,44 +422,44 @@
         {{-- tree --}}
         <script type="text/javascript" src="{{ asset('balkan/orgchart.js') }}"></script>
         {{-- <script src="https://balkan.app/js/OrgChart.js"></script> --}}
-<script>
-    // alert(11)
+        <script>
+            // alert(11)
 
-    var charts = new OrgChart(document.getElementById("tree"), {
-        // template: "ula",
-        mouseScrool: OrgChart.none,
-        nodeBinding: {
-            field_0: "Nombre",
-            field_1: "Cargo",
-            img_0: "Photo"
-        },
-        // nodeMenu: {
-        //     details: { text: "Details" },
-        //     edit: { text: "Edit" },
-        //     add: { text: "Add" },
-        //     remove: { text: "Remove" }
-        // }
-    });
+            var charts = new OrgChart(document.getElementById("tree"), {
+                // template: "ula",
+                mouseScrool: OrgChart.none,
+                nodeBinding: {
+                    field_0: "Nombre",
+                    field_1: "Cargo",
+                    img_0: "Photo"
+                },
+                // nodeMenu: {
+                //     details: { text: "Details" },
+                //     edit: { text: "Edit" },
+                //     add: { text: "Add" },
+                //     remove: { text: "Remove" }
+                // }
+            });
 
-    // chart.on('init', function (sender) {
-    //     sender.editUI.show(1);
-    // });   
-    var entrada_id = '{{$data->id}}';
+            // chart.on('init', function (sender) {
+            //     sender.editUI.show(1);
+            // });   
+            var entrada_id = '{{$data->id}}';
 
-      $.get('{{route('tree-ajax')}}/'+entrada_id, function(data){
-            // alert(data[0].cite)
-            var datas= [
-                { id: data[0].entrada, "Nombre": data[0].remitente, Cargo: data[0].cargo, email: "jay@domain.com", Photo: "https://siscor.beni.gob.bo/images/icon.png" },
-            ]
+            $.get('{{route('tree-ajax')}}/'+entrada_id, function(data){
+                    // alert(data[0].cite)
+                    var datas= [
+                        { id: data[0].entrada, "Nombre": data[0].remitente, Cargo: data[0].cargo, email: "jay@domain.com", Photo: "https://siscor.beni.gob.bo/images/icon.png" },
+                    ]
 
-                for(var i=0; i<data.length; ++i)
-                {
-                    datas.push({ id: data[i].derivacion, pid: data[i].parent, "Nombre": data[i].para, Cargo: data[i].cargos, Photo: "https://siscor.beni.gob.bo/images/icon.png" })
-                }
-            charts.load(datas);
-          });
-    console.log(data);
-</script>
+                        for(var i=0; i<data.length; ++i)
+                        {
+                            datas.push({ id: data[i].derivacion, pid: data[i].parent, "Nombre": data[i].para, Cargo: data[i].cargos, Photo: "https://siscor.beni.gob.bo/images/icon.png" })
+                        }
+                    charts.load(datas);
+                });
+            console.log(data);
+        </script>
     @stop
     
 @else

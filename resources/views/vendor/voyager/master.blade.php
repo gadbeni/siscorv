@@ -55,7 +55,7 @@
                 padding: 0px !important
             }
             .div-phone-main{
-                padding-left: 0px !important
+                padding: 0px !important
             }
         }
     </style>

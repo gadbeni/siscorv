@@ -65,6 +65,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
+    Route::get('bandeja/list/{funcionario_id}/{type}', [EntradasController::class, 'derivacion_list']);
     Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
     Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
     Route::post('bandeja/{id}/archivar', [EntradasController::class, 'derivacion_archivar'])->name('bandeja.archivar');

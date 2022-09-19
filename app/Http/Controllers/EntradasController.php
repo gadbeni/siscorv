@@ -10,6 +10,8 @@ use DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 // Models
 use App\Models\Entrada;
 use App\Models\Via;
@@ -37,90 +39,14 @@ class EntradasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {        
-
- 
-        // $usuario = DB::table('personas')
-        //     ->where('people_id','!=', null)
-        //     ->where('deleted_at',null)
-        //     ->where('tipo','user')
-        //     ->select('*')
-        //     ->orderBy('ci', 'ASC')
-        //     ->get();
-
-        // $i=0;
-        // while($i< count($usuario))
-        // {
-        
-        //     Entrada::where('funcionario_id_remitente', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
-        //     Entrada::where('funcionario_id_destino', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
-            
-        //     Derivation::where('funcionario_id_de', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_de'=>$usuario[$i]->people_id]);
-        //     Derivation::where('funcionario_id_para', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id_para'=>$usuario[$i]->people_id]);
-
-        //     Via::where('funcionario_id', $usuario[$i]->funcionario_id)
-        //         ->update(['people_id'=>$usuario[$i]->people_id]);
-
-        //     $i++;
-        // } 
-
-
+    public function index(){
         return view('entradas.browse');
     }
 
     public function list(){
-
+        $paginate = request('paginate') ?? 10;
+        $search = request('search') ?? null;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-
-        
-
-        // if($funcionario->people_id)
-        // {
-        //     $funcionariodea = DB::connection('mamore')
-        //                         ->table('people as p')
-        //                         ->join('contracts as c', 'c.person_id', 'p.id')
-        //                         ->where('p.id', $funcionario->people_id)
-        //                         ->where('c.status', 'firmado')
-        //                         ->select('p.id', 'c.direccion_administrativa_id as DA')
-        //                         ->first();
-        // }
-        // else
-        // {
-        //     $funcionariodea =  DB::connection('mysqlgobe')
-        //                         ->table('contribuyente as c')
-        //                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-        //                         ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-        //                         ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-        //                         ->where('c.Estado', '=', '1')->where('co.Estado', '1')
-        //                         ->where('c.id', $funcionario->funcionario_id)
-        //                         ->select('c.id', 'c.DA')
-        //                         ->first();
-        // }
-        
-
-        // if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-        //     $query_filtro = 'registrado_por_id_direccion = '.$funcionariodea->DA;
-        // } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
-        //     $query_filtro = 'tipo = "E" and registrado_por_id_direccion = '.$funcionariodea->DA;
-        // } elseif (auth()->user()->isAdmin() || auth()->user()->id == 28) {
-        //     $query_filtro = 1;
-        // }
-        // // elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-        // //     $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.$funcionario->funcionario_id;
-        // // } 
-        // elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-        //     // if($funcionario->people_id)
-        //         $query_filtro = 'tipo = "I" and people_id_de = '.$funcionario->people_id;
-        //     // else
-        //     //     $query_filtro = 'tipo = "I" and funcionario_id_remitente = '.$funcionario->funcionario_id;
-        // } 
-       
-
         $query_filtro = 'people_id_de = '.$funcionario->people_id;
         if (auth()->user()->isAdmin()) {
             $query_filtro = 1;
@@ -129,65 +55,12 @@ class EntradasController extends Controller
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
-                            'id','tipo','gestion','estado_id','cite','remitente','referencia','entity_id','created_at',
-                            'people_id_para'
+                            'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para'
                         ])
-                        ->where('deleted_at', NULL)->take(10);
+                        ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
+                        ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);;
         
-        
-        return
-            Datatables::of($data)
-            ->addIndexColumn()
-            ->addColumn('fecha_ingreso', function($row){
-                $f_ingreso = $row->fecha_ingreso ?? $row->created_at;
-                return date('d/m/Y H:i:s', strtotime($f_ingreso)).'<br><small>'.\Carbon\Carbon::parse($f_ingreso)->diffForHumans().'</small>';
-            })
-            ->addColumn('origen', function($row){
-                if($row->tipo == 'E'){
-                    return $row->entity->nombre ?? 'Sin entidad';
-                }else{
-                    $origen = '';
-                    $direccion = $this->getIdDireccionInfo($row->direccion_id_remitente);
-                    $unidad = $this->getIdUnidadInfo($row->unidad_id_remitente);
-                    // dd($direccion, $unidad);
-                    if($direccion){
-                        $origen = $direccion->NOMBRE;
-                    }
-                    if ($unidad) {
-                        $origen = $unidad->Nombre;
-                    }
-                    return $origen;
-                }
-            })
-            ->addColumn('estado', function($row){
-                return $row->estado->nombre;
-            })
-            
-            ->addColumn('action', function($row){
-                $derivar_button = ' <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem('.$row->id.','.$row->people_id_para.')" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
-                                        <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
-                                    </button>';
-                $actions = '
-                    <div class="no-sort no-click bread-actions text-right">
-                        '.($row->derivaciones->whereNull('deleted_at')->count() == 0 ? $derivar_button : '').'
-                        <a href="'.route('entradas.show', ['entrada' => $row->id]).'" title="Ver" class="btn btn-sm btn-info view">
-                            <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
-                        </a>
-                        '.(($row->derivaciones->count() == 0) ? 
-                            '<a href="'.route('entradas.edit', ['entrada' => $row->id]).'" title="Editar" class="btn btn-sm btn-warning">
-                                <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
-                            </a>' : '').
-                        ''.(($row->derivaciones->whereNull('deleted_at')->count() <= 1) ? 
-                            '<button title="Anular" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/entradas/".$row->id)."'".')">
-                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
-                            </button>' : '').
-                        '
-                    </div>
-                        ';
-                return $actions;
-            })
-            ->rawColumns(['hr', 'origen', 'fecha_ingreso', 'estado', 'action'])
-            ->make(true);
+        return view('entradas.list', compact('data'));
     }
 
     /**
@@ -336,16 +209,7 @@ class EntradasController extends Controller
         $origen = '';
         $destino = NULL;
         if($data->tipo == 'I'){
-            // $direccion = $this->getIdDireccionInfo($data->direccion_id_remitente);
-            // $unidad = $this->getIdUnidadInfo($data->unidad_id_remitente);
-            // if($direccion){
-            //     $origen = $direccion->nombre;
-            // }
-            // if ($unidad) {
-            //     $origen = $unidad->nombre;
-            // }
             $destino = $this->getPeopleSN($data->people_id_para);
-
         }
 
         return view('entradas.read', compact('data', 'destino'));
@@ -367,10 +231,6 @@ class EntradasController extends Controller
             // return 2;
             $funcionario = $this->getPeople($user_auth->people_id);
         }
-
-
-
-
 
         // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
         return view('entradas.edit-add', compact('entrada','funcionario'));
@@ -537,18 +397,16 @@ class EntradasController extends Controller
             return "Contactese con el Administrador de Sistema";            
         }
 
-                
-        $view = view('entradas.hr',['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
+        return view('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
             $q->where('deleted_at', null)->where('via', 0)->get();
-            }],'entity'),'funcionario' =>$funcionario
+            }],'entity'),'funcionario' => $funcionario
         ], compact('additional', 'funcionarios', 'additionals', 'de'));
-        // return $funcionario;
-        // dd($destino);
-        return $view;
 
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        return $pdf->stream();
+        // $pdf = Pdf::loadView('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
+        //     $q->where('deleted_at', null)->where('via', 0)->get();
+        //     }],'entity'),'funcionario' => $funcionario
+        // ], compact('additional', 'funcionarios', 'additionals', 'de'));
+        // return $pdf->stream();
     }
 
     public function printhr(Entrada $entrada){
@@ -655,82 +513,78 @@ class EntradasController extends Controller
     }
 
     public function derivacion_index(){
-        // return 2;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $ingresos = [];
         $funcionario_id = null;
-        // if ($funcionario) {
-        //     $funcionario_id = $funcionario->funcionario_id;
-        //     if (!$funcionario_id) {
-        //         return redirect()->back()->with(['message' => 'Falta tu código de funcionario contáctate con sistema para solucionarlo por favor.', 'alert-type' => 'error']);
-        //     }
-        //     $derivaciones = Derivation::with([
-        //                             'entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent,deadline',
-        //                             'entrada.estado:id,nombre',
-        //                             'derivationparent:id,tipo,gestion,cite,remitente,urgent',
-        //                             'parents'
-        //                         ])
-        //                         ->select('id','entrada_id','created_at','visto','funcionario_id_para','parent_id','parent_type')
-        //                         ->where('funcionario_id_para', $funcionario_id)->get();
-           
-        // }
-
 
         if ($funcionario) {
             $funcionario_id = $funcionario->people_id;
             if (!$funcionario_id) {
                 return redirect()->back()->with(['message' => 'Falta tu código de funcionario contáctate con sistema para solucionarlo por favor.', 'alert-type' => 'error']);
             }
-            $derivaciones = Derivation::with([
-                                    'entrada:id,tipo,gestion,cite,remitente,referencia,estado_id,urgent,deadline',
-                                    'entrada.estado:id,nombre',
-                                    'derivationparent:id,tipo,gestion,cite,remitente,urgent',
-                                    'parents'
-                                ])
-                                ->select('id','entrada_id','created_at','visto','people_id_para','parent_id','parent_type', 'derivation', 'ok')
-                                ->where('transferred', 0)
-                                ->where('people_id_para', $funcionario_id)->get();
             
-            // return $derivaciones;
-            // foreach($derivaciones as $item)
-            // {
-            //     $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
-            // }
-            
-            // DB::beginTransaction();    
-            // try {
-            //     foreach($derivaciones as $item)
-            //     {
-            //         $item->okderivado = Derivation::where('parent_id', $item->id)->where('entrada_id',$item->entrada->id)->where('deleted_at', NULL)->count();
-            //         if($item->okderivado > 0)
-            //         {
-            //             Derivation::where('id', $item->id)->update(['derivation'=> 1, 'ok'=>'SI']);
-            //             // return $item->id;
-            //         }
-            //         else
-            //         {
-            //             // $item->update(['ok'=>'SI']);
-            //             Derivation::where('id', $item->id)->update(['ok'=>'SI']);
-
-            //         }
-            //     }
-            //     DB::commit();
-             
-            // } catch (\Throwable $th) {
-            //     DB::rollBack();
-            //     return 0;
-            // }
-           
         }
-        // return $derivaciones;
-        return view('bandeja.browse', compact('derivaciones', 'funcionario_id'));
+        // dd($derivaciones);
+        return view('bandeja.browse', compact('funcionario_id'));
     }
 
-    
+    public function derivacion_list($funcionario_id, $type){
+        $paginate = request('paginate') ?? 10;
+        $search = request('search') ?? null;
+        switch ($type) {
+            case 'pendientes':
+                $derivaciones = Derivation::whereHas('entrada', function($q){
+                                        $q->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                    ->where('ok', '!=', 'ARCHIVADO')
+                                    ->where(function($query) use ($search){
+                                        if($search){
+                                            $query->OrwhereHas('entrada', function($query) use($search){
+                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                            })
+                                            ->OrWhereRaw("id = '$search'");
+                                        }
+                                    })
+                                    ->orderBy('id', 'DESC')->paginate($paginate);
+                return view('bandeja.pendientes', compact('derivaciones'));
+                break;
+            case 'urgentes':
+                $derivaciones = Derivation::whereHas('entrada', function($q){
+                                        $q->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
+                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                    ->where('ok', '!=', 'ARCHIVADO')
+                                    ->where(function($query) use ($search){
+                                        if($search){
+                                            $query->OrwhereHas('entrada', function($query) use($search){
+                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                            })
+                                            ->OrWhereRaw("id = '$search'");
+                                        }
+                                    })
+                                    ->orderBy('id', 'DESC')->paginate($paginate);
+                return view('bandeja.urgentes', compact('derivaciones'));
+                break;
+            case 'archivados':
+                    $derivaciones = Derivation::where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                        // ->whereHas('entrada', function($q){
+                                        //     $q->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
+                                        // })
+                                        ->where('ok', 'ARCHIVADO')
+                                        ->where(function($query) use ($search){
+                                            if($search){
+                                                $query->OrwhereHas('entrada', function($query) use($search){
+                                                    $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                                })
+                                                ->OrWhereRaw("id = '$search'");
+                                            }
+                                        })
+                                        ->orderBy('id', 'DESC')->paginate($paginate);
+                    return view('bandeja.archivados', compact('derivaciones'));
+                    break;
+        }
+    }
 
     public function derivacion_show($id)
     {
-    
         try {
             $derivacion =  Derivation::where('id',$id)->first();    
     
@@ -742,18 +596,9 @@ class EntradasController extends Controller
                             ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
                             ->first();
-            
                         
             $ok = date("d-m-Y", strtotime($data->created_at));
             
-            
-                //  return $ok;
-      
-           
-            // $vias = Derivation::where('entrada_id', $id)->get();
-            // return $vias;
-        
-                            // return $data;
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
@@ -767,10 +612,7 @@ class EntradasController extends Controller
                 if ($unidad) {
                     $origen = $unidad->nombre;
                 }
-                // return $data->people_id_para;
-                // $destino = $this->getPeople($data->people_id_para);
             }
-            
             return view('bandeja.read', compact('data', 'origen','derivacion', ));
         } catch (\Throwable $th) {
             //  dd($th);
@@ -803,34 +645,6 @@ class EntradasController extends Controller
         }
     }
 
-    // public function add_rechazo($funcionario, $request){
-    //     $persona = Persona::where('user_id', Auth::user()->id)->first();
-                       
-
-    //     return Derivation::create([
-    //         'entrada_id' => $request->id,
-    //         // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
-    //         'people_id_de' => $rde ? null : $persona->people_id,
-    //         // 'funcionario_id_para' => $funcionario->id_funcionario,
-    //         'people_id_para' => $funcionario->id_funcionario,
-    //         'funcionario_nombre_para' => $funcionario->nombre,
-    //         'funcionario_cargo_para' => $funcionario->cargo,
-    //         'funcionario_direccion_id_para' => $funcionario->id_direccion ?? null,
-    //         'funcionario_direccion_para' => $funcionario->direccion ?? null,
-    //         'funcionario_unidad_id_para' => $funcionario->id_unidad ?? null,
-    //         'funcionario_unidad_para' => $funcionario->unidad ?? null,
-    //         'responsable_actual' => 1,
-    //         'rechazo' => 1,
-    //         // 'via'   => 0,
-    //         // 'ok'=> 'NO',
-    //         'derivation'=>0,
-    //         'registro_por' => Auth::user()->email,
-    //         'observacion' => $request->observacion,
-    //         'parent_id' => $request->der_id ? $request->der_id : $request->id,
-    //         'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
-    //     ]);
-    //     // dd($si);
-    // }
     public function derivacion_rechazar($id, Request $request)
     {
         // return $id;
@@ -908,40 +722,6 @@ class EntradasController extends Controller
             DB::commit();
             return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
 
-
-
-
-
-
-
-            // return $derivacion;
-            // if($request->der_id)
-            // {
-            //     Derivation::where('id', $request->der_id)->update(['derivation' => 1, 'ok' => 'SI']);
-            // }
-
-            
-            // if(!$derivacion){
-            //     // return 1;
-            //     return redirect()->route('bandeja.index')->with(['message' => 'No puedes rechazar un un tramite creado por ti mismo.', 'alert-type' => 'error']);
-            // }            
-            // // return $derivacion;
-            // // Si solo ha habido una sola derivación se anula, sino se deriva al último remitente
-            // if ($derivacion->people_id_de) {
-            //     return $request;
-            //     $funcionario = $this->getPeople($derivacion->people_id_de);
-            //     // return $funcionario;
-            //     if($funcionario){
-            //         $this->add_derivacion($funcionario, $request, 1);
-            //     }else{
-            //         return redirect()->route('bandeja.index')->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
-            //     }
-            // } else {
-            //     return 2;
-            //     Entrada::where('id', $derivacion->entrada_id)->update(['estado_id' => 6, 'referencia' => $request->observacion]);
-            // }
-
-            // return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
             dd($th);

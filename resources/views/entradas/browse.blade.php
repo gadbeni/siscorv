@@ -29,17 +29,29 @@
                 <div class="col-md-12 div-phone">
                     <div class="panel panel-bordered">
                         <div class="panel-body">
-                            <div class="table-responsive">
-                                <table id="dataTable" class="table table-hover">
-                                </table>
+                            <div class="row">
+                                <div class="col-sm-9" style="margin-bottom: 0px">
+                                    <div class="dataTables_length" id="dataTable_length">
+                                        <label>Mostrar <select id="select-paginate" class="form-control input-sm">
+                                            <option value="10">10</option>
+                                            <option value="25">25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select> registros</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3" style="margin-bottom: 0px">
+                                    <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>
+                                </div>
                             </div>
+                            <div class="row" id="div-results" style="min-height: 120px"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        @include('partials.modal-delete',['name'=>'Si anula esta entrada tambien anulara la derivacion si tuviese?'])
+        @include('partials.modal-delete',['name'=>'Si anula esta entrada tambien anulara la derivacion si tuviese, desea continuar?'])
 
         {{-- Personas modal --}}
         @include('partials.modal-derivar')
@@ -54,27 +66,39 @@
     @stop
 
     @push('javascript')
-        <script src="{{ url('js/main.js') }}"></script>
         <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+        <script src="{{ asset('vendor/loading_overlay/loadingoverlay.min.js') }}"></script>
 
         <script>
             var destinatario_id;
             var intern_externo = 1;
+            var countPage = 10;
             $(document).ready(function() {
-                let columns = [
-                    { data: 'id', title: 'ID' },
-                    { data: 'cite', title: 'HR|NCI' },
-                    { data: 'fecha_ingreso', title: 'F. Ingreso' },               
-                    // { data: 'cite', title: 'Nro. cite' },
-                    // { data: 'nro_hojas', title: 'Nro. de hojas' },
-                    { data: 'origen', title: 'origen' },
-                    { data: 'remitente', title: 'Remitente' },
-                    { data: 'referencia', title: 'Referencia' },
-                    { data: 'estado', title: 'Estado' },
-                    { data: 'action', title: 'Acciones', orderable: false, searchable: false },
-                ]
-                customDataTable("{{ url('admin/entradas/ajax/list') }}/", columns);
+                list();
+                $('#input-search').on('keyup', function(e){
+                    if(e.keyCode == 13) {
+                        list();
+                    }
+                });
+                $('#select-paginate').change(function(){
+                    countPage = $(this).val();
+                    list();
+                });
             });
+
+            function list(page = 1){
+                $("#div-results").LoadingOverlay("show");
+                let url = '{{ url("admin/entradas/ajax/list") }}';
+                let search = $('#input-search').val() ? $('#input-search').val() : '';
+                $.ajax({
+                    url: `${url}?search=${search}&paginate=${countPage}&page=${page}`,
+                    type: 'get',
+                    success: function(response){
+                        $('#div-results').html(response);
+                        $("#div-results").LoadingOverlay("hide");
+                    }
+                });
+            }
 
             function derivacionItem(id,destinoid=0){
                 $('#form-derivacion input[name="id"]').val(id);

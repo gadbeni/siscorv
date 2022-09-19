@@ -15,10 +15,9 @@ use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 class VoyagerAuthController extends BaseVoyagerAuthController
 {
     public function redirectTo(){
-        // return 1;
+        // Si el sistema está en mantenimiento y el usuario no es admin
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
-            // return 1;
             Auth::logout();
             return 'maintenance';
         }
