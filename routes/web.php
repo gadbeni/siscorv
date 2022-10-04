@@ -17,6 +17,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PeopleExtController;
 use App\Http\Controllers\AdditionalJobController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\EmbargoController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
@@ -102,6 +103,19 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('exchange', ExchangeController::class);
     Route::post('exchange/search/print', [ExchangeController::class, 'print'])->name('exchange-search.print');
     Route::post('exchange/search/transfer', [ExchangeController::class, 'transfer'])->name('exchange-search.transfer');
+
+
+
+    // LEVANTAMIENTO DE EMBARGO
+    Route::get('embargos', [EmbargoController::class, 'index'])->name('voyager.embargos.index');
+    Route::post('embargos/import/excel', [EmbargoController::class, 'importExcel'])->name('embargos-embargo.excel');
+    Route::post('embargos/list/inhabilitar', [EmbargoController::class, 'inhabilitar'])->name('embargos-list.inhabilitar');
+    Route::post('embargos/list/habilitar', [EmbargoController::class, 'habilitar'])->name('embargos-list.habilitar');
+
+
+
+
+
 
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite

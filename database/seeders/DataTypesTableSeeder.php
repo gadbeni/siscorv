@@ -181,6 +181,24 @@ class DataTypesTableSeeder extends Seeder
                 'created_at' => '2021-09-07 16:20:45',
                 'updated_at' => '2021-09-07 16:28:23',
             ),
+            9 => 
+            array (
+                'id' => 10,
+                'name' => 'embargos',
+                'slug' => 'embargos',
+                'display_name_singular' => 'Orden Embargo',
+                'display_name_plural' => 'Orden Embargos',
+                'icon' => 'fa-solid fa-square-pen',
+                'model_name' => 'App\\Models\\Embargo',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'created_at' => '2022-10-03 12:18:45',
+                'updated_at' => '2022-10-03 12:18:45',
+            ),
         ));
         
         

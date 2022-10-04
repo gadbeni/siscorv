@@ -78,5 +78,22 @@ class PermissionsTableSeeder extends Seeder
                 'table_name' => 'exchange',
             ]);
         }
+
+
+        $keys = [
+            'browse_embargos',
+            'edit_embargos',
+            'add_embargos',            
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => 'embargos',
+            ]);
+        }
+
+
+
     }
 }

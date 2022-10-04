@@ -42,6 +42,7 @@
                         <div class="panel-body">
                             <div class="table-responsive">
                                 <table id="dataTable" class="dataTable table-hover">
+                                    <table style="width:100%"  class="table dataTable table-bordered table-striped table-sm">
                                     <thead>
                                         <tr>
                                             <th>Id&deg;</th>
