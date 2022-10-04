@@ -78,11 +78,13 @@
                                                         @endif
                                                     </td>
                                                     <td style="text-align: right">
-                                                        @if(auth()->user()->hasPermission('edit_embargos'))
-                                                            <a href="{{ route('voyager.embargos.show', $item->id) }}" title="Ver" class="btn btn-sm btn-info view">
-                                                                <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
-                                                            </a>
-                                                            <div class="no-sort no-click bread-actions text-right">
+                                                        <div class="no-sort no-click bread-actions text-right">
+                                                            @if(auth()->user()->hasPermission('read_embargos'))
+                                                                <a href="{{ route('voyager.embargos.show', $item->id) }}" title="Ver" class="btn btn-sm btn-info view">
+                                                                    <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
+                                                                </a>
+                                                            @endif
+                                                            @if(auth()->user()->hasPermission('statu_embargos'))                                                            
                                                                 @if($item->status == 1)
                                                                     <a data-toggle="modal" data-target="#modal-inhabilitar" title="Inhabilitar Dirección" data-id="{{$item->id}}" class="btn btn-sm btn-warning view">
                                                                         <i class="fa-solid fa-thumbs-down"></i> <span class="hidden-xs hidden-sm">Inhabilitar</span>
@@ -91,9 +93,9 @@
                                                                     <a data-toggle="modal" data-target="#modal-habilitar" title="Habilitar Dirección" data-id="{{$item->id}}" class="btn btn-sm btn-success view">
                                                                         <i class="fa-solid fa-thumbs-up"></i> <span class="hidden-xs hidden-sm">Habilitar</span>
                                                                     </a> 
-                                                                @endif
-                                                            </div>
-                                                        @endif
+                                                                @endif                                                            
+                                                            @endif
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach                      

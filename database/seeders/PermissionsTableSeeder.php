@@ -82,8 +82,9 @@ class PermissionsTableSeeder extends Seeder
 
         $keys = [
             'browse_embargos',
-            'edit_embargos',
-            'add_embargos',            
+            'statu_embargos',
+            'add_embargos',   
+            'read_embargos'         
         ];
 
         foreach ($keys as $key) {
