@@ -45,15 +45,15 @@
                                                 <th rowspan="2" style="text-align: center">Nombre</th>
                                                 <th colspan="2" style="text-align: center">Embargo</th>
                                                 <th colspan="2" style="text-align: center">Levantamiento</th>
-                                                <th colspan="2" style="text-align: center"></th>
+                                                <th rowspan="2" style="text-align: center">Estado</th>
+                                                <th rowspan="2" style="text-align: right">Aciones</th>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">Monto</th>
                                                 <th style="text-align: center">Nota</th>
                                                 <th style="text-align: center">Monto</th>
                                                 <th style="text-align: center">Nota</th>
-                                                <th style="text-align: center">Estado</th>
-                                                <th style="text-align: right">Aciones</th>
+                                                
                                             </tr>
                                         </thead>
                                         <tbody>
