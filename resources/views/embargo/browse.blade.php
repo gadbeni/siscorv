@@ -37,14 +37,15 @@
                                         <thead>
                                             <tr>
                                                 <th rowspan="2" style="text-align: center">Id&deg;</th>
-                                                <th rowspan="2" style="text-align: center">Nro</th>
-                                                <th rowspan="2" style="text-align: center">Nro Piet</th>
+                                                {{-- <th rowspan="2" style="text-align: center">Nro</th> --}}
+                                                {{-- <th rowspan="2" style="text-align: center">Nro Piet</th> --}}
                                                 <th rowspan="2" style="text-align: center">Fecha Piet</th>
                                                 <th rowspan="2" style="text-align: center">Rut / Nit</th>
                                                 <th rowspan="2" style="text-align: center">Ci</th>
                                                 <th rowspan="2" style="text-align: center">Nombre</th>
                                                 <th colspan="2" style="text-align: center">Embargo</th>
                                                 <th colspan="2" style="text-align: center">Levantamiento</th>
+                                                <th colspan="2" style="text-align: center"></th>
                                             </tr>
                                             <tr>
                                                 <th style="text-align: center">Monto</th>
@@ -59,8 +60,8 @@
                                             @foreach ($embargo as $item)
                                                 <tr>
                                                     <th style="text-align: center">{{$item->id}}</th>
-                                                    <th style="text-align: center">{{$item->nro}}</th>
-                                                    <th style="text-align: center">{{$item->nroPiet}}</th>
+                                                    {{-- <th style="text-align: center">{{$item->nro}}</th> --}}
+                                                    {{-- <th style="text-align: center">{{$item->nroPiet}}</th> --}}
                                                     <th style="text-align: center">{{$item->fechaPiet}}</th>
                                                     <th style="text-align: center">{{$item->rutNit}}</th>
                                                     <th style="text-align: center">{{$item->ci}}</th>
@@ -78,6 +79,9 @@
                                                     </td>
                                                     <td style="text-align: right">
                                                         @if(auth()->user()->hasPermission('edit_embargos'))
+                                                            <a href="{{ route('voyager.embargos.show', $item->id) }}" title="Ver" class="btn btn-sm btn-info view">
+                                                                <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
+                                                            </a>
                                                             <div class="no-sort no-click bread-actions text-right">
                                                                 @if($item->status == 1)
                                                                     <a data-toggle="modal" data-target="#modal-inhabilitar" title="Inhabilitar Dirección" data-id="{{$item->id}}" class="btn btn-sm btn-warning view">
@@ -252,7 +256,7 @@
                 var fileName = this.files[0].name;
                 var fileSize = this.files[0].size;
 
-                if(fileSize > 3000000){
+                if(fileSize > 5000000){
                     alert('El archivo no debe superar los 3MB');
                     this.value = '';
                     this.files[0].name = '';

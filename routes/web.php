@@ -117,6 +117,7 @@ Route::group(['prefix' => 'admin'], function () {
 
 
 
+
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite
         Route::get('/mamore/getpeople/',[AjaxController::class, 'getPeoples'])->name('mamore.getpeople');
