@@ -26,6 +26,9 @@
         #label-locations{
             display: none;
         }
+        #label-locatio{
+            display: none;
+        }
         @media print{
             .hide-print{
                 display: none
@@ -39,10 +42,18 @@
             #label-location{
                 display: inline;
             }
+
             #location-ids{
                 display: none;
             }
             #label-locations{
+                display: inline;
+            }
+
+            #location-i{
+                display: none;
+            }
+            #label-locatio{
                 display: inline;
             }
         }
@@ -245,11 +256,35 @@
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
+                                
                                 @forelse($entrada->vias as $der)
+
+                                {{-- @php
+                                    dd($entrada->vias);
+                                @endphp --}}
+                                    @php
+                                        $viaJob = \DB::table('additional_jobs')
+                                                        ->where('person_id',$der->funcionario_id)
+                                                        ->where('status', 1)
+                                                        ->select('*')
+                                                        ->get();
+                                        // dd($viaJob);
+                                    @endphp
                                     <table class="alltables" style="margin-top: 5px;">
                                         <tr style="text-transform: uppercase;">
                                             <td style="width: 20%">VIA</td>
-                                            <td class="box-margin">{{ $der->nombre }} - {{$der->cargo}}</td>
+                                            <td class="box-margin">{{ $der->nombre }} 
+
+                                                <select id="location-i" style="text-transform: uppercase;">
+                                                    <option value=""> - {{$der->cargo}}</option>
+                                                    @if(count($viaJob)>0)
+                                                        @foreach($viaJob as $item)
+                                                            <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                <span id="label-locatio" style="text-transform: uppercase;"> - {{$der->cargo}}</span>
+                                            </td>
                                         </tr>
                                     </table>
                                 @empty
@@ -510,6 +545,9 @@
             });
             $('#location-ids').change(function () {
                 $('#label-locations').html($(this).val());
+            });
+            $('#location-i').change(function () {
+                $('#label-locatio').html($(this).val());
             });
         });
     </script>

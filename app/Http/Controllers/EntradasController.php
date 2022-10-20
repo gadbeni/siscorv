@@ -355,7 +355,7 @@ class EntradasController extends Controller
                 ->where('person_id',$funcionario->people_id_para)
                 ->where('status', 1)
                 ->select('*')
-                ->get();
+                ->get();            
 
         
         //              DE
@@ -401,12 +401,6 @@ class EntradasController extends Controller
             $q->where('deleted_at', null)->where('via', 0)->get();
             }],'entity'),'funcionario' => $funcionario
         ], compact('additional', 'funcionarios', 'additionals', 'de'));
-
-        // $pdf = Pdf::loadView('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
-        //     $q->where('deleted_at', null)->where('via', 0)->get();
-        //     }],'entity'),'funcionario' => $funcionario
-        // ], compact('additional', 'funcionarios', 'additionals', 'de'));
-        // return $pdf->stream();
     }
 
     public function printhr(Entrada $entrada){
