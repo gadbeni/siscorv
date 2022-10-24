@@ -160,6 +160,8 @@ class AjaxController extends Controller
                 // $funcionarios = DB::table('siscor2021.people_exts as s')
                 $funcionarios = DB::table('siscor_v2.people_exts as s')
                 ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                ->where('s.status', 1)
+                ->where('s.deleted_at', null)
                 ->select(
                     'm.id',
                     DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
