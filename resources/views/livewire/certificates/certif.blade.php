@@ -127,7 +127,7 @@
                         <br>
                         <div>
                             <p>
-                                LA SECRETARIA DEPARTAMENTAL DE ADMINISTRACION FINANZAS, DEL GOBIERNO AUTONOMO DEPARTAMENTAL DEL BENI, A TRAVEZ DE LA SECCION CIERRE DE CARGO DEPENDIENTE DE LA UNIDAD DE CONTABILIDAD;
+                                LA SECRETARIA DEPARTAMENTAL DE ADMINISTRACION FINANZAS, DEL GOBIERNO AUTONOMO DEPARTAMENTAL DEL BENI, A TRAVES DE LA SECCION CIERRE DE CARGO DEPENDIENTE DE LA UNIDAD DE CONTABILIDAD;
                             </p>
                             <br>
                             <H3><strong>CERTIFICA:</strong></H3>
