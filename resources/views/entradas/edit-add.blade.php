@@ -198,7 +198,7 @@
                                     
                                     <div class="form-group col-md-12" id="div-detalle" style="{{ auth()->user()->hasRole(['funcionario']) || $entrada->tipo == 'I' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Cuerpo</label> 
-                                        <textarea class="form-control richTextBox" onpaste="return false" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
+                                        <textarea class="form-control richTextBox" id="bloquear" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
                                    
                                 </div>
@@ -270,6 +270,8 @@
 
 
     @section('javascript')
+   
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> {{-- Para bloquear el text-area --}}
         <script>
             entrada_id = "<?php echo $entrada->id; ?>"; 
             input1.oninput = function() {
