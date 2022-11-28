@@ -18,6 +18,7 @@ use App\Http\Controllers\PeopleExtController;
 use App\Http\Controllers\AdditionalJobController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmbargoController;
+use App\Http\Controllers\EntidadController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
@@ -51,6 +52,11 @@ Route::get('/prueba', function()
 Route::group(['prefix' => 'admin'], function () {
     
     Voyager::routes();
+
+    // entidades
+    Route::get('entities', [EntidadController::class, 'index'])->name('voyager.entities.index');
+    Route::get('entities/ajax/list/{search?}', [EntidadController::class, 'list']);
+
 
     // Entradas
     Route::resource('entradas', EntradasController::class);
