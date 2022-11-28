@@ -198,7 +198,7 @@
                                     
                                     <div class="form-group col-md-12" id="div-detalle" style="{{ auth()->user()->hasRole(['funcionario']) || $entrada->tipo == 'I' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Cuerpo</label> 
-                                        <textarea class="form-control richTextBox" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
+                                        <textarea class="form-control richTextBox" id="bloquear" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
                                    
                                 </div>
@@ -634,6 +634,21 @@
                     return;
                 }
                 
+            }
+
+
+
+            window.onload = function() {
+                var myInput = document.getElementById('bloquear');
+                myInput.onpaste = function(e) {
+                    e.preventDefault();
+                    // alert("esta acción está prohibida");
+                }
+                
+                myInput.oncopy = function(e) {
+                    e.preventDefault();
+                    // alert("esta acción está prohibida");
+                }
             }
 
 
