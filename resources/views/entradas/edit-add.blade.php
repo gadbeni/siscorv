@@ -154,7 +154,7 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexas</label>
-                                        <input type="text" name="nro_hojas" class="form-control" value="{{old('nro_hojas') ? : $entrada->nro_hojas}}">
+                                        <input type="text" id="bloquear" name="nro_hojas" class="form-control" value="{{old('nro_hojas') ? : $entrada->nro_hojas}}">
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Plazo</label>
@@ -198,7 +198,7 @@
                                     
                                     <div class="form-group col-md-12" id="div-detalle" style="{{ auth()->user()->hasRole(['funcionario']) || $entrada->tipo == 'I' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Cuerpo</label> 
-                                        <textarea class="form-control richTextBox" id="bloquear" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
+                                        <textarea class="form-control richTextBox" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
                                    
                                 </div>
