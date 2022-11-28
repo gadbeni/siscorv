@@ -271,7 +271,7 @@
 
     @section('javascript')
    
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> {{-- Para bloquear el text-area --}}
+        {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> Para bloquear el text-area --}}
         <script>
             entrada_id = "<?php echo $entrada->id; ?>"; 
             input1.oninput = function() {
