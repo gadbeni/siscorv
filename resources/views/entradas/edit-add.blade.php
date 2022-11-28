@@ -638,19 +638,16 @@
 
 
 
-            window.onload = function() {
-                var myInput = document.getElementById('bloquear');
-                myInput.onpaste = function(e) {
+            $(document).ready(function(){
+                $("#bloquear").on('paste', function(e){
                     e.preventDefault();
-                    // alert("esta acción está prohibida");
-                }
-                
-                myInput.oncopy = function(e) {
+                    // alert('Esta acción está prohibida');
+                })                
+                $("#bloquear").on('copy', function(e){
                     e.preventDefault();
-                    // alert("esta acción está prohibida");
-                }
-            }
-
+                    // alert('Esta acción está prohibida');
+                })
+            })
 
         </script>
     @stop
