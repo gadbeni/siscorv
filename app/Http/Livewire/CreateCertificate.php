@@ -144,6 +144,7 @@ class CreateCertificate extends Component
             'monto_deuda'   => $this->deuda,
             'user_id'       => auth()->user()->id,
             'persona_id'    => $persona_id,
+            'created_at'    => date("2022-10-16 H:i:s"),
             'warehouse_id'  => $this->warehouse_id
         ]);
         $cert->codigo = $cod.''.$cert->id;
