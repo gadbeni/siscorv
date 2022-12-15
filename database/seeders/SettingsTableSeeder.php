@@ -145,7 +145,7 @@ class SettingsTableSeeder extends Seeder
                 'id' => 12,
                 'key' => 'site.telefono',
                 'display_name' => 'Telefono',
-                'value' => '+1 5589 55488 55',
+                'value' => '346-21651',
                 'details' => NULL,
                 'type' => 'text',
                 'order' => 7,
@@ -156,7 +156,7 @@ class SettingsTableSeeder extends Seeder
                 'id' => 13,
                 'key' => 'site.email',
                 'display_name' => 'Email',
-                'value' => 'contact@example.com',
+                'value' => 'despacho@beni.gob.bo',
                 'details' => NULL,
                 'type' => 'text',
                 'order' => 8,
@@ -205,6 +205,28 @@ class SettingsTableSeeder extends Seeder
                 'type' => 'text',
                 'order' => 12,
                 'group' => 'Redes sociales',
+            ),
+            17 => 
+            array (
+                'id' => 18,
+                'key' => 'configuracion.maintenance',
+                'display_name' => 'Sistema en Mantenimiento',
+                'value' => '0',
+                'details' => NULL,
+                'type' => 'checkbox',
+                'order' => 1,
+                'group' => 'Configuración',
+            ),
+            18 => 
+            array (
+                'id' => 19,
+                'key' => 'configuracion.navidad',
+                'display_name' => 'Navidad',
+                'value' => '1',
+                'details' => '',
+                'type' => 'checkbox',
+                'order' => 1,
+                'group' => 'Configuración',
             ),
         ));
         
