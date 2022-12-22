@@ -840,6 +840,33 @@ class EntradasController extends Controller
         // dd($si);
     }
 
+    public function bandejaDerivationDelete(Request $request)
+    {
+        // return $request;
+
+        DB::beginTransaction();
+        try {
+            $ok = Derivation::where('deleted_at', null)->where('visto', null)->where('entrada_id', $request->entrada_id)->where('id',$request->id)->first();
+            $ok->update(['deleted_at'=> Carbon::now()]);
+            // return $ok->parent_id;
+
+            $data = Derivation::where('deleted_at', null)->where('entrada_id', $request->entrada_id)->where('parent_id', $ok->parent_id)->get();
+            // return count($data);
+            if(count($data)==0)
+            {
+                Derivation::where('deleted_at', null)->where('id', $ok->parent_id)->where('entrada_id', $request->entrada_id)->update(['derivation'=>0, 'ok'=>'NO']);
+            }
+            DB::commit();
+            // window.location = "{{ url('admin/bandeja') }}/"+id;
+
+            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+
     public function store_vias(Request $request){
         DB::beginTransaction();
         // return $request;

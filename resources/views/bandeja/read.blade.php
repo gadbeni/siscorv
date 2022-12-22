@@ -229,11 +229,14 @@
                                                         @endif
                                                     </td>
                                                     @php
-                                                        
+                                                        $people = \App\Models\Persona::where('tipo', 'user')->where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+                                                        // dd($people->people_id);
+
                                                     @endphp
                                                     <td>
-
-                                                        {{-- <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button> --}}
+                                                        @if ($item->derivation == 0 && $item->ok == 'NO' && $item->via == 0 && $item->visto == NULL && $item->people_id_de == $people->people_id)
+                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                                 @php
@@ -266,7 +269,7 @@
                     </div>
                     <div class="modal-footer">
                         <p></p>
-                        <form id="anulacion_form" action="{{ route('delete.derivacion') }}" method="POST">
+                        <form id="anulacion_form" action="{{ route('bandeja-derivation.delete') }}" method="POST">
                             @csrf
                             <input type="hidden" name="entrada_id" value="{{ $data->id }}">
                             <input type="hidden" name="id">
@@ -449,6 +452,12 @@
                     $('#info_form input[name="direccion_para"]').val(direccion_para);
                     $('#info_form input[name="unidad_para"]').val(unidad_para);
                     $('#info_form textarea[name="observacion"]').val(observacion);
+                });
+
+
+                $('.btn-anular').click(function(){
+                    let id = $(this).data('id');
+                    $('#anulacion_form input[name="id"]').val(id);
                 });
             });
 

@@ -368,7 +368,7 @@
                     </div>
                     <div class="modal-footer">
                         <p></p>
-                        <form id="anulacion_form" action="{{ route('delete.derivacions') }}" method="POST">
+                        <form action="{{ route('delete.derivacions') }}" method="POST">
                             @csrf
                             <input type="hidden" name="entrada_id" value="{{ $data->id }}">
 
