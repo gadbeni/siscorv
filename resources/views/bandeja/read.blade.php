@@ -184,10 +184,10 @@
                         // dd($data->created_at);
                     @endphp
               
-                    @if ($data->created_at >= '2022-09-01' )
+                    {{-- @if ($data->created_at >= '2022-09-01' )
                         <div style="width:100%;" id="tree">
                         </div>
-                    @endif
+                    @endif --}}
                     
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
@@ -206,6 +206,7 @@
                                                 <th>Funcionario</th>
                                                 <th>Observaciones</th>
                                                 <th>Fecha de derivación</th>
+                                                <th></th>
                                                 {{-- <th>Fecha de recepción</th> --}}
                                             </tr>
                                         </thead>
@@ -214,13 +215,26 @@
                                                 $cont = 1;
                                             @endphp
                                             @forelse ($data->derivaciones as $item)
-                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif @if ($item->via == 1) style="background-color: rgba(231, 217, 176)" @endif>
+                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif @if ($item->via) style="background-color: rgb(224,223,223)" @endif>
                                                     <td>{{ $cont }}</td>
                                                     <td>{{ $item->funcionario_direccion_para }}</td>
                                                     <td>{{ $item->funcionario_unidad_para }}</td>
                                                     <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
                                                     <td>{{ $item->observacion }}</td>
-                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small><br>
+                                                        @if ($item->visto)
+                                                                <i class="fa-solid fa-eye" style="color: rgb(9,132,41)"></i>
+                                                        @else
+                                                            <i class="fa-solid fa-eye-slash"></i>
+                                                        @endif
+                                                    </td>
+                                                    @php
+                                                        
+                                                    @endphp
+                                                    <td>
+
+                                                        {{-- <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button> --}}
+                                                    </td>
                                                 </tr>
                                                 @php
                                                     $cont++;
@@ -237,6 +251,28 @@
                                  
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Modal para eliminar las derivaciones --}}
+        <div class="modal modal-danger fade" tabindex="-1" id="anular_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-trash"></i> Desea anular la siguiente derivación?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <p></p>
+                        <form id="anulacion_form" action="{{ route('delete.derivacion') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="entrada_id" value="{{ $data->id }}">
+                            <input type="hidden" name="id">
+                            <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, anular">
+                        </form>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>

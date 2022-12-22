@@ -287,6 +287,7 @@
                                                     <th>Funcionario</th>
                                                     <th>Observaciones</th>
                                                     <th>Fecha de derivación</th>
+                                                    <th></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -294,7 +295,7 @@
                                                     $cont = 1;
                                                 @endphp
                                                 @forelse ($data->derivaciones as $item)
-                                                    <tr  @if ($item->via) style="background-color: RGB(230 230 230)" @endif @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                                    <tr  @if ($item->via) style="background-color: rgb(224,223,223)" @endif @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
                                                         <td>{{ $cont }}</td>
                                                         <td>{{ $item->funcionario_direccion_para }}</td>
                                                         <td>{{ $item->funcionario_unidad_para }}</td>
@@ -312,7 +313,6 @@
                                                                 $ok = \App\Models\Derivation::where('parent_id', $item->id)->get();
                                                             @endphp
                                                             @if(0 == count($ok) && $item->via == 0 && auth()->user()->hasRole('admin') && $item->entrada_id != $item->parent_id)
-                                                            {{-- @if (auth()->user()->hasRole('admin')) --}}
                                                                 <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
                                                             @endif
                                                         </td> 
