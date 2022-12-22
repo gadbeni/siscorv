@@ -80,8 +80,11 @@ class ExchangeController extends Controller
                         'via'=>$aux->via,
                         'people_id_de'=>$aux->people_id_de,
                         'people_id_para'=>$request->people_id,
-                        'derivation'=>$aux->derivation,
-                        'ok'=>$aux->ok
+
+                        'derivation'=>0,
+                        'ok'=>'NO'
+                        // 'derivation'=>$aux->derivation,
+                        // 'ok'=>$aux->ok
                     ]);
                     $aux->update([
                         'transferred'=>1,

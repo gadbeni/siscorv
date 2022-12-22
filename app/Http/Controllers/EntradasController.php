@@ -723,21 +723,42 @@ class EntradasController extends Controller
         }
     }
 
-    public function delete_derivacion(Request $request){
-        // dd($request);
+    // para eliminar la primera derivacion del tramite
+    public function delete_derivacions(Request $request){
+        DB::beginTransaction();
         try {
-            // Derivation::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
+            Derivation::where('entrada_id', $request->entrada_id)->where('deleted_at', null)->update(['deleted_at' => Carbon::now()]);
 
-            $ok = Derivation::where('id', $request->id)->where('deleted_at', null)->first();
+            Via::where('entrada_id', $request->entrada_id)->where('deleted_at', null)->update(['deleted_at' => Carbon::now()]);
 
-            Derivation::where('id', $ok->parent_id)->where('deleted_at', null)
-                ->update(['derivation'=>0, 'ok'=>'NO']);
-
-            $ok->update(['deleted_at' => Carbon::now()]);
-
+            DB::commit();
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
+            DB::rollBack();
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function delete_derivacion(Request $request){
+        DB::beginTransaction();
+        try {
+            $ok = Derivation::where('id', $request->id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->first();
+            // return $ok;
+            $ok->update(['deleted_at' => Carbon::now()]);
+
+            $data = Derivation::where('parent_id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->count();
+            
+            // return $data;
+            if($data == 0)
+            {
+                Derivation::where('id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)
+                ->update(['derivation'=>0, 'ok'=>'NO']);
+            }
+
+            DB::commit();
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }

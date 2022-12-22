@@ -63,6 +63,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('entradas/ajax/list', [EntradasController::class, 'list']);
     Route::post('entradas/store/file', [EntradasController::class, 'store_file']);
     Route::post('entradas/store/derivacion', [EntradasController::class, 'store_derivacion'])->name('store.derivacion');
+    Route::post('entradas/delete/derivacions', [EntradasController::class, 'delete_derivacions'])->name('delete.derivacions');
     Route::post('entradas/delete/derivacion', [EntradasController::class, 'delete_derivacion'])->name('delete.derivacion');
     Route::post('entradas/delete/derivacion/file', [EntradasController::class, 'delete_derivacion_file'])->name('delete.derivacion.file');
     Route::get('entradas/{entrada}/print', [EntradasController::class, 'print'])->name('entradas.print');

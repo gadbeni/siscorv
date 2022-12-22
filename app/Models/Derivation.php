@@ -27,7 +27,7 @@ class Derivation extends Model
         'fecha_fisico', 'observacion', 'estado', 'registro_por', 'actualizado_por', 'entrada_id', 'visto', 
         'rechazo','parent_id','parent_type', 'via',
         'people_id_de', 'people_id_para',
-        'derivation', 'ok', 'transferred', 'transferredUser_id', 'transferredDetails', 'transferredPeople_id', 'transferredDate'
+        'derivation', 'ok', 'transferred', 'transferredUser_id', 'transferredDetails', 'transferredPeople_id', 'transferredDate', 'deleted_at'
 
     ];
 

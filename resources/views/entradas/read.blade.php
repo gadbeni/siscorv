@@ -262,6 +262,22 @@
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
                                     <div class="table-responsive">
+                                        {{-- para que el dueño del tramite pueda eliminar todas las derivacion --}}
+                                        @php
+                                            $ok = \App\Models\Derivation::where('parent_id', $data->id)->where('entrada_id', $data->id)->where('via', 0)
+                                                    ->where('deleted_at', null)
+                                                    ->where('derivation', 0)
+                                                    ->where('ok', 'NO')->first();
+                                            // dd($ok);
+                                        @endphp
+
+                                        @if ($ok)
+                                            @if ($ok->visto == null || auth()->user()->hasRole('admin'))
+                                                <button type="button" data-toggle="modal" data-target="#modal_derivacionAnular" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span> Eliminar Derivación</button>                                                
+                                            @endif                                            
+                                        @endif
+
+
                                         <table class="table table-bordered-table-hover">
                                             <thead>
                                                 <tr>
@@ -271,7 +287,6 @@
                                                     <th>Funcionario</th>
                                                     <th>Observaciones</th>
                                                     <th>Fecha de derivación</th>
-                                                    {{-- <th>Fecha de recepción</th> --}}
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -279,18 +294,27 @@
                                                     $cont = 1;
                                                 @endphp
                                                 @forelse ($data->derivaciones as $item)
-                                                    <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
+                                                    <tr  @if ($item->via) style="background-color: RGB(230 230 230)" @endif @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
                                                         <td>{{ $cont }}</td>
                                                         <td>{{ $item->funcionario_direccion_para }}</td>
                                                         <td>{{ $item->funcionario_unidad_para }}</td>
                                                         <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
                                                         <td>{{ $item->observacion }}</td>
-                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small><br>
+                                                            @if ($item->visto)
+                                                                <i class="fa-solid fa-eye" style="color: rgb(9,132,41)"></i>
+                                                            @else
+                                                                <i class="fa-solid fa-eye-slash"></i>
+                                                            @endif
+                                                        </td>
                                                         <td>
-                                                            {{-- @if ($cont == count($data->derivaciones)) --}}
-                                                            {{-- @if (auth()->user()->hasRole('admin'))
+                                                            @php
+                                                                $ok = \App\Models\Derivation::where('parent_id', $item->id)->get();
+                                                            @endphp
+                                                            @if(0 == count($ok) && $item->via == 0 && auth()->user()->hasRole('admin') && $item->entrada_id != $item->parent_id)
+                                                            {{-- @if (auth()->user()->hasRole('admin')) --}}
                                                                 <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                            @endif --}}
+                                                            @endif
                                                         </td> 
                                                     </tr>
                                                     @php
@@ -334,6 +358,27 @@
                 </div>
             </div>
         </div>
+        
+        <div class="modal modal-danger fade" tabindex="-1" id="modal_derivacionAnular" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"><i class="voyager-trash"></i> Desea anular la siguiente derivación?</h4>
+                    </div>
+                    <div class="modal-footer">
+                        <p></p>
+                        <form id="anulacion_form" action="{{ route('delete.derivacions') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="entrada_id" value="{{ $data->id }}">
+
+                            <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, anular">
+                        </form>
+                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {{-- delete file modal --}}
         <div class="modal modal-danger fade" tabindex="-1" id="delete-file-modal" role="dialog">
@@ -356,6 +401,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- delete via modal --}}
         @include('partials.modal-delete-via')
