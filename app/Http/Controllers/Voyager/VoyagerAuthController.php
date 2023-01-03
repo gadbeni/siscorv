@@ -18,8 +18,6 @@ class VoyagerAuthController extends BaseVoyagerAuthController
         // Si el sistema está en mantenimiento y el usuario no es admin
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
-            return redirect()->route('maintenance');
-
             Auth::logout();
             // return redirect()->route('maintenance');
             return 'maintenance';
