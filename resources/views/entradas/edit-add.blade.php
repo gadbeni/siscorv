@@ -189,7 +189,7 @@
                                     
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
-                                        <input type="file" name="archivos[]" multiple class="form-control" accept="application/pdf">
+                                        <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label">Referencia</label>
@@ -272,6 +272,7 @@
     @section('javascript')
    
         {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> Para bloquear el text-area --}}
+        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             entrada_id = "<?php echo $entrada->id; ?>"; 
             input1.oninput = function() {
@@ -604,6 +605,7 @@
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("formulario").addEventListener('submit', validarFormulario); 
             });
+
             function validarFormulario(evento) {
                 evento.preventDefault();
                 
@@ -612,17 +614,24 @@
                 }
                 else
                 {
-                    swal({
-                        title: "Error",
+                    // swal({
+                    //     title: "Error",
+                    //     text: "El Campo Nro. CITE tiene que tener minimo 2 letras y 5 numeros.\nEjemplo: DF-1/2022",
+                    //     // text: "Esta acción ya no se podrá deshacer, Así que piénsalo bien.",
+                    //     type: "error",
+                    //     showCancelButton: false,
+                    //     // confirmButtonColor: '#3085d6',
+                    //     // cancelButtonColor: '#d33',
+                    //     // confirmButtonText: 'Si, estoy seguro',
+                    //     // cancelButtonText: "Cancelar"
+                    //     });
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
                         text: "El Campo Nro. CITE tiene que tener minimo 2 letras y 5 numeros.\nEjemplo: DF-1/2022",
-                        // text: "Esta acción ya no se podrá deshacer, Así que piénsalo bien.",
-                        type: "error",
-                        showCancelButton: false,
-                        // confirmButtonColor: '#3085d6',
-                        // cancelButtonColor: '#d33',
-                        // confirmButtonText: 'Si, estoy seguro',
-                        // cancelButtonText: "Cancelar"
-                        });
+                        // footer: '<a href="">Why do I have this issue?</a>'
+                    })
                     // alertify.confirm("This is a confirm dialog.",
                     // function() {
                     //     alertify.success('Ok');
@@ -650,6 +659,46 @@
                     // alert('Esta acción está prohibida');
                 })
             })
+
+
+
+            // Para validar los archivos Extenciones y Tamaño
+            $(document).on('change','.imageLength',function(){
+                var fileName = this.files[0].name;
+                var fileSize = this.files[0].size;
+
+                if(fileSize > 10000000){
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: 'El archivo no debe superar los 10 MB!'
+                    })
+                    this.value = '';
+                    this.files[0].name = '';
+                }
+                
+                    // recuperamos la extensión del archivo
+                    var ext = fileName.split('.').pop();
+                    
+                    // Convertimos en minúscula porque 
+                    // la extensión del archivo puede estar en mayúscula
+                    ext = ext.toLowerCase();
+                    // console.log(ext);
+                    switch (ext) {
+                        case 'jpg':
+                        case 'jpeg':
+                        case 'png': 
+                        case 'pdf': break;
+                        default:
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'El archivo no tiene la extensión adecuada!'
+                            })
+                            this.value = ''; // reset del valor
+                            this.files[0].name = '';
+                    }
+            });
 
         </script>
     @stop

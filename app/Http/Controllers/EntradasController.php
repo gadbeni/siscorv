@@ -166,9 +166,6 @@ class EntradasController extends Controller
                     'category_id' => $request->category_id,
                     'estado_id' => 6
                 ]);
-                // return $data;
-                
-
             }
             
             $file = $request->file('archivos');
