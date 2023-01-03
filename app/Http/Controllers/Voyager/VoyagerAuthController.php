@@ -19,7 +19,7 @@ class VoyagerAuthController extends BaseVoyagerAuthController
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
             Auth::logout();
-            return 'maintenance';
+            return redirect()->route('maintenance');
         }
        
         if(Auth::user()->role_id == 1){
