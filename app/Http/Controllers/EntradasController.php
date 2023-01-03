@@ -44,7 +44,7 @@ class EntradasController extends Controller
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
             Auth::logout();
-            return 'maintenance';
+            return redirect()->route('maintenance');
         }
 
         return view('entradas.browse');
@@ -518,9 +518,9 @@ class EntradasController extends Controller
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
         {
             Auth::logout();
-            return 'maintenance';
+            return redirect()->route('maintenance');
         }
-        
+
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
         $funcionario_id = null;
 

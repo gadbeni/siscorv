@@ -42,7 +42,7 @@ Route::get('login', function () {
 Route::get('/', [HomeController::class, 'index']);
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 Route::get('/buscartramite', [HomeController::class, 'searchtramite']);
-Route::get('/maintenance', [MaintenanceController::class , 'maintenance']);
+Route::get('/maintenance', [MaintenanceController::class , 'maintenance'])->name('maintenance');
 
 Route::get('/prueba', function()
 {
