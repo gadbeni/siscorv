@@ -40,6 +40,13 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
+
+        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
+        {
+            Auth::logout();
+            return 'maintenance';
+        }
+
         return view('entradas.browse');
     }
 
@@ -507,6 +514,13 @@ class EntradasController extends Controller
     }
 
     public function derivacion_index(){
+
+        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
+        {
+            Auth::logout();
+            return 'maintenance';
+        }
+        
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
         $funcionario_id = null;
 
@@ -640,10 +654,7 @@ class EntradasController extends Controller
     }
 
     public function derivacion_rechazar($id, Request $request)
-    {
-        // return $id;
-        // return $request;
-        
+    {        
         DB::beginTransaction();
         try {
 
@@ -651,14 +662,18 @@ class EntradasController extends Controller
 
             $derivacion = Derivation::where('id', $request->derivacion_id)->first();
 
+            // return $derivacion;
+
             if ($derivacion->people_id_de)
             {
                 // return $derivacion;
                 $funcionario = $this->getPeople($derivacion->people_id_de);
-                if($funcionario =='Error')
+                // return $funcionario;
+                if($funcionario == 'Error')
                 {
                     return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador.', 'alert-type' => 'error']);
                 }
+
                 Derivation::create([
                     'entrada_id' => $id,
                     // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
