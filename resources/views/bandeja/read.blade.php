@@ -11,7 +11,7 @@
         <div class="col-md-6 text-right" style="margin-top: 20px;">
             <div class="btn-group" role="group" aria-label="...">
                 @php                                                        
-                    dd($derivacion);
+                  
                 @endphp
                 @if ($data->estado_id != 4 && $derivacion->ok != 'ARCHIVADO' && $derivacion->ok != 'SI' && $derivacion->ok != 'RECHAZADO')
                     <button type="button" data-toggle="modal" data-target="#modal-archivar" title="Archivar" class="btn btn-default"><i class="voyager-categories"></i> Archivar</button>
