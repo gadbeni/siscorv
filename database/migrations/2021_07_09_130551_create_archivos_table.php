@@ -19,6 +19,7 @@ class CreateArchivosTable extends Migration
             $table->string('nombre_origen')->nullable();
             $table->string('extension', 10)->nullable();
             $table->string('ruta')->nullable();
+            $table->smallInteger('nci')->default(0);
 
             $table->foreignId('entrada_id')
                   ->nullable()
@@ -28,6 +29,7 @@ class CreateArchivosTable extends Migration
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreignId('deleteUser_id')->nullable()->constrained('users');
         });
     }
 

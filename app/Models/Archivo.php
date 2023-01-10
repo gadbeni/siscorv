@@ -11,7 +11,7 @@ class Archivo extends Model
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
-        'nombre_origen', 'entrada_id', 'ruta', 'user_id'
+        'nombre_origen', 'entrada_id', 'ruta', 'user_id', 'nci', 'deleteUser_id'
     ];
 
     function user(){
