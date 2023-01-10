@@ -56,7 +56,7 @@
                     @if (count($nci)==0)     
                         <form action="{{route('entradas-file-nci.store')}}" method="POST" enctype="multipart/form-data">
                             @csrf
-                            <div class="alert alert-warning">
+                            <div class="alert" style="background-color: #F5C02A;">
                                 <strong>Advertencia:</strong>
                                 <p>Carge el Comprobante Recepcionado para poder derivar el tramite</p>
                                 <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
