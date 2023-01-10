@@ -315,6 +315,7 @@ class EntradasController extends Controller
                 'direccion_id_remitente' => $direccion_id_remitente,
                 // 'funcionario_id_destino' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
                 'people_id_para' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
+                'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
                 'entity_id' => $request->entity_id,
                 'actualizado_por' => auth()->user()->email,
                 'category_id' => $request->category_id,
