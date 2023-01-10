@@ -103,17 +103,15 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
-
+        // return $request;
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
+        //para verificar si exixte el cite regsitrado
         $oldtramite = Entrada::where('tipo',$request->tipo)
                             ->where('cite',$request->cite)
                             ->where('deleted_at',NULL)
-                            ->first();
-        
-        
+                            ->first();       
         if ($oldtramite) {
-            // return 'cite dupilicado';
             return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
         }
 
@@ -158,6 +156,7 @@ class EntradasController extends Controller
                     'direccion_id_remitente' => $direccion_id_remitente,
                     // 'funcionario_id_destino' => $request->funcionario_id_destino,
                     'people_id_para' => $request->funcionario_id_destino,
+                    'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
                     'registrado_por' => Auth::user()->email,
                     // Cambiar el parámetro de la llamada a la funcion getIdDireccionFuncionario
                     'registrado_por_id_direccion' => $this->getIdDireccionPeople($persona ? $persona->people_id : 844)->DA,
@@ -207,6 +206,7 @@ class EntradasController extends Controller
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
+        $nci = Archivo::where('entrada_id', $id)->where('nci',1)->where('deleted_at', null)->get();
         /*
             En caso de se una nota interna obtener los datos del remietente
         */
@@ -216,9 +216,40 @@ class EntradasController extends Controller
             $destino = $this->getPeopleSN($data->people_id_para);
         }
 
-        return view('entradas.read', compact('data', 'destino'));
+        return view('entradas.read', compact('data', 'destino', 'nci'));
     }
 
+    public function entradaFile(Request $request)
+    {
+        // return $request;
+        DB::beginTransaction();
+        try {
+            $file = $request->file('archivos');
+            if ($file) {
+                for ($i=0; $i < count($file); $i++) { 
+                    $nombre_origen = $file[$i]->getClientOriginalName();
+                    $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
+                    $dir = "entradas/".date('F').date('Y');
+                    Storage::makeDirectory($dir);
+                    Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
+                    Archivo::create([
+                        'nombre_origen' => $nombre_origen,
+                        'entrada_id' => $request->id,
+                        'ruta' => $dir.'/'.$newFileName,
+                        'user_id' => Auth::user()->id,
+                        'nci'=>1
+                    ]);
+                }
+            }
+            DB::commit();
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+
+        }
+    }
   
     public function edit(Entrada $entrada)
     {
@@ -342,69 +373,85 @@ class EntradasController extends Controller
 
     public function print(Entrada $entrada){
 
-        // return $entrada;
-        if($entrada->people_id_de != null && $entrada->people_id_para != null)
-        {
-            $destino = $entrada->people_id_para;
-
-            $funcionario = DB::table('derivations')
-                ->where('via', 0)
-                ->where('deleted_at', null)
-                ->where('entrada_id', $entrada->id)
-                ->select('*')
-                ->first();
-                // return $funcionario;
-
-            $additional = DB::table('additional_jobs')
-                ->where('person_id',$funcionario->people_id_para)
-                ->where('status', 1)
-                ->select('*')
-                ->get();            
-
-        
-        //              DE
-            $funcionarios = DB::connection('mamore')->table('contracts as c')
-                ->leftJoin('jobs as j', 'j.id', 'c.job_id')
-                ->where('c.status', 'firmado')
-                ->where('c.deleted_at', null)
-                ->where('c.person_id', $entrada->people_id_de)
-                ->select('c.cargo_id', 'c.job_id', 'j.name as cargo')
-                ->first();
-            
-            if($funcionarios && $funcionarios->cargo_id != NULL)
-            {
-                $cargo = DB::connection('mysqlgobe')->table('cargo')
-                    ->where('id',$funcionarios->cargo_id)
-                    ->select('*')
-                    ->first();        
-                $funcionarios->cargo=$cargo->Descripcion;
-            }   
-            if(!$funcionarios)
-            {
-                $funcionarios = PeopleExt::where('person_id', $entrada->people_id_de)
-                    ->where('status',1)
-                    ->select('*')
-                    ->first();
-            }
-
-            // return $funcionarios;
-            $additionals = DB::table('additional_jobs')
+        $entrada = $entrada;
+        $additional = DB::table('additional_jobs')
                 ->where('person_id',$entrada->people_id_de)
                 ->where('status', 1)
                 ->select('*')
                 ->get();
-        
-            $de = Person::where('id',$entrada->people_id_de)->first();
-        }
-        else
-        {
-            return "Contactese con el Administrador de Sistema";            
-        }
+        $additionals = DB::table('additional_jobs')
+                ->where('person_id',$entrada->people_id_para)
+                ->where('status', 1)
+                ->select('*')
+                ->get();      
+        $via = Via::where('entrada_id', $entrada->id)->where('deleted_at', null)->get();
+        // return $via;
+        // return $additional;
+        // if($entrada->people_id_de != null && $entrada->people_id_para != null)
+        // {
+        //     $destino = $entrada->people_id_para;
 
-        return view('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
-            $q->where('deleted_at', null)->where('via', 0)->get();
-            }],'entity'),'funcionario' => $funcionario
-        ], compact('additional', 'funcionarios', 'additionals', 'de'));
+        //     $funcionario = DB::table('derivations')
+        //         ->where('via', 0)
+        //         ->where('deleted_at', null)
+        //         ->where('entrada_id', $entrada->id)
+        //         ->select('*')
+        //         ->first();
+        //         // return $funcionario;
+
+        //     $additional = DB::table('additional_jobs')
+        //         ->where('person_id',$funcionario->people_id_para)
+        //         ->where('status', 1)
+        //         ->select('*')
+        //         ->get();            
+
+        
+        // //              DE
+        //     $funcionarios = DB::connection('mamore')->table('contracts as c')
+        //         ->leftJoin('jobs as j', 'j.id', 'c.job_id')
+        //         ->where('c.status', 'firmado')
+        //         ->where('c.deleted_at', null)
+        //         ->where('c.person_id', $entrada->people_id_de)
+        //         ->select('c.cargo_id', 'c.job_id', 'j.name as cargo')
+        //         ->first();
+            
+        //     if($funcionarios && $funcionarios->cargo_id != NULL)
+        //     {
+        //         $cargo = DB::connection('mysqlgobe')->table('cargo')
+        //             ->where('id',$funcionarios->cargo_id)
+        //             ->select('*')
+        //             ->first();        
+        //         $funcionarios->cargo=$cargo->Descripcion;
+        //     }   
+        //     if(!$funcionarios)
+        //     {
+        //         $funcionarios = PeopleExt::where('person_id', $entrada->people_id_de)
+        //             ->where('status',1)
+        //             ->select('*')
+        //             ->first();
+        //     }
+
+        //     // return $funcionarios;
+        //     $additionals = DB::table('additional_jobs')
+        //         ->where('person_id',$entrada->people_id_de)
+        //         ->where('status', 1)
+        //         ->select('*')
+        //         ->get();
+        
+        //     $de = Person::where('id',$entrada->people_id_de)->first();
+        // }
+        // else
+        // {
+        //     return "Contactese con el Administrador de Sistema";            
+        // }
+
+        // return view('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
+        //     $q->where('deleted_at', null)->where('via', 0)->get();
+        //     }],'entity'),'funcionario' => $funcionario
+        // ], compact('additional', 'funcionarios', 'additionals', 'de'));
+
+
+        return view('entradas.hr', compact('entrada', 'via', 'additional', 'additionals'));
     }
 
     public function printhr(Entrada $entrada){

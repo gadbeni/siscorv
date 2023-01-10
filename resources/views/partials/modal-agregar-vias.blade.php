@@ -1,6 +1,6 @@
 {{-- Derivación modal --}}
 <form id="form-derivacion" action="{{ route('store.vias') }}" method="post">
-    <div class="modal modal-primary fade" id="modal-derivar" role="dialog">
+    <div class="modal modal-primary fade" id="modal-derivar-via" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

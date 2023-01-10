@@ -53,11 +53,11 @@
                     <td>{{ $item->referencia }}</td>
                     <td>{{ $item->estado->nombre }}</td>
                     <td class="no-sort no-click bread-actions text-right">
-                        @if ($item->derivaciones->whereNull('deleted_at')->count() == 0)
+                        {{-- @if ($item->derivaciones->whereNull('deleted_at')->count() == 0)
                             <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $item->id }}, {{ $item->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
                                 <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
                             </button>
-                        @endif
+                        @endif --}}
                         <a href="{{ route('entradas.show', ['entrada' => $item->id]) }}" title="Ver" class="btn btn-sm btn-info view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>

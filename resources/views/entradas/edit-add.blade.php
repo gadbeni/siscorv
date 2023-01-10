@@ -189,7 +189,7 @@
                                     
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
-                                        <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
+                                        <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf">
                                     </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label">Referencia</label>

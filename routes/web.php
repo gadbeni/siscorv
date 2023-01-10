@@ -34,10 +34,6 @@ use App\Models\Derivation;
 | contains the "web" middleware group. Now create something great!
 |
 */
-if(env('APP_MAINTENANCE'))
-{
-    return redirect()->route('maintenance');  
-}
 Route::get('login', function () {
     return redirect('admin/login');
 })->name('login');
@@ -74,6 +70,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('entradas/{entrada}/printhr', [EntradasController::class, 'printhr'])->name('entradas.printhr');
     Route::post('entradas/store/vias', [EntradasController::class, 'store_vias'])->name('store.vias');
     Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
+    Route::post('entradas/read/nci/file', [EntradasController::class, 'entradaFile'])->name('entradas-file-nci.store');
 
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');

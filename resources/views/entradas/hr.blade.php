@@ -217,54 +217,37 @@
                             </tr>
                         </table>
                         @php
-                            if($entrada->funcionario_id_destino == 6984)
-                            {
-                                $funcionario->nombre = 'GEISEL MARCELO OLIVA RUIZ ';
-                            }
+                           
                             // dd($entrada);
                         @endphp
                         <table class="alltables" style="margin-top: 5px;">
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'DESTINATARIO' : 'A'}}</td>
                                 <td class="box-margin">
-                                    @if($entrada->people_id_para)
-                                        @if($entrada->derivaciones[0]->people_id_para != $entrada->people_id_para && $entrada->tipo == 'E')
-                                        {{-- para RDE personederia juridica --}}
-                                            @php
-                                            $name = \DB::connection('mamore')->table('people')->where('id', $entrada->people_id_para)->first();
-                                            @endphp
-                                            {{ $name->first_name }} {{ $name->last_name }}
-                                        @else
-                                            {{ $funcionario->funcionario_nombre_para}}
-                                            <select id="location-id" style="text-transform: uppercase;">
-                                                    <option value=" - {{$funcionario->funcionario_cargo_para}}"> - {{$funcionario->funcionario_cargo_para}}</option>
-                                                 
-                                                        @if(count($additional)>0)
-                                                            @foreach($additional as $item)
-                                                                <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
-                                                            @endforeach
-                                                        @endif
-                                        
-                                            </select>
-                                            <span id="label-location" style="text-transform: uppercase;"> - {{$funcionario->funcionario_cargo_para}}</span>
-                                        @endif
-                                    @else
-                                    {{$entrada->derivaciones[0]->funcionario_nombre_para }}.
-                                    <b>{{$entrada->derivaciones[0]->funcionario_cargo_para }}</b>
-                                    @endif
+                                    @php
+                                        $name = \DB::connection('mamore')->table('people')->where('id', $entrada->people_id_para)->first();                                        
+                                    @endphp
+                                    {{$name->first_name}} {{$name->last_name}} 
+                                    <select id="location-id" style="text-transform: uppercase;">
+                                        <option value=" - {{$entrada->job_para}}"> - {{$entrada->job_para}}</option>
+                                     
+                                            @if(count($additionals)>0)
+                                                @foreach($additionals as $item)
+                                                    <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
+                                                @endforeach
+                                            @endif
+                            
+                                    </select>
+                                    <span id="label-location" style="text-transform: uppercase;"> - {{$entrada->job_para}}</span>
                                 </td>
                             </tr>
                         </table>
                             @if($entrada->tipo == 'I')
                                 
                                 @forelse($entrada->vias as $der)
-
-                                {{-- @php
-                                    dd($entrada->vias);
-                                @endphp --}}
                                     @php
                                         $viaJob = \DB::table('additional_jobs')
-                                                        ->where('person_id',$der->funcionario_id)
+                                                        ->where('person_id',$der->people_id)
                                                         ->where('status', 1)
                                                         ->select('*')
                                                         ->get();
@@ -295,17 +278,17 @@
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
                                 @if($entrada->tipo == 'I')
-                                    <td class="box-margin">{{ $de->first_name}} {{ $de->last_name}}
+                                    <td class="box-margin">{{ $entrada->remitente}}
 
                                         <select id="location-ids" style="text-transform: uppercase;">
-                                            <option value=""> - {{$funcionarios->cargo}}</option>
-                                            @if(count($additionals)>0)
-                                                @foreach($additionals as $item)
+                                            <option value=""> - {{$entrada->job_de}}</option>
+                                            @if(count($additional)>0)
+                                                @foreach($additional as $item)
                                                     <option value=" - {{$item->cargo}}"> - {{$item->cargo}}</option>
                                                 @endforeach
                                             @endif
                                         </select>
-                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$funcionarios->cargo}}</span>
+                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$entrada->job_de}}</span>
                                 @else
                                     <td class="box-margin">{{ $entrada->entity->nombre}}
                           
@@ -347,7 +330,7 @@
                             <table class="alltables">
                                 <tr>
                                     <td style="width: 15%;">Fecha de Salida</td>
-                                    <td>{{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}</td>
+                                    <td>{{ date('d/m/Y', strtotime($entrada->created_at)) }}</td>
                                     <td>Plazo</td>
                                     <td>{{ $entrada->deadline ? date('d/m/Y', strtotime($entrada->deadline)) : '....../....../............' }}</td>
                                     <td class="text-right" style="width: 30%">Firma y sello</td>
@@ -368,7 +351,7 @@
                             </tr>
                             <tr>
                                 <td style="width: 15%;">Fecha de Salida</td>
-                                <td>{{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}</td>
+                                <td>{{ date('d/m/Y', strtotime($entrada->created_at)) }}</td>
                                 <td>Plazo</td>
                                 <td>{{ $entrada->deadline ? date('d/m/Y', strtotime($entrada->deadline)) : '....../....../............' }}</td>
                                 <td class="text-right" style="width: 30%">Firma y sello</td>

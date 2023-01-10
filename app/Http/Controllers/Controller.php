@@ -117,6 +117,13 @@ class Controller extends BaseController
         return $funcionario;
     }
 
+
+
+
+
+
+
+    
     public function getPeopleDestino($id)
     {        
         

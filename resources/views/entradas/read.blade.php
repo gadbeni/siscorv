@@ -9,7 +9,7 @@
             <a href="{{ route('entradas.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
         </div>
         <div class="col-md-6 col-xs-6 text-right" style="margin-top: 20px;">
-            @if($data->derivaciones->count() > 0)
+            {{-- @if($data->derivaciones->count() > 0) --}}
                 <div class="dropdown">
                     <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
                     <span class="caret"></span></button>
@@ -27,9 +27,21 @@
                         </a>
                       </li>
                     </ul>
+                    @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                        @if (count($nci)>0)
+                            <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $data->id }}, {{ $data->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                                <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
+                            </button>
+                        @endif
+                    @endif
                 </div>
-            @endif
+            {{-- @endif --}}
         </div>
+        {{-- @if ($item->derivaciones->whereNull('deleted_at')->count() == 0) --}}
+                            {{-- <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $data->id }}, {{ $data->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                                <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
+                            </button> --}}
+                        {{-- @endif --}}
         <div class="clearfix"></div>
         <div class="col-md-12" style="margin-bottom: 20px">
             <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
@@ -40,6 +52,22 @@
         <div class="page-content read container-fluid div-phone">
             <div class="row">
                 <div class="col-md-12">
+                    
+                    @if (count($nci)==0)     
+                        <form action="{{route('entradas-file-nci.store')}}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="alert alert-warning">
+                                <strong>Advertencia:</strong>
+                                <p>Carge el Comprobante Recepcionado para poder derivar el tramite</p>
+                                <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
+                                <input type="file" name="archivos[]" multiple class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
+                                <button type="submit" class="btn btn-success">Subir Comprobante</button>
+
+                            </div>
+
+                        </form>
+                    @endif
+
 
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
@@ -151,7 +179,6 @@
                                                     <th>Título</th>
                                                     <th>Adjuntado por</th>
                                                     <th>Fecha de registro</th>
-                                                    <th>Archivo</th>
                                                     <th>Acciones</th>
                                                 </tr>
                                             </thead>
@@ -162,11 +189,21 @@
                                                 @forelse ($data->archivos as $item)
                                                     <tr>
                                                         <td>{{ $cont }}</td>
-                                                        <td>{{ $item->nombre_origen }}</td>
+                                                        <td>
+                                                            @if ($item->nci)
+                                                            <label class="label label-success"><i class="fa-solid fa-file"></i> Comprobante</label> <br>
+                                                            @endif
+                                                            {{ $item->nombre_origen }}
+                                                        </td>
                                                         <td>{{ $item->user->name ?? '' }}</td>
                                                         <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                        <td><a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a></td>
-                                                        <td><button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button></td>
+                                                        <td>
+                                                            <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
+                                                            @if (!$item->nci)
+                                                                <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
+                                                            @endif
+
+                                                        </td>
                                                     </tr>
                                                     @php
                                                         $cont++;
@@ -184,6 +221,7 @@
                             </div>
                         </div>
                     </div>
+
                     @if($data->tipo == 'I')
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
@@ -194,15 +232,17 @@
                                             <h3 class="panel-title">Vias</h3>
                                         </div>
                                         <div class="col-md-3 text-right">
-                                            <button 
-                                                type="button" 
-                                                data-toggle="modal" 
-                                                data-target="#modal-derivar" 
-                                                title="Nuevo" class="btn btn-success"
-                                                style="margin: 15px;">
-                                                <i class="voyager-list-add"></i> 
-                                                Nuevo
-                                            </button>
+                                            @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                                                <button 
+                                                    type="button" 
+                                                    data-toggle="modal" 
+                                                    data-target="#modal-derivar-via" 
+                                                    title="Nuevo" class="btn btn-success"
+                                                    style="margin: 15px;">
+                                                    <i class="voyager-list-add"></i> 
+                                                    Nuevo
+                                                </button>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -227,14 +267,16 @@
                                                         <td>{{ $item->nombre }}</td>
                                                         <td>{{ $item->cargo }}</td>
                                                         <td>
-                                                            <button type="button" 
-                                                            data-toggle="modal" 
-                                                            data-target="#delete-via-modal" 
-                                                            data-id="{{ $item->id }}" 
-                                                            data-entrada_id="{{ $data->id }}"
-                                                            class="btn btn-danger btn-sm btn-delete-via">
-                                                                <span class="voyager-trash"></span>
-                                                            </button>
+                                                            @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                                                                <button type="button" 
+                                                                data-toggle="modal" 
+                                                                data-target="#delete-via-modal" 
+                                                                data-id="{{ $item->id }}" 
+                                                                data-entrada_id="{{ $data->id }}"
+                                                                class="btn btn-danger btn-sm btn-delete-via">
+                                                                    <span class="voyager-trash"></span>
+                                                                </button>
+                                                            @endif
                                                         </td>
                                                     </tr>
                                                     @php
@@ -402,6 +444,8 @@
             </div>
         </div>
 
+        {{-- para derivar la correspondencia --}}
+        @include('partials.modal-derivar')
 
         {{-- delete via modal --}}
         @include('partials.modal-delete-via')
@@ -529,6 +573,12 @@
                     $('#info_form textarea[name="observacion"]').val(observacion);
                 });
             });
+
+            function derivacionItem(id,destinoid=0){
+                $('#form-derivacion input[name="id"]').val(id);
+                destinatario_id = destinoid;
+                // alert(destinatario_id);
+            }
         </script>
     @stop
 

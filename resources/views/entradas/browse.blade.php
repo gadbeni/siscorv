@@ -100,11 +100,11 @@
                 });
             }
 
-            function derivacionItem(id,destinoid=0){
-                $('#form-derivacion input[name="id"]').val(id);
-                destinatario_id = destinoid;
-                // alert(destinatario_id);
-            }
+            // function derivacionItem(id,destinoid=0){
+            //     $('#form-derivacion input[name="id"]').val(id);
+            //     destinatario_id = destinoid;
+            //     // alert(destinatario_id);
+            // }
 
             function deleteItem(url){
                 $('#delete_form').attr('action', url);
