@@ -34,12 +34,13 @@ use App\Models\Derivation;
 | contains the "web" middleware group. Now create something great!
 |
 */
-if(!env('APP_MAINTENANCE'))
+if(env('APP_MAINTENANCE'))
 {
-    Route::get('login', function () {
-        return redirect('admin/login');
-    })->name('login');
+    return redirect()->route('maintenance');  
 }
+Route::get('login', function () {
+    return redirect('admin/login');
+})->name('login');
 
 
 Route::get('/', [HomeController::class, 'index']);
