@@ -206,7 +206,7 @@ class EntradasController extends Controller
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
-        $nci = Archivo::where('entrada_id', $id)->where('nci',1)->where('deleted_at', null)->get();
+        $nci = Archivo::where('entrada_id', $id)->where('deleted_at', null)->get();
         /*
             En caso de se una nota interna obtener los datos del remietente
         */
