@@ -179,8 +179,8 @@
                             <tr>
                                 <td  WIDTH="17%">FECHA</td>
                                 <td class="caja" WIDTH="12%">
-                                    @if($entrada->derivaciones()->count() > 0)
-                                        {{ date('d/m/Y', strtotime($entrada->derivaciones[0]->created_at)) }}
+                                    @if($entrada)
+                                        {{ date('d/m/Y', strtotime($entrada->created_at)) }}
                                     @else
                                      2021
                                     @endif
