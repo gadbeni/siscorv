@@ -75,7 +75,7 @@ class AjaxController extends Controller
         else
         {
             // $funcionarios = DB::table('siscor2021.people_exts as s')
-            $funcionarios = DB::table('siscor-v2.people_exts as s')
+            $funcionarios = DB::table('siscor_v2.people_exts as s')
             ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
             ->select(
                 'm.id',
@@ -88,8 +88,6 @@ class AjaxController extends Controller
             // ->groupBy('text')
             ->get();
         }      
-
-        
         return response()->json($funcionarios);
         // return response()->json($personas);
     }
