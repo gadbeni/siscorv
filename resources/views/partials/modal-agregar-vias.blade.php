@@ -25,7 +25,7 @@
                         <input 
                             type="checkbox" 
                             
-                            id="toggleswitch" 
+                            id="toggleswitchv" 
                             data-toggle="toggle" 
                             data-on="Interno" 
                             data-off="Externo"
@@ -36,16 +36,7 @@
 
                     <div class="form-group" id="div-destinatario" >
                         <label class="control-label">Destinatario</label> &nbsp;
-                        {{-- <input 
-                        type="checkbox" 
-                        
-                        id="toggleswitch" 
-                        data-toggle="toggle" 
-                        data-on="Interno" 
-                        data-off="Externo"
-                        checked 
-                        > --}}
-                        <select name="via" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;"></select>
+                        <select name="via" class="form-control" id="select-funcionario_id_destinov" style="text-transform: uppercase;"></select>
                         
                     </div>
                 </div>
@@ -89,7 +80,9 @@
 
         ruta = "{{ route('mamore.getpeople') }}";
                 intern_externo=1;
-                $("#select-funcionario_id_destino").select2({
+                // alert(1);
+                $("#select-funcionario_id_destinov").select2({
+                    // alert(1);
                     ajax: { 
                         allowClear: true,
                         url: ruta,
@@ -108,8 +101,10 @@
                             };
                         }
                     }
+                    // alert(1)
                 });
-                $('#toggleswitch').on('change', function() {
+                $('#toggleswitchv').on('change', function() {
+                    // alert(1);
                     if (this.checked) {
                         intern_externo = 1;
                     } else {
