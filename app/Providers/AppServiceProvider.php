@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use TCG\Voyager\Facades\Voyager;
+use App\Actions\EnlaceAddFile;
+use Illuminate\Events\Dispatcher;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Voyager::addAction(\App\Actions\EnlaceAddFile::class);
         Paginator::useBootstrap();
     }
 }

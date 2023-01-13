@@ -94,6 +94,27 @@ class PermissionsTableSeeder extends Seeder
             ]);
         }
 
+        $keys = [
+            'browse_enlaces',
+            'edit_enlaces',
+            'add_enlaces',   
+            'read_enlaces',    
+            'delete_enlaces',
+            
+            'browse_enlacefile',
+            'edit_enlacefile',
+            'add_enlacefile',   
+            'read_enlacefile',    
+            'delete_enlacefile' 
+        ];
+
+        foreach ($keys as $key) {
+            Permission::firstOrCreate([
+                'key'        => $key,
+                'table_name' => 'enlaces',
+            ]);
+        }
+
 
 
     }

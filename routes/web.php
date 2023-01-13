@@ -18,6 +18,7 @@ use App\Http\Controllers\PeopleExtController;
 use App\Http\Controllers\AdditionalJobController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EmbargoController;
+use App\Http\Controllers\EnlaceController;
 use App\Http\Controllers\EntidadController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
@@ -120,6 +121,16 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('embargos/import/excel', [EmbargoController::class, 'importExcel'])->name('embargos-embargo.excel');
     Route::post('embargos/list/inhabilitar', [EmbargoController::class, 'inhabilitar'])->name('embargos-list.inhabilitar');
     Route::post('embargos/list/habilitar', [EmbargoController::class, 'habilitar'])->name('embargos-list.habilitar');
+
+
+    //ENLACE TRAMITES Y CORRESPONDENCIA
+    Route::get('enlaces/{enlace?}/file', [EnlaceController::class, 'indexFile'])->name('enlaces-file.index');
+    Route::post('enlaces/file/store', [EnlaceController::class, 'storeFile'])->name('enlaces-file.store');
+    Route::post('enlaces/file/delete', [EnlaceController::class, 'destroyFile'])->name('enlaces-file.delete');
+
+
+
+
 
 
 
