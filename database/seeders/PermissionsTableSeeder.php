@@ -102,7 +102,6 @@ class PermissionsTableSeeder extends Seeder
             'delete_enlaces',
             
             'browse_enlacefile',
-            'edit_enlacefile',
             'add_enlacefile',   
             'read_enlacefile',    
             'delete_enlacefile' 
