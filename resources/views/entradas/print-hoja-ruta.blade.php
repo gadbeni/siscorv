@@ -76,7 +76,11 @@
         @php
             $persona = \App\Models\Persona::where('user_id', Auth::user()->id)->first();
         @endphp
-        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br> <small style="font-size: 11px">Por: {{ $persona->full_name ?? auth()->user()->name }}</small></p>
+        <p style="font-size: 12px">Fecha y hora de impresión: {{ date('d/m/Y H:i:s') }} <br>
+            @if (!auth()->user()->hasRole('admin'))
+                <small style="font-size: 11px">Por: {{ $persona->full_name ?? auth()->user()->name }}</small>
+            @endif
+        </p>
     </div>
 
     <style>
