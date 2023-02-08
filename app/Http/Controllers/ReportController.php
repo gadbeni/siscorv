@@ -45,18 +45,32 @@ class ReportController extends Controller
 
 
         $data = DB::table('entradas as e')
-            ->leftJoin('entities as en', 'e.entity_id', 'en.id')
-            ->leftJoin('derivations as d', function ($join) {
-                $join->on('d.id', '=', DB::raw('(SELECT derivations.entrada_id FROM derivations WHERE derivations.entrada_id = e.id and derivations.via = 0 and derivations.deleted_at is null LIMIT 1)'));
-                })
+            ->join('entities as en', 'e.entity_id', 'en.id')
+            ->join('derivations as d', 'd.entrada_id', 'e.id')
             ->select('e.created_at', 'e.cite', 'en.nombre as origen', 'e.remitente', 'e.referencia', 'd.funcionario_nombre_para', 'd.funcionario_cargo_para')
             ->where('e.deleted_at', null)
-            // ->where('e.people_id_de', $people->people_id)
             ->where('e.tipo', 'E')
-            ->where('e.created_at', '>=', $request->start)
-            ->where('e.created_at', '<=', $request->finish)
-            ->groupBy('e.id')
+            ->whereDate('e.created_at', '>=', $request->start)
+            ->whereDate('e.created_at', '<=', $request->finish)
+            ->groupBy('e.cite')
             ->get();
+        // dd($data);
+
+
+        // $data = DB::table('entradas as e')
+        //     ->leftJoin('entities as en', 'e.entity_id', 'en.id')
+        //     ->leftJoin('derivations as d', function ($join) {
+        //         $join->on('d.id', '=', DB::raw('(SELECT derivations.entrada_id FROM derivations WHERE derivations.entrada_id = e.id and derivations.via = 0 and derivations.deleted_at is null LIMIT 1)'));
+        //         })
+        //     ->select('e.created_at', 'e.cite', 'en.nombre as origen', 'e.remitente', 'e.referencia', 'd.funcionario_nombre_para', 'd.funcionario_cargo_para')
+        //     ->where('e.deleted_at', null)
+        //     ->where('e.tipo', 'E')
+        //     ->whereDate('e.created_at', '>=', $request->start)
+        //     ->whereDate('e.created_at', '<=', $request->finish)
+        //     ->groupBy('e.id')
+        //     ->get();
+
+        
 
 
 
