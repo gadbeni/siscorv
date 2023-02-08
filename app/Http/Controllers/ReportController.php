@@ -50,10 +50,23 @@ class ReportController extends Controller
             ->select('e.created_at', 'e.cite', 'en.nombre as origen', 'e.remitente', 'e.referencia', 'd.funcionario_nombre_para', 'd.funcionario_cargo_para')
             ->where('e.deleted_at', null)
             ->where('e.tipo', 'E')
+            ->where('d.deleted_at', null)
             ->whereDate('e.created_at', '>=', $request->start)
             ->whereDate('e.created_at', '<=', $request->finish)
             ->groupBy('e.cite')
             ->get();
+
+            // $data = DB::table('entradas as e')
+            // ->leftJoin('entities as en', 'e.entity_id', 'en.id')
+            // ->leftJoin('derivations as d', 'd.entrada_id', 'e.id')
+            // ->select('e.created_at', 'e.cite', 'en.nombre as origen', 'e.remitente', 'e.referencia')
+            // ->where('e.deleted_at', null)
+            // ->where('e.tipo', 'E')
+            // ->where('e.entity_id', null)
+            // ->whereDate('e.created_at', '>=', $request->start)
+            // ->whereDate('e.created_at', '<=', $request->finish)
+            // ->groupBy('e.cite')
+            // ->get();
         // dd($data);
 
 
