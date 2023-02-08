@@ -358,17 +358,18 @@ class EntradasController extends Controller
      */
     public function destroy($id)
     {  
-        DB::beginTransaction();
-        try {
-            $entrada = Entrada::findOrFail($id);
-            $entrada->derivaciones()->delete();
-            $entrada->delete();
-            DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente.', 'alert-type' => 'success']);
-        } catch (\Throwable $th) {
-            //throw $th;
-            DB::rollback();
-        }   
+        return $id;
+        // DB::beginTransaction();
+        // try {
+        //     $entrada = Entrada::findOrFail($id);
+        //     $entrada->derivaciones()->delete();
+        //     $entrada->delete();
+        //     DB::commit();
+        //     return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente.', 'alert-type' => 'success']);
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        //     DB::rollback();
+        // }   
        
     }
 

@@ -11,7 +11,7 @@
                 <h3 style="margin-bottom: 0px; margin-top: 5px">
                     REPORTE {{$name}} <br>
                    
-                    <small style="font-size: 11px; font-weight: 100">Impreso por: {{ Auth::user()->name }} <br> {{ date('d/M/Y H:i:s') }}</small>
+                    {{-- <small style="font-size: 11px; font-weight: 100">Impreso por: {{ Auth::user()->name }} <br> {{ date('d/M/Y H:i:s') }}</small> --}}
                 </h3>
             </td>
         </tr>
