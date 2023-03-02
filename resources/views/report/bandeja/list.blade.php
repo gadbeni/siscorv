@@ -46,6 +46,7 @@
                             <td>{{ $item->entrada->cite }}</td>
                             <td>{{ $item->entrada->remitente }}</td>
                             <td>{{ $item->entrada->referencia }}</td>
+                            <td>{{ $item->entrada->referencia }}</td>
                             <td>
                                 {!! $item->entrada->detalles !!}
                             </td>

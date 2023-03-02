@@ -72,7 +72,7 @@ $months = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Juli
                     <td>{{ $item->entrada->cite }}</td>
                     <td>{{ $item->entrada->remitente }}</td>
                     <td>{{ $item->entrada->referencia }}</td>
-                    <td >
+                    <td>
                         {!! $item->entrada->detalles !!}
                     </td>
                 </tr>

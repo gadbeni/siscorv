@@ -267,6 +267,8 @@ class ReportController extends Controller
                                         ->whereHas('entrada', function($q){
                                             $q->whereNotIn('estado_id', [4, 6]);
                                         })
+                                        ->whereDate('created_at', '>=', $request->start)
+                                        ->whereDate('created_at', '<=', $request->finish)
                                         // ->where('ok', 'ARCHIVADO')
                                         ->orderBy('id', 'DESC')->get();
         $people = Person::where('id', $request->people)->first();
