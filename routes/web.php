@@ -102,6 +102,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('report/bandeja', [ReportController::class, 'view_report_bandeja'])->name('view.report.bandeja');
     Route::post('report/print/bandeja', [ReportController::class, 'printf_report_bandeja'])->name('print.report.bandeja');
     
+    
 
     //personas externas 
     Route::resource('people_exts', PeopleExtController::class);
