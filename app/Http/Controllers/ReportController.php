@@ -9,9 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Persona;
 use Illuminate\Support\Facades\DB;
 use App\Models\Entrada;
+use App\Models\Person;
 use Dflydev\DotAccessData\Data;
 use Dotenv\Parser\Entry;
 use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
+use App\Models\Derivation;
 
 class ReportController extends Controller
 {
@@ -122,10 +124,6 @@ class ReportController extends Controller
 
 
     //______________________________________________________________________ report print
-
-
-
-
     public function printf_report_list(Request $request)
     {
         // dd($request);
@@ -217,4 +215,69 @@ class ReportController extends Controller
 
 
 
+
+
+    // Para los Ingresos 
+    public function view_report_ingreso()
+    {
+        $people = Person::where('deleted_at', null)->get();
+        return view('report.salida.report' , compact('people'));
+    }
+    
+    public function printf_report_ingreso(Request $request)
+    {
+
+        // dump($request);
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
+                        ->where('people_id_de',$request->people)
+                        ->select([
+                            'id','tipo','gestion','estado_id','cite', 'detalles', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para'
+                        ])
+                        ->where('deleted_at', NULL)->orderBy('id', 'ASC')->get();
+        // dump($data);
+        
+        $people = Person::where('id', $request->people)->first();
+        if($request->print){
+            $start = $request->start;
+            $finish = $request->finish;
+            return view('report.salida.print', compact('data', 'finish', 'start', 'people'));
+
+        }else{
+            return view('report.salida.list', compact('data'));
+
+        }
+    }
+
+
+    // Para LA BANDEJA DE ENTRADA
+    public function view_report_bandeja()
+    {
+        // $data = DB::table('dbo.Personas')->get();
+        // dump($data);
+        // $data = DB::select('select * from Personas');
+        // return $data;
+
+        $people = Person::where('deleted_at', null)->get();
+        return view('report.bandeja.report' , compact('people'));
+    }
+    
+    public function printf_report_bandeja(Request $request)
+    {
+        $data = Derivation::where('transferred', 0)->where('people_id_para', $request->people)
+                                        ->whereHas('entrada', function($q){
+                                            $q->whereNotIn('estado_id', [4, 6]);
+                                        })
+                                        // ->where('ok', 'ARCHIVADO')
+                                        ->orderBy('id', 'DESC')->get();
+        $people = Person::where('id', $request->people)->first();
+        if($request->print){
+            $start = $request->start;
+            $finish = $request->finish;
+            return view('report.bandeja.print', compact('data', 'finish', 'start', 'people'));
+
+        }else{
+            return view('report.bandeja.list', compact('data'));
+
+        }
+    }
 }

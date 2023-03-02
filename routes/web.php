@@ -94,6 +94,13 @@ Route::group(['prefix' => 'admin'], function () {
     // Report
     Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
     Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
+
+    //Ingreso
+    Route::get('report/ingreso', [ReportController::class, 'view_report_ingreso'])->name('view.report.ingreso');
+    Route::post('report/print/ingreso', [ReportController::class, 'printf_report_ingreso'])->name('print.report.ingreso');
+    //para la bandeja de entrada
+    Route::get('report/bandeja', [ReportController::class, 'view_report_bandeja'])->name('view.report.bandeja');
+    Route::post('report/print/bandeja', [ReportController::class, 'printf_report_bandeja'])->name('print.report.bandeja');
     
 
     //personas externas 
