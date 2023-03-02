@@ -499,6 +499,38 @@ class MenuItemsTableSeeder extends Seeder
                 'route' => 'voyager.enlaces.index',
                 'parameters' => NULL,
             ),
+            30 => 
+            array (
+                'id' => 33,
+                'menu_id' => 1,
+                'title' => 'Reporte Ingresos',
+                'url' => '',
+                'target' => '_self',
+                'icon_class' => 'fa-solid fa-print',
+                'color' => '#000000',
+                'parent_id' => 27,
+                'order' => 2,
+                'created_at' => '2023-03-01 15:03:09',
+                'updated_at' => '2023-03-02 08:58:28',
+                'route' => 'view.report.ingreso',
+                'parameters' => 'null',
+            ),
+            31 => 
+            array (
+                'id' => 34,
+                'menu_id' => 1,
+                'title' => 'Reporte Bandeja',
+                'url' => '',
+                'target' => '_self',
+                'icon_class' => 'fa-solid fa-print',
+                'color' => '#000000',
+                'parent_id' => 27,
+                'order' => 3,
+                'created_at' => '2023-03-02 08:58:15',
+                'updated_at' => '2023-03-02 08:58:44',
+                'route' => 'view.report.bandeja',
+                'parameters' => NULL,
+            ),
         ));
         
         
