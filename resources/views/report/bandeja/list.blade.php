@@ -47,7 +47,7 @@
                             <td>{{ $item->entrada->remitente }}</td>
                             <td>{{ $item->entrada->referencia }}</td>
                             <td>
-                                {!! $item->entrada->detalles !!}</p>
+                                {!! $item->entrada->detalles !!}
                             </td>
                         </tr>
                     @empty
