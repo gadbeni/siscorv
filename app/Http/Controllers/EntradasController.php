@@ -25,6 +25,7 @@ use Database\Seeders\PersonasTableSeeder;
 use phpDocumentor\Reflection\Types\Nullable;
 use PhpParser\Node\Stmt\Return_;
 use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
+use Prophecy\Promise\ReturnPromise;
 
 use function PHPSTORM_META\map;
 
@@ -639,6 +640,7 @@ class EntradasController extends Controller
 
     public function derivacion_show($id)
     {
+        
         try {
             $derivacion =  Derivation::where('id',$id)->first();    
     
@@ -667,7 +669,8 @@ class EntradasController extends Controller
                     $origen = $unidad->nombre;
                 }
             }
-            return view('bandeja.read', compact('data', 'origen','derivacion', ));
+            // return 1;
+            return view('bandeja.read', compact('data', 'origen','derivacion', 'ok'));
         } catch (\Throwable $th) {
             //  dd($th);
             return redirect()->route('voyager.dashboard');

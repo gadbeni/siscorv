@@ -60,12 +60,6 @@
                                     <p>{{ $data->cite ?? 'No definido' }}</p>
                                 </div>
                                 <hr style="margin:0;">
-                                @if ()
-                                    h1
-                                    
-                                @else
-                                    
-                                @endif
                             </div>
                             <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
