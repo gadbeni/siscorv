@@ -72,6 +72,11 @@
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
                         </button>
                         @endif
+                        @if (auth()->user()->hasRole('admin'))
+                            <button title="Cambio de fecha del tramite" class="btn btn-sm btn-dark" data-toggle="modal" data-target="#modal_Date" onclick="dateItem('{{ route('entradas-date.update', ['id'=>$item->id]) }}')">
+                                <i class="fa-solid fa-calendar"></i>
+                            </button>
+                        @endif
                     </td>
                 </tr>
             @empty

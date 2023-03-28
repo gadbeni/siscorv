@@ -23,6 +23,7 @@ use App\Http\Controllers\EntidadController;
 use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
+use App\Http\Controllers\FileController;
 use App\Models\Derivation;
 
 /*
@@ -72,6 +73,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/store/vias', [EntradasController::class, 'store_vias'])->name('store.vias');
     Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
     Route::post('entradas/read/nci/file', [EntradasController::class, 'entradaFile'])->name('entradas-file-nci.store');
+    Route::post('entradas/{id?}/date/update', [FileController::class, 'UpdateDateEntrada'])->name('entradas-date.update');//Para cambio d fecha del documemto y agrgera oc respaldo
+
+
 
     // Bandeja
     Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
