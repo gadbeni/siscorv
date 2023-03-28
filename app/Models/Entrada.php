@@ -58,7 +58,7 @@ class Entrada extends Model
 
     public function archivodate()
     {
-        return $this->hasMany(ArchivoDate::class, 'entrada_id')
+        return $this->hasMany(ArchivoDate::class, 'entrada_id');
     }
 
     public function destinatario(){
