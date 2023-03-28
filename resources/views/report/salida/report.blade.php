@@ -1,7 +1,7 @@
 @extends('voyager::master')
 
 @section('page_title', 'Reporte Recaudacion Diaria')
-{{-- @if(auth()->user()->hasPermission('browse_report_list-document')) --}}
+@if(auth()->user()->hasRole('admin'))
 
 
 @section('page_header')
@@ -203,8 +203,8 @@
         }
     </script>
 @stop
-{{-- @else
+@else
     @section('content')
         <h1>403</h1>
     @stop
-@endif --}}
+@endif
