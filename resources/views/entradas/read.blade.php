@@ -58,7 +58,7 @@
                             @csrf
                             <div class="alert" style="background-color: #F5C02A;">
                                 <strong>Advertencia:</strong>
-                                <p>Carge el Comprobante Recepcionado para poder derivar el tramite</p>
+                                <p>Carge su documento de respaldo..</p>
                                 <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
                                 <input type="file" name="archivos[]" multiple class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
                                 <button type="submit" class="btn btn-success">Subir Archivos</button>
