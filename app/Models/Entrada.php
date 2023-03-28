@@ -26,7 +26,7 @@ class Entrada extends Model
         'unidad_id_remitente', 'direccion_id_remitente', 'funcionario_id_destino', 'funcionario_id_responsable', 
         'registrado_por', 'registrado_por_id_direccion', 'registrado_por_id_unidad', 'actualizado_por', 
         'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id', 'tipo_id','details',
-        'urgent','category_id',
+        'urgent','category_id', 'created_at',
 
         'people_id_de', 'job_de', 'people_id_para', 'job_para'
     ];

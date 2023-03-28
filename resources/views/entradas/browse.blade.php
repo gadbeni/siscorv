@@ -86,7 +86,7 @@
                                 <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="">Observaciones</label>
-                                        <textarea name="observacion" class="form-control" rows="3"></textarea>
+                                        <textarea name="observation" class="form-control" rows="3"></textarea>
                                     </div>
                                 </div>
                             </div>
