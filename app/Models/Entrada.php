@@ -56,6 +56,11 @@ class Entrada extends Model
         return $this->hasMany(Derivation::class);
     }
 
+    public function archivodate()
+    {
+        return $this->hasMany(ArchivoDate::class, 'entrada_id')
+    }
+
     public function destinatario(){
         // return $this->belongsTo(Persona::class,'funcionario_id_destino','funcionario_id');
         return $this->belongsTo(Persona::class,'people_id_para','people_id');
