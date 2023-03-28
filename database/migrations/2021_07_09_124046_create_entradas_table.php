@@ -32,6 +32,7 @@ class CreateEntradasTable extends Migration
             $table->string('job_de')->nullable();
             $table->integer('people_id_para')->nullable();
             $table->string('job_para')->nullable();
+            
 
 
             $table->string('funcionario_id_responsable', 10)->nullable();

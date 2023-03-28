@@ -14,7 +14,7 @@ class UpdatePermissionsSeeder extends Seeder
     public function run()
     {
         $this->call([
-            // RolesTableSeeder::class,
+            RolesTableSeeder::class,
             PermissionsTableSeeder::class,
             PermissionRoleTableSeeder::class
         ]);

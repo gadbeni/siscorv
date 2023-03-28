@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use TCG\Voyager\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 class PermissionsTableSeeder extends Seeder
 {
@@ -12,12 +13,19 @@ class PermissionsTableSeeder extends Seeder
      */
     public function run()
     {
+        \DB::table('permissions')->delete();
+        
+        Permission::firstOrCreate([
+            'key'        => 'browse_admin',
+            'table_name' => 'admin',
+        ]);
+        
         $keys = [
-            'browse_admin',
             'browse_bread',
             'browse_database',
             'browse_media',
             'browse_compass',
+            'browse_clear-cache',
         ];
 
         foreach ($keys as $key) {
@@ -27,19 +35,12 @@ class PermissionsTableSeeder extends Seeder
             ]);
         }
 
-        // Permission::create(['key' => 'index_bandeja','table_name' => null]);
-        // Permission::create(['key' => 'edit_bandeja','table_name' => null]);
-        // Permission::create(['key' => 'show_bandeja','table_name' => null]);
-        // Permission::create(['key' => 'create_bandeja','table_name' => null]);
-        // Permission::create(['key' => 'delete_bandeja','table_name' => null]);
-
-        // Permission::create(['key' => 'index_seguimiento','table_name' => null]);
-        // Permission::create(['key' => 'edit_seguimiento','table_name' => null]);
 
         Permission::generateFor('menus');
         Permission::generateFor('roles');
         Permission::generateFor('users');
         Permission::generateFor('entities');
+        Permission::generateFor('categories');
         Permission::generateFor('entradas');
         Permission::generateFor('certificates');
         Permission::generateFor('settings');
@@ -56,6 +57,7 @@ class PermissionsTableSeeder extends Seeder
 
         $keys = [
             'browse_report_list-document',
+            'browse_report'
             // 'browse_report'
         ];
 
@@ -69,7 +71,6 @@ class PermissionsTableSeeder extends Seeder
         //para transferencia de mensaje de persona a persona
         $keys = [
             'browse_exchange',
-            // 'browse_report'
         ];
 
         foreach ($keys as $key) {
