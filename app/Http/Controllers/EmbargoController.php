@@ -27,7 +27,7 @@ class EmbargoController extends Controller
         {
             $nro++;
         }
-
+        
         $file = $request->file('file');
         Excel::import(new EmbargoImport, $file);
         // return 1;
