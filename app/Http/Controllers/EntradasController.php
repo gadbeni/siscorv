@@ -70,7 +70,7 @@ class EntradasController extends Controller
                         ])
                         ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
                         ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
-        dd($data);
+        // dd($data);
         
 
         
