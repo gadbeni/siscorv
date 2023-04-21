@@ -62,7 +62,7 @@ class EntradasController extends Controller
         if (auth()->user()->isAdmin()) {
             $query_filtro = 1;
         }
-
+        return 1;
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
@@ -70,7 +70,7 @@ class EntradasController extends Controller
                         ])
                         ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
                         ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
-        return 1;
+        
 
         
         return view('entradas.list', compact('data'));
