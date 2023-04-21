@@ -59,6 +59,14 @@ class PermissionRoleTableSeeder extends Seeder
                                                 table_name = "certificates" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
+
+
+        // Para la orden de embargo
+        $role = Role::where('name', 'embargos')->firstOrFail();
+        $permissions = Permission::whereRaw('   table_name = "admin" or
+                                                table_name = "embargos" or
+                                                `key` = "browse_clear-cache"')->get();
+        $role->permissions()->sync($permissions->pluck('id')->all());
         // Roles de funcionario
         // $role = Role::where('name', 'certificados')->firstOrFail();
         // $permissions = Permission::whereRaw('table_name = "certificates" or id = 1')->get();

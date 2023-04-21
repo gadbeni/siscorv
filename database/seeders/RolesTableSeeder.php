@@ -48,6 +48,12 @@ class RolesTableSeeder extends Seeder
             $role->fill(['display_name' => 'Enlace'])->save();
         }
 
+        //Embargo
+        $role = Role::firstOrNew(['name' => 'embargos']);
+        if (!$role->exists) {
+            $role->fill(['display_name' => 'Orden de Embargos'])->save();
+        }
+
 
         // \DB::table('roles')->delete();
         

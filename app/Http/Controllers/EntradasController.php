@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Controllers\FileController;
 use DataTables;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
@@ -21,6 +22,7 @@ use App\Models\Persona;
 use App\Models\PeopleExt;
 use App\Models\Category;
 use App\Models\Person;
+use App\Models\PjNameReservation;
 use Database\Seeders\PersonasTableSeeder;
 use phpDocumentor\Reflection\Types\Nullable;
 use PhpParser\Node\Stmt\Return_;
@@ -28,6 +30,7 @@ use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 use Prophecy\Promise\ReturnPromise;
 
 use function PHPSTORM_META\map;
+use function PHPUnit\Framework\returnSelf;
 
 class EntradasController extends Controller
 {
@@ -63,7 +66,7 @@ class EntradasController extends Controller
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
-                            'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para'
+                            'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para', 'personeria'
                         ])
                         ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
                         ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);;
@@ -78,6 +81,7 @@ class EntradasController extends Controller
      */
     public function create()
     {
+        
         $entrada = new Entrada;
         $user_auth = Persona::where('user_id', Auth::user()->id)->first();
         // $funcionario = $this->getFuncionario($user_auth->funcionario_id);
@@ -104,7 +108,10 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
+        $objFile = new FileController();
         // return $request;
+
+        
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
         //para verificar si exixte el cite regsitrado
@@ -126,7 +133,7 @@ class EntradasController extends Controller
             /*
                 Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id) 
             */
-            // return $request;
+
 
             if($persona->people_id)
             {
@@ -164,8 +171,46 @@ class EntradasController extends Controller
                     'registrado_por_id_unidad' => $this->getIdDireccionPeople($persona ? $persona->people_id : 844)->idDependencia,
                     'entity_id' => $request->entity_id,
                     'category_id' => $request->category_id,
-                    'estado_id' => 6
+                    'estado_id' => 6,
+                    'personeria'=>$request->pj?1:0
                 ]);
+
+                if($request->pj && 1==2)
+                {
+                    return $request;
+                    PjNameReservation::create([
+                        'entrada_id'=>$data->id,
+                        'applicant'=>$request->nameSolicitante,
+                        'name'=>$request->namePersoneria,
+                        'phone'=>$request->cellPersoneria
+                    ]);
+
+                    
+                    $file = $request->file('solicitud_p');
+                    if ($file) {
+                        $objFile.file($file, 'sidepej/solicitud');
+                        
+                    }
+
+                    $file = $request->file('carnet_p');
+                    if ($file) {
+                        $objFile.file($file, 'sidepej/carnet');
+                        
+                    }
+
+                    $file = $request->file('deposito_p');
+                    if ($file) {
+                        $objFile.file($file, 'sidepej/deposito');
+                        
+                    }
+
+                    $file = $request->file('poder_p');
+                    if ($file) {
+                        $objFile.file($file, 'sidepej/poder');
+                        
+                    }
+
+                }
             }
             
             $file = $request->file('archivos');

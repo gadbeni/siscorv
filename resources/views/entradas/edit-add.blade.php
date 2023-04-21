@@ -1,13 +1,8 @@
 {{-- <link href="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/css/alertify.min.css" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.11.0/build/alertify.min.js"></script> --}}
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.css" rel="stylesheet" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.js"></script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-
+{{-- <link href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.8.0/sweetalert2.min.css" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> --}}
 
 
 @extends('voyager::master')
@@ -75,18 +70,8 @@
                                             @endforeach                                        
                                         </select>
                                     </div>
-                                    {{-- <div id="div_category" @if(auth()->user()->hasRole(['ventanilla'])) class="form-group col-md-4" @else class="form-group col-md-6" @endif>
-                                        <label class="control-label">Tipo Trámite</label>
-                                        <select name="category_id" class="form-control select2" id="select-category" required>
-                                            <option value="" selected>Seleccione el tipo</option>
-                                            @foreach ($category as $item)
-                                            <option {{(int)old('category_id') === $item->id ||$entrada->category_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->organization->count() > 0) ? substr($item->organization->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option> 
-                                            @endforeach                                        
-                                        </select>
-                                    </div> --}}
                                     @if (auth()->user()->hasRole(['ventanilla']))
                                         <div class="form-group col-md-2">
-                                        {{-- <label class="control-label">Tipo Trámite</label> --}}
                                         <br>
                                             <a href="#" title="Nuevo cliente" data-target="#modal-create-customer" data-toggle="modal" class="btn btn-primary">
                                                 <i class="voyager-plus"></i><span> Nuevo</span>
@@ -174,41 +159,90 @@
                                     </div>
                                     <div class="form-group col-md-6" id="div-destinatario" >
                                         <label class="control-label">Destinatario</label>
-                                        <input 
-                                        type="checkbox" 
                                         
-                                        id="toggleswitch" 
-                                        data-toggle="toggle" 
-                                        data-on="Interno" 
-                                        data-off="Externo"
-                                        checked 
-                                        >
-                                        <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;" required></select>
                                         
+                                        <div class="input-group">
+                                            <select name="funcionario_id_destino" class="form-control" id="select-funcionario_id_destino" style="text-transform: uppercase;" required></select>
+
+                                            <span class="input-group-btn">
+                                                <input 
+                                                    type="checkbox" 
+                                                    
+                                                    id="toggleswitch" 
+                                                    data-toggle="toggle" 
+                                                    data-on="Interno" 
+                                                    data-off="Externo"
+                                                    checked 
+                                                >
+                                            </span>
+                                        </div>
                                     </div>
+
+
+
+
                                     
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
                                         <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf">
                                     </div>
+                                    <div class="form-group col-md-12" id="div-personeria" style="display:none">       
+                                        <hr>                             
+
+                                        <input type="checkbox" id="myCheck" name="pj" onclick="myFunction()">
+                                        <label for="myCheck">Personeria Juridica</label> 
+
+
+                                        <div class="row" id="div-personeria-name" style="display:none">
+                                            <div class="form-group col-md-5">
+                                                <label class="control-label">Nombre de Personeria</label>
+                                                <input type="text" id="namePersoneria" name="namePersoneria" class="form-control">
+                                            </div>
+
+                                            <div class="form-group col-md-5">
+                                                <label class="control-label">Nombre del Solicitante</label>
+                                                <input type="text" id="nameSolicitante" name="nameSolicitante" class="form-control">
+                                            </div>
+
+                                            <div class="form-group col-md-2">
+                                                <label class="control-label">Celular Responsable</label>
+                                                <input type="number" id="cellPersoneria" name="cellPersoneria" class="form-control">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label class="control-label">Solicitud</label>
+                                                <input type="file" name="solicitud_p" id="solicitud_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label class="control-label">Carnet</label>
+                                                <input type="file" name="carnet_p" id="carnet_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label class="control-label">Deposito</label>
+                                                <input type="file" name="deposito_p" id="deposito_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            </div>
+                                            <div class="form-group col-md-3">
+                                                <label class="control-label">Poder (Opcional)</label>
+                                                <input type="file" name="poder_p" id="poder_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            </div>
+                                        </div>
+
+                                    </div>
                                     <div class="form-group col-md-12">
                                         <label class="control-label">Referencia</label>
                                         <textarea name="referencia" class="form-control" rows="3" required>{{old('referencia') ? : $entrada->referencia}}</textarea>
                                     </div>
-                                    
                                     <div class="form-group col-md-12" id="div-detalle" style="{{ auth()->user()->hasRole(['funcionario']) || $entrada->tipo == 'I' ? 'display: block' : 'display: none' }}">
                                         <label class="control-label">Cuerpo</label> 
                                         <textarea class="form-control richTextBox" id="bloquear" name="detalles">{{old('detalles') ? : $entrada->detalles}}</textarea>
                                     </div>
+                                    
+                                   
+
+                                    
                                    
                                 </div>
                             </div>
 
-                            {{-- <p><a href="javascript:mostrar();">Mostrar</a></p>
-                            <div id="flotante" style="display:none;">
-                                
-                                <label class="label label-danger">Pendiente</label>
-                            </div> --}}
 
                             <div class="panel-footer text-right">
                                 <button type="submit" id="btn_save" class="btn btn-primary save">{{ __('voyager::generic.save') }} <i class="voyager-check"></i> </button>
@@ -270,9 +304,35 @@
 
 
     @section('javascript')
-   
-        {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script> Para bloquear el text-area --}}
-        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            function myFunction() {
+                var checkBox = document.getElementById("myCheck");
+                var text = document.getElementById("text");
+                if (checkBox.checked == true){
+                    // alert(1);
+                    $('#div-personeria-name').fadeIn();
+                    $('#namePersoneria').attr('required', 'required');
+                    $('#cellPersoneria').attr('required', 'required');
+                    $('#nameSolicitante').attr('required', 'required');
+                    $('#solicitud_p').attr('required', 'required');
+                    $('#carnet_p').attr('required', 'required');   
+                    $('#deposito_p').attr('required', 'required');   
+                    
+                    
+                    
+
+                } else {
+                    $('#div-personeria-name').fadeOut();
+                    $('#namePersoneria').removeAttr('required');
+                    $('#cellPersoneria').removeAttr('required');
+                    $('#nameSolicitante').removeAttr('required');
+                    $('#solicitud_p').removeAttr('required');
+                    $('#carnet_p').removeAttr('required');
+                    $('#deposito_p').removeAttr('required');
+                }
+            }
+        </script>
         <script>
             entrada_id = "<?php echo $entrada->id; ?>"; 
             input1.oninput = function() {
@@ -472,6 +532,20 @@
                         $('#input1').removeAttr('name', 'cite');
                         auxn =5;
                         auxl=5;
+                        $('#div-personeria').fadeIn();
+                        $('#div-personeria-name').fadeOut();
+
+
+                        // name Person
+                        $('#namePersoneria').removeAttr('required');
+                        $('#cellPersoneria').removeAttr('required');
+                        $('#nameSolicitante').removeAttr('required');
+                        $('#solicitud_p').removeAttr('required');
+                        $('#carnet_p').removeAttr('required');
+                        $('#deposito_p').removeAttr('required');
+
+
+
                         
                     }else{
                         $('#div-remitente').fadeIn();
@@ -487,6 +561,17 @@
                         $('#input2').removeAttr('name', 'cite');
                         auxn =0;
                         auxl=0;
+
+                        $('#div-personeria').fadeOut();
+                        $('#namePersoneria').removeAttr('required');
+                        $('#cellPersoneria').removeAttr('required');
+                        $('#nameSolicitante').removeAttr('required');
+                        $('#solicitud_p').removeAttr('required');
+                        $('#carnet_p').removeAttr('required');
+                        $('#deposito_p').removeAttr('required');
+
+                        
+
                     }
                 });
 
@@ -614,17 +699,6 @@
                 }
                 else
                 {
-                    // swal({
-                    //     title: "Error",
-                    //     text: "El Campo Nro. CITE tiene que tener minimo 2 letras y 5 numeros.\nEjemplo: DF-1/2022",
-                    //     // text: "Esta acción ya no se podrá deshacer, Así que piénsalo bien.",
-                    //     type: "error",
-                    //     showCancelButton: false,
-                    //     // confirmButtonColor: '#3085d6',
-                    //     // cancelButtonColor: '#d33',
-                    //     // confirmButtonText: 'Si, estoy seguro',
-                    //     // cancelButtonText: "Cancelar"
-                    //     });
 
                     Swal.fire({
                         icon: 'error',

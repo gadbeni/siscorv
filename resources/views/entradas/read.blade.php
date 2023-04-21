@@ -223,78 +223,78 @@
                     </div>
 
                     @if($data->tipo == 'I')
-                    <div class="panel panel-bordered" style="padding-bottom:5px;">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <div class="row">
-                                        <div class="col-md-9">
-                                            <h3 class="panel-title">Vias</h3>
-                                        </div>
-                                        <div class="col-md-3 text-right">
-                                            @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
-                                                <button 
-                                                    type="button" 
-                                                    data-toggle="modal" 
-                                                    data-target="#modal-derivar-via" 
-                                                    title="Nuevo" class="btn btn-success"
-                                                    style="margin: 15px;">
-                                                    <i class="voyager-list-add"></i> 
-                                                    Nuevo
-                                                </button>
-                                            @endif
+                        <div class="panel panel-bordered" style="padding-bottom:5px;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <h3 class="panel-title">Vias</h3>
+                                            </div>
+                                            <div class="col-md-3 text-right">
+                                                @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                                                    <button 
+                                                        type="button" 
+                                                        data-toggle="modal" 
+                                                        data-target="#modal-derivar-via" 
+                                                        title="Nuevo" class="btn btn-success"
+                                                        style="margin: 15px;">
+                                                        <i class="voyager-list-add"></i> 
+                                                        Nuevo
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>ID&deg;</th>
-                                                    <th>Nombre</th>
-                                                    <th>Cargo</th>
-                                                    <th>Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php
-                                                    $cont = 1;
-                                                @endphp
-                                                @forelse ($data->vias as $item)
-                                                    <tr style="text-transform: uppercase;">
-                                                        <td>{{ $cont }}</td>
-                                                        <td>{{ $item->nombre }}</td>
-                                                        <td>{{ $item->cargo }}</td>
-                                                        <td>
-                                                            @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
-                                                                <button type="button" 
-                                                                data-toggle="modal" 
-                                                                data-target="#delete-via-modal" 
-                                                                data-id="{{ $item->id }}" 
-                                                                data-entrada_id="{{ $data->id }}"
-                                                                class="btn btn-danger btn-sm btn-delete-via">
-                                                                    <span class="voyager-trash"></span>
-                                                                </button>
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                    @php
-                                                        $cont++;
-                                                    @endphp
-                                                @empty
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered table-hover">
+                                                <thead>
                                                     <tr>
-                                                        <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                        <th>ID&deg;</th>
+                                                        <th>Nombre</th>
+                                                        <th>Cargo</th>
+                                                        <th>Acciones</th>
                                                     </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $cont = 1;
+                                                    @endphp
+                                                    @forelse ($data->vias as $item)
+                                                        <tr style="text-transform: uppercase;">
+                                                            <td>{{ $cont }}</td>
+                                                            <td>{{ $item->nombre }}</td>
+                                                            <td>{{ $item->cargo }}</td>
+                                                            <td>
+                                                                @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                                                                    <button type="button" 
+                                                                    data-toggle="modal" 
+                                                                    data-target="#delete-via-modal" 
+                                                                    data-id="{{ $item->id }}" 
+                                                                    data-entrada_id="{{ $data->id }}"
+                                                                    class="btn btn-danger btn-sm btn-delete-via">
+                                                                        <span class="voyager-trash"></span>
+                                                                    </button>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                        @php
+                                                            $cont++;
+                                                        @endphp
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
+                                    <hr style="margin:0;">
                                 </div>
-                                <hr style="margin:0;">
                             </div>
                         </div>
-                    </div>
                     @endif
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
@@ -375,6 +375,8 @@
                             </div>
                         </div>
                     </div>
+
+                    
                 </div>
             </div>
         </div>

@@ -14,7 +14,7 @@ class UpdateEntradaTable extends Migration
     public function up()
     {
         Schema::table('entradas', function (Blueprint $table) {
-            // $table->smallInteger('personeria')->nullable();
+            $table->smallInteger('personeria')->nullable();
         });
     }
 

@@ -16,6 +16,7 @@ class CreateEntradasTable extends Migration
         Schema::create('entradas', function (Blueprint $table) {
             $table->id();
             $table->integer('gestion')->nullable();
+            $table->smallInteger('personeria')->nullable();
             $table->char('tipo', 1)->nullable();
             $table->string('hr', 20)->nullable();
             $table->string('remitente', 150)->nullable();

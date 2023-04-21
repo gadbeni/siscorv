@@ -25,10 +25,14 @@
                         @else
                         No definida
                         @endif
+                        @if ($item->personeria== 1)
+                            <br>
+                            <label class="label label-info">Personeria Juridica</label>
+                        @endif
                     </td>
                     <td>
                         {{ $item->cite }} <br>
-                        {!! $item->tipo == 'I' ? '<label class="label label-info">Interna</lable>' : '<label class="label label-success">Externa</lable>' !!}
+                        {!! $item->tipo == 'I' ? '<label class="label label-info">Interna</label>' : '<label class="label label-success">Externa</label>' !!}
                     </td>
                     <td>
                         @if ($item->tipo == 'E')

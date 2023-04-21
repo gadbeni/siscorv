@@ -14,19 +14,14 @@ use Illuminate\Support\Str;
 class FileController extends Controller
 {
 
-    public function file()
+    public function file($file, $direc)
     {
-        // $nombre_origen = $file->getClientOriginalName();
-        //         $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
-        //         $dir = "entradas/".date('F').date('Y');
-        //         Storage::makeDirectory($dir);
-        //         Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file));
-        //         Archivo::create([
-        //             'nombre_origen' => $nombre_origen,
-        //             'entrada_id' => $request->id,
-        //             'ruta' => $dir.'/'.$newFileName,
-        //             'user_id' => Auth::user()->id
-        // ]);
+        $nombre_origen = $file->getClientOriginalName();
+        $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
+        $dir = $direc."/".date('F').date('Y');
+        Storage::makeDirectory($dir);
+        Storage::disk('sidepej')->put($dir.'/'.$newFileName, file_get_contents($file));
+        return $dir.'/'.$newFileName;
     }
 
     public function UpdateDateEntrada(Request $request, $id)

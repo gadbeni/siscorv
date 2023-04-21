@@ -42,6 +42,11 @@ return [
             'visibility' => 'public',
         ],
 
+        'siscor' => [
+            'driver' => 'local',
+            'root' => storage_path('../../sidepej/storage/app/public'),
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

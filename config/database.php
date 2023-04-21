@@ -91,6 +91,20 @@ return [
             'engine' => null,
         ],
 
+        'sidepej_v2' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST_SIDEPEJV2', 'localhost'),
+            'port' => env('DB_PORT_SIDEPEJV2', '3306'),
+            'database' => env('DB_DATABASE_SIDEPEJV2', 'forge'),
+            'username' => env('DB_USERNAME_SIDEPEJV2', 'forge'),
+            'password' => env('DB_PASSWORD_SIDEPEJV2', ''),
+            'charset' => 'utf8',
+            'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ],
+
         'mysqlgobe' => [
             'driver' => 'mysql',
             'host' => env('DB_HOST_GOBE', 'localhost'),

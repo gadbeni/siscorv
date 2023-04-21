@@ -28,7 +28,7 @@ class Entrada extends Model
         'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id', 'tipo_id','details',
         'urgent','category_id', 'created_at',
 
-        'people_id_de', 'job_de', 'people_id_para', 'job_para'
+        'people_id_de', 'job_de', 'people_id_para', 'job_para', 'personeria'
     ];
 
     public function person(){
