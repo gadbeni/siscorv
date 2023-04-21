@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Embargo;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\EmbargoImport;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class EmbargoController extends Controller
@@ -27,7 +28,7 @@ class EmbargoController extends Controller
         {
             $nro++;
         }
-        
+        Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
         $file = $request->file('file');
         Excel::import(new EmbargoImport, $file);
         // return 1;
