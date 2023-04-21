@@ -55,6 +55,7 @@ class EntradasController extends Controller
     }
 
     public function list(){
+        return 1;
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
