@@ -62,7 +62,7 @@ class EntradasController extends Controller
         if (auth()->user()->isAdmin()) {
             $query_filtro = 1;
         }
-        return 1;
+        dd($funcionario);
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
