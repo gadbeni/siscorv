@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Builder;
-use App\Http\Controllers\FileController;
+use Storage;
 use DataTables;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Storage;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Via;
+use App\Models\Person;
+use App\Models\Archivo;
+use App\Models\Entrada;
+use App\Models\Persona;
+use App\Models\Category;
+use App\Models\PeopleExt;
 
 // Models
-use App\Models\Entrada;
-use App\Models\Via;
-use App\Models\Archivo;
 use App\Models\Derivation;
-use App\Models\Persona;
-use App\Models\PeopleExt;
-use App\Models\Category;
-use App\Models\Person;
-use App\Models\PjNameReservation;
-use Database\Seeders\PersonasTableSeeder;
-use phpDocumentor\Reflection\Types\Nullable;
-use PhpParser\Node\Stmt\Return_;
-use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
-use Prophecy\Promise\ReturnPromise;
-
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use function PHPSTORM_META\map;
+use PhpParser\Node\Stmt\Return_;
+use App\Models\PjNameReservation;
+use Illuminate\Support\Facades\DB;
+use Prophecy\Promise\ReturnPromise;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FileController;
+use Database\Seeders\PersonasTableSeeder;
+use Illuminate\Database\Eloquent\Builder;
 use function PHPUnit\Framework\returnSelf;
+
+use phpDocumentor\Reflection\Types\Nullable;
+use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class EntradasController extends Controller
 {
@@ -112,7 +112,7 @@ class EntradasController extends Controller
     public function store(Request $request)
     {  
         $objFile = new FileController();
-        // return $request;
+        return $request;
 
         
         $request->merge(['cite' =>  strtoupper($request->cite)]);
