@@ -111,9 +111,7 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {  
-        $objFile = new FileController();
-        return $request;
-
+        // return $request;
         
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
@@ -178,43 +176,47 @@ class EntradasController extends Controller
                     'personeria'=>$request->pj?1:0
                 ]);
 
-                if($request->pj && 1==2)
+                if($request->pj)
                 {
-                    return $request;
+                    $objFile = new FileController();
+                    // return $request;    
+                    // dd($request);
                     PjNameReservation::create([
                         'entrada_id'=>$data->id,
                         'applicant'=>$request->nameSolicitante,
                         'name'=>$request->namePersoneria,
                         'phone'=>$request->cellPersoneria
                     ]);
+                    // return 1;
 
-                    
                     $file = $request->file('solicitud_p');
                     if ($file) {
-                        $objFile.file($file, 'sidepej/solicitud');
+                        // return 2;
+                        $objFile->file($file, 'sidepej/solicitud');
                         
                     }
 
                     $file = $request->file('carnet_p');
                     if ($file) {
-                        $objFile.file($file, 'sidepej/carnet');
+                        $objFile->file($file, 'sidepej/carnet');
                         
                     }
 
                     $file = $request->file('deposito_p');
                     if ($file) {
-                        $objFile.file($file, 'sidepej/deposito');
+                        $objFile->file($file, 'sidepej/deposito');
                         
                     }
 
                     $file = $request->file('poder_p');
                     if ($file) {
-                        $objFile.file($file, 'sidepej/poder');
+                        $objFile->file($file, 'sidepej/poder');
                         
                     }
 
                 }
             }
+            // return 1;
             
             $file = $request->file('archivos');
             if ($file) {
@@ -238,7 +240,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             //  dd($th);
             DB::rollback();
-            // return 00;
+            return 100;
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
 

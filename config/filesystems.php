@@ -42,7 +42,7 @@ return [
             'visibility' => 'public',
         ],
 
-        'siscor' => [
+        'sidepej' => [
             'driver' => 'local',
             'root' => storage_path('../../sidepej/storage/app/public'),
         ],

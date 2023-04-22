@@ -18,6 +18,7 @@ class FileController extends Controller
     {
         $nombre_origen = $file->getClientOriginalName();
         $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
+        // return $file;
         $dir = $direc."/".date('F').date('Y');
         Storage::makeDirectory($dir);
         Storage::disk('sidepej')->put($dir.'/'.$newFileName, file_get_contents($file));
