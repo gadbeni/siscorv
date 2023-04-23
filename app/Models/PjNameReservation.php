@@ -30,4 +30,6 @@ class PjNameReservation extends Model
         'deleted_at',
         'deletedUser_id'
     ];
+
+    // public function
 }

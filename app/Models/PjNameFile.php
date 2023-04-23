@@ -22,4 +22,9 @@ class PjNameFile extends Model
         'poder',
         'deleted_at'
     ];
+
+    public function name()
+    {
+        return $this->belongsTo(PjNameReservation::class, 'nameReservation_id');
+    }
 }

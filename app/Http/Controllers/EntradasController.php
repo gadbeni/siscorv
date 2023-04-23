@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Prophecy\Promise\ReturnPromise;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FileController;
+use App\Models\PjNameFile;
 use Database\Seeders\PersonasTableSeeder;
 use Illuminate\Database\Eloquent\Builder;
 use function PHPUnit\Framework\returnSelf;
@@ -178,42 +179,40 @@ class EntradasController extends Controller
 
                 if($request->pj)
                 {
+                    // return $request;
                     $objFile = new FileController();
                     // return $request;    
                     // dd($request);
-                    PjNameReservation::create([
+                    $reservation = PjNameReservation::create([
                         'entrada_id'=>$data->id,
                         'applicant'=>$request->nameSolicitante,
                         'name'=>$request->namePersoneria,
                         'phone'=>$request->cellPersoneria
                     ]);
+                    $fileP = PjNameFile::create([
+                        'nameReservation_id'=>$reservation->id,
+                        'registerUser' => Auth::user()->name
+                    ]);
                     // return 1;
 
                     $file = $request->file('solicitud_p');
                     if ($file) {
-                        // return 2;
-                        $objFile->file($file, 'sidepej/solicitud');
-                        
+                        $fileP->update(['solicitud'=>$objFile->file($file, 'sidepej/solicitud')]);                        
                     }
+                    // return 1;
 
                     $file = $request->file('carnet_p');
                     if ($file) {
-                        $objFile->file($file, 'sidepej/carnet');
-                        
+                        $fileP->update(['carnet'=>$objFile->file($file, 'sidepej/carnet')]);                                                
                     }
-
                     $file = $request->file('deposito_p');
                     if ($file) {
-                        $objFile->file($file, 'sidepej/deposito');
-                        
+                        $fileP->update(['deposito'=>$objFile->file($file, 'sidepej/deposito')]);                                                                        
                     }
-
                     $file = $request->file('poder_p');
                     if ($file) {
-                        $objFile->file($file, 'sidepej/poder');
-                        
+                        $fileP->update(['poder'=>$objFile->file($file, 'sidepej/poder')]);                                                                        
                     }
-
                 }
             }
             // return 1;

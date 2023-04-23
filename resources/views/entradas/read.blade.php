@@ -43,8 +43,8 @@
                             </button> --}}
                         {{-- @endif --}}
         <div class="clearfix"></div>
-        <div class="col-md-12" style="margin-bottom: 20px">
-            <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+        <div class="col-md-12">
+            <h3 class="text-muted page-title" style="padding-left: 10px">{{ $data->referencia }}</h3>
         </div>
     @stop
 
@@ -69,89 +69,77 @@
                     @endif
 
 
-                    <div class="panel panel-bordered" style="padding-bottom:5px;">
+                    <div class="panel panel-bordered">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Hoja de Ruta</h3>
+                                    <label class="panel-title">Hoja de Ruta</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</p>
+                                    <small>{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</small>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Fecha de Ingreso</h3>
+                                    <label class="panel-title">Fecha de Ingreso</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ date('d/m/Y H:i:s', strtotime($data->created_at)) }} <small>{{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}</small></p>
+                                    <small>{{ date('d/m/Y H:i:s', strtotime($data->created_at)) }} {{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}</small>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Número de Cite</h3>
+                                    <label class="panel-title">Número de Cite</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->cite ?? '' }}</p>
+                                    <small>{{ $data->cite ?? '' }}</small>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Número de hojas</h3>
+                                    <label class="panel-title">Número de hojas</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->nro_hojas ?? 'No definida' }}</p>
+                                    <small>{{ $data->nro_hojas ?? 'No definida' }}</small>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            <div class="col-md-6">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Origen</h3>
+                            @if ($data->tipo == 'E')
+                                <div class="col-md-6">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <label class="panel-title">Origen</label>
+                                    </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <small>{{ $data->entity->nombre ?? 'Sin Origen' }}</small>                                    
+                                    </div>
+                                    <hr style="margin:0;">
                                 </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    @if ($data->tipo == 'E')
-                                    <p>{{ $data->entity->nombre ?? 'Sin Origen' }}</p>
-                                    @else
-                                        No definido
-                                    @endif
-                                    
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-6">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Remitente</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->remitente ? strtoupper($data->remitente) : '' }}</p>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            @if ($data->tipo == 'I')
-                            <div class="col-md-12">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Destino</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <p>
-                                        {{ $data->person ? $data->person->first_name.' '.$data->person->last_name : '' }}
-                                    </p>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
                             @endif
-                            {{-- <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Referencia</h3>
+                                    <label class="panel-title">Remitente</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->referencia ? strtoupper($data->referencia) : 'NN' }}</p>
+                                    <small>{{ $data->remitente ? strtoupper($data->remitente) : '' }}</small>
                                 </div>
                                 <hr style="margin:0;">
-                            </div> --}}
+                            </div>
+                            {{-- @if ($data->tipo == 'I') --}}
+                            <div class="col-md-6">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <label class="panel-title">Destino</label>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>
+                                        {{ $data->person ? $data->person->first_name.' '.$data->person->last_name : '' }}
+                                    </small>
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            {{-- @endif --}}
                         </div>
                     </div>
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -172,14 +160,14 @@
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
                                     <div class="table-responsive">
-                                        <table class="table table-bordered table-hover">
+                                        <table id="dataTable" class="table table-bordered table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>N&deg;</th>
-                                                    <th>Título</th>
-                                                    <th>Adjuntado por</th>
-                                                    <th>Fecha de registro</th>
-                                                    <th>Acciones</th>
+                                                    <th style="text-align: center">Título</th>
+                                                    <th style="text-align: center">Adjuntado por</th>
+                                                    <th style="text-align: center">Fecha de registro</th>
+                                                    <th width="150px" style="text-align: center">Acciones</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -188,21 +176,15 @@
                                                 @endphp
                                                 @forelse ($data->archivos as $item)
                                                     <tr>
-                                                        <td>{{ $cont }}</td>
-                                                        <td>
-                                                            {{-- @if ($item->nci)
-                                                            <label class="label label-success"><i class="fa-solid fa-file"></i> Comprobante</label> <br>
-                                                            @endif --}}
+                                                        <td width="5px">{{ $cont }}</td>
+                                                        <td style="text-align: center">
                                                             {{ $item->nombre_origen }}
                                                         </td>
-                                                        <td>{{ $item->user->name ?? '' }}</td>
-                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                        <td>
+                                                        <td style="text-align: center">{{ $item->user->name ?? '' }}</td>
+                                                        <td style="text-align: center">{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                        <td style="text-align: right">
                                                             <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
-                                                            {{-- @if (!$item->nci) --}}
-                                                                <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
-                                                            {{-- @endif --}}
-
+                                                            <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
                                                         </td>
                                                     </tr>
                                                     @php
@@ -217,10 +199,71 @@
                                         </table>
                                     </div>
                                 </div>
-                                <hr style="margin:0;">
                             </div>
                         </div>
                     </div>
+                    @if ($data->personeria)    
+                        @php
+                            $name = \App\Models\PjNameReservation::where('entrada_id', $data->id)->where('deleted_at', null)->first();
+                            $fileName = \App\Models\PjNameFile::where('nameReservation_id', $name->id)
+                                                    ->where('deleted_at', null)->first();
+                        @endphp                    
+                        <div class="panel panel-bordered" style="padding-bottom:5px;">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <h3 class="panel-title">Archivos Personería Jurídica</h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <div class="table-responsive">
+                                            <table id="dataTable" class="table table-bordered table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>N&deg;</th>
+                                                        <th style="text-align: center">Título</th>
+                                                        <th style="text-align: center">Adjuntado por</th>
+                                                        <th style="text-align: center">Fecha de registro</th>
+                                                        <th width="150px" style="text-align: center">Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @php
+                                                        $cont = 1;
+                                                    @endphp
+                                                    @forelse ($data->archivos as $item)
+                                                        <tr>
+                                                            <td width="5px">{{ $cont }}</td>
+                                                            <td style="text-align: center">
+                                                                {{ $item->nombre_origen }}
+                                                            </td>
+                                                            <td style="text-align: center">{{ $item->user->name ?? '' }}</td>
+                                                            <td style="text-align: center">{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                            <td style="text-align: right">
+                                                                <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
+                                                                <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
+                                                            </td>
+                                                        </tr>
+                                                        @php
+                                                            $cont++;
+                                                        @endphp
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    
 
                     @if($data->tipo == 'I')
                         <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -248,7 +291,7 @@
                                     </div>
                                     <div class="panel-body" style="padding-top:0;">
                                         <div class="table-responsive">
-                                            <table class="table table-bordered table-hover">
+                                            <table id="dataTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
                                                         <th>ID&deg;</th>
@@ -320,7 +363,7 @@
                                         @endif
 
 
-                                        <table class="table table-bordered-table-hover">
+                                        <table id="dataTable" class="table table-bordered-table-hover">
                                             <thead>
                                                 <tr>
                                                     <th>N&deg;</th>

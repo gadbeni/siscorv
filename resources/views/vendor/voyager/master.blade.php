@@ -16,6 +16,22 @@
     
 
 
+    <link rel="stylesheet" href="{{ asset('css/dataTable.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/small.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/h.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/loader.css') }}"> --}}
+    <style>
+        .form-control, .select2-selection, .mce-tinymce {
+            border: 1px solid #464545 !important;
+            /* color: #f40202; */
+            color:rgb(30, 29, 29) !important;
+            /* font-weight: 200; */
+        }
+        label
+        {
+            color: rgb(33, 33, 33) !important;
+        }
+    </style>
     
 
     <!-- Favicon -->
