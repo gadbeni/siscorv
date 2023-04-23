@@ -187,7 +187,8 @@ class EntradasController extends Controller
                         'entrada_id'=>$data->id,
                         'applicant'=>$request->nameSolicitante,
                         'name'=>$request->namePersoneria,
-                        'phone'=>$request->cellPersoneria
+                        'phone'=>$request->cellPersoneria,
+                        'status'=>'pendiente'
                     ]);
                     $fileP = PjNameFile::create([
                         'nameReservation_id'=>$reservation->id,
@@ -637,7 +638,7 @@ class EntradasController extends Controller
         switch ($type) {
             case 'pendientes':
                 $derivaciones = Derivation::whereHas('entrada', function($q){
-                                        $q->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                                        $q->where('personeria', null)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
                                     })->where('transferred', 0)->where('people_id_para', $funcionario_id)
                                     ->where('ok', '!=', 'ARCHIVADO')
                                     ->where(function($query) use ($search){
@@ -653,7 +654,7 @@ class EntradasController extends Controller
                 break;
             case 'urgentes':
                 $derivaciones = Derivation::whereHas('entrada', function($q){
-                                        $q->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
+                                        $q->where('personeria', null)->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
                                     })->where('transferred', 0)->where('people_id_para', $funcionario_id)
                                     ->where('ok', '!=', 'ARCHIVADO')
                                     ->where(function($query) use ($search){

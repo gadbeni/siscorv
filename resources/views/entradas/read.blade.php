@@ -148,7 +148,7 @@
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <div class="row">
                                         <div class="col-md-9">
-                                            <h3 class="panel-title">Archivos</h3>
+                                            <label class="panel-title">Archivos</label>
                                         </div>
                                         <div class="col-md-3 text-right">
                                             <a href="#" data-toggle="modal" data-target="#modal-upload" class="btn btn-success" style="margin: 15px;">
@@ -209,52 +209,97 @@
                                                     ->where('deleted_at', null)->first();
                         @endphp                    
                         <div class="panel panel-bordered" style="padding-bottom:5px;">
+                            <label class="panel-title">Personería Jurídica</label>
+                                
+                           
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-4">
                                     <div class="panel-heading" style="border-bottom:0;">
-                                        <div class="row">
-                                            <div class="col-md-9">
-                                                <h3 class="panel-title">Archivos Personería Jurídica</h3>
-                                            </div>
-                                        </div>
+                                        <label class="panel-title">Nombre Personería Jurídica</label>
                                     </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <small>{{$name->name }}</small>
+                                    </div>
+                                    <hr style="margin:0;">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <label class="panel-title">Solicitante</label>
+                                    </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <small>{{$name->applicant }}</small>
+                                    </div>
+                                    <hr style="margin:0;">
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <label class="panel-title">Celular</label>
+                                    </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        <small>{{$name->phone }}</small>
+                                    </div>
+                                    <hr style="margin:0;">
+                                </div>
+                                <div class="col-md-12">
+                                    
                                     <div class="panel-body" style="padding-top:0;">
                                         <div class="table-responsive">
                                             <table id="dataTable" class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th>N&deg;</th>
-                                                        <th style="text-align: center">Título</th>
-                                                        <th style="text-align: center">Adjuntado por</th>
-                                                        <th style="text-align: center">Fecha de registro</th>
-                                                        <th width="150px" style="text-align: center">Acciones</th>
+                                                        <th>Tipo</th>                
+                                                        <th style="text-align: center">Detalle</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @php
-                                                        $cont = 1;
-                                                    @endphp
-                                                    @forelse ($data->archivos as $item)
-                                                        <tr>
-                                                            <td width="5px">{{ $cont }}</td>
-                                                            <td style="text-align: center">
-                                                                {{ $item->nombre_origen }}
-                                                            </td>
-                                                            <td style="text-align: center">{{ $item->user->name ?? '' }}</td>
-                                                            <td style="text-align: center">{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                            <td style="text-align: right">
-                                                                <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
-                                                                <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
-                                                            </td>
-                                                        </tr>
-                                                        @php
-                                                            $cont++;
-                                                        @endphp
-                                                    @empty
-                                                        <tr>
-                                                            <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
-                                                        </tr>
-                                                    @endforelse
+                                                    <tr>
+                                                        <td style="height: 50px">Solicitud</td>
+                                                        <td style="text-align: center">
+                                                            @if (!$fileName->solicitud)
+                                                                <label class="label label-danger">Sin datos</label>
+                                                            @else                                                                
+                                                                <a href="{{asset('../../sidepej/public/storage/'.$fileName->solicitud)}}" title="Ver" target="_blank">
+                                                                    <img src="{{asset('images/icon/pdf.png')}}"  href="{{asset('../../sidepej_v2/public/storage/'.$fileName->solicitud)}}" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
+                                                                </a> 
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 50px">Carnet de Identidad</td>
+                                                          <td style="text-align: center">
+                                                            @if (!$fileName->carnet)
+                                                                <label class="label label-danger">Sin datos</label>
+                                                            @else
+                                                                <a href="{{asset('storage/'.$fileName->carnet)}}" title="Ver" target="_blank">
+                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->carnet)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
+                                                                </a> 
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 50px">Deposito</td>
+                                                        <td style="text-align: center">
+                                                            @if (!$fileName->deposito)
+                                                                <label class="label label-danger">Sin datos</label>
+                                                            @else
+                                                                <a href="{{asset('storage/'.$fileName->deposito)}}" title="Ver" target="_blank">
+                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->deposito)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
+                                                                </a>                                                                
+                                                            @endif                                                            
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="height: 50px">Poder</td>
+                                                        <td style="text-align: center">
+                                                            @if (!$fileName->poder)
+                                                                <label class="label label-danger">Sin datos</label>
+                                                            @else
+                                                                <a href="{{asset('storage/'.$fileName->poder)}}" title="Ver" target="_blank">
+                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->poder)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
+                                                                </a>                                                                
+                                                            @endif                                                            
+                                                        </td>
+                                                    </tr>                                     
                                                 </tbody>
                                             </table>
                                         </div>
@@ -272,7 +317,7 @@
                                     <div class="panel-heading" style="border-bottom:0;">
                                         <div class="row">
                                             <div class="col-md-9">
-                                                <h3 class="panel-title">Vias</h3>
+                                                <label class="panel-title">Vias</label>
                                             </div>
                                             <div class="col-md-3 text-right">
                                                 @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
@@ -343,7 +388,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 class="panel-title">Historial de derivaciones</h3>
+                                    <label class="panel-title">Historial de derivaciones</label>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
                                     <div class="table-responsive">
