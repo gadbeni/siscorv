@@ -413,13 +413,23 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
             $entrada = Entrada::findOrFail($id);
+            // return $entrada;
+            
+            if($entrada->personeria)
+            {
+                $name = PjNameReservation::where('entrada_id', $entrada->id)->first();
+                PjNameFile::where('nameReservation_id', $name->id)->update(['deleted_at'=> Carbon::now()]);
+                $name->update(['deleted_at'=> Carbon::now(), 'deletedUser_id'=>Auth::user()->id]);
+            }
             $entrada->derivaciones()->delete();
             $entrada->delete();
+
             DB::commit();
             return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
+            // return 1;
         }   
        
     }
@@ -550,7 +560,6 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
             $cont = 0; 
-            // return $request;
             foreach ($destinatarios as $valor) {
                 
                 // $user = Persona::where('funcionario_id', $valor)->first();
@@ -591,6 +600,10 @@ class EntradasController extends Controller
                     $cont++;
                     $this->add_derivacion($funcionario, $request, null, $entrada->tipo == 'E' ? $rde: NULL);
 
+                    if($entrada->personeria)
+                    {
+                        PjNameReservation::where('entrada_id', $entrada->id)->update(['status'=>'enviado']);
+                    }
                     DB::commit();
                 }else{
                     return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
@@ -604,7 +617,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             // dd($th);
-            // return 1;
+            return 1;
         
             return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }

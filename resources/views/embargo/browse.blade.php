@@ -59,17 +59,17 @@
                                         <tbody>
                                             @foreach ($embargo as $item)
                                                 <tr>
-                                                    <th style="text-align: center">{{$item->id}}</th>
-                                                    {{-- <th style="text-align: center">{{$item->nro}}</th> --}}
-                                                    {{-- <th style="text-align: center">{{$item->nroPiet}}</th> --}}
-                                                    <th style="text-align: center">{{$item->fechaPiet}}</th>
-                                                    <th style="text-align: center">{{$item->rutNit}}</th>
-                                                    <th style="text-align: center">{{$item->ci}}</th>
-                                                    <th style="text-align: center">{{$item->nombre}}</th>
-                                                    <th style="text-align: center">{{$item->montoEmbargo}}</th>
-                                                    <th style="text-align: center">{{$item->notaEmbargo}}</th>
-                                                    <th style="text-align: center">{{$item->montoLevantamiento}}</th>
-                                                    <th style="text-align: center">{{$item->notaLevantamiento}}</th>
+                                                    <td style="text-align: center">{{$item->id}}</td>
+                                                    {{-- <td style="text-align: center">{{$item->nro}}</td> --}}
+                                                    {{-- <td style="text-align: center">{{$item->nroPiet}}</td> --}}
+                                                    <td style="text-align: center">{{$item->fechaPiet}}</td>
+                                                    <td style="text-align: center">{{$item->rutNit}}</td>
+                                                    <td style="text-align: center">{{$item->ci}}</td>
+                                                    <td style="text-align: center">{{$item->nombre}}</td>
+                                                    <td style="text-align: center">{{$item->montoEmbargo}}</td>
+                                                    <td style="text-align: center">{{$item->notaEmbargo}}</td>
+                                                    <td style="text-align: center">{{$item->montoLevantamiento}}</td>
+                                                    <td style="text-align: center">{{$item->notaLevantamiento}}</td>
                                                     <td style="text-align: center">
                                                         @if ($item->status == 1)
                                                             <label class="label label-success">Activo</label>
