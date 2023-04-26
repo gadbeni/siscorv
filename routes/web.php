@@ -130,6 +130,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     // LEVANTAMIENTO DE EMBARGO
     Route::get('embargos', [EmbargoController::class, 'index'])->name('voyager.embargos.index');
+    Route::get('embargos/list/eliminar', [EmbargoController::class, 'eliminar'])->name('embargos.eliminar');
     Route::post('embargos/import/excel', [EmbargoController::class, 'importExcel'])->name('embargos-embargo.excel');
     Route::post('embargos/list/inhabilitar', [EmbargoController::class, 'inhabilitar'])->name('embargos-list.inhabilitar');
     Route::post('embargos/list/habilitar', [EmbargoController::class, 'habilitar'])->name('embargos-list.habilitar');

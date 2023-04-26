@@ -28,7 +28,7 @@ class EmbargoController extends Controller
         {
             $nro++;
         }
-        Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
+        // Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
         $file = $request->file('file');
         Excel::import(new EmbargoImport, $file);
         // return 1;
@@ -42,6 +42,21 @@ class EmbargoController extends Controller
             Embargo::where('id', $request->id)->update(['status'=>0]);
             DB::commit();
             return redirect()->route('voyager.embargos.index')->with(['message' => 'Inhabilitado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrio un error.', 'alert-type' => 'error']);
+        }
+        
+    }
+
+    public function eliminar()
+    {
+        // return 1;
+        DB::beginTransaction();
+        try {
+            Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
+            DB::commit();
+            return redirect()->route('voyager.embargos.index')->with(['message' => 'Eliminado todo los registro exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrio un error.', 'alert-type' => 'error']);

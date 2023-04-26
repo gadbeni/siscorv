@@ -15,6 +15,9 @@
                             <a data-toggle="modal" data-target="#myModal" class="btn btn-success btn-add-new">
                                 <i class="fa-solid fa-file-import"></i> <span>Importar</span>
                             </a>
+                            <a data-toggle="modal" data-target="#modal_destroy" class="btn btn-danger btn-add-new">
+                                <i class="fa-solid fa-trash"></i> <span>Eliminar Lista</span>
+                            </a>
                         @endif
                     </div>
                 
@@ -108,7 +111,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('embargos-embargo.excel') }}" enctype="multipart/form-data" method="post">
+            <form action="{{ route('embargos-embargo.excel') }}" id="form-create-customer" enctype="multipart/form-data" method="post">
             @csrf
                 <div class="modal fade" id="myModal" role="dialog">
                     <div class="modal-dialog modal-xl">
@@ -123,8 +126,10 @@
                         </div>
                         </div>
                         <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success btn-add-new"><i class="fa-solid fa-file-import"></i> <span>Importar archivo</span></button>
+                        <input type="button" class="btn btn-default btn-cerrar" data-dismiss="modal" value="Cerrar">
+                        <input type="submit" id="btn-add-new" class="btn btn-success btn-add-new" value="Sí, agregar">
+                        {{-- <input type="submit" class="btn btn-success pull-right delete-confirm btn-save-customer" value="Sí, agregar"> --}}
+
                         </div>
                     </div>
                     </div>
@@ -158,6 +163,32 @@
                             <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
                         </div>
                         {!! Form::close()!!} 
+                    </div>
+                </div>
+            </div>
+            {{-- Modal Para eliminar todos los registro de embargo --}}
+            <div class="modal fade" id="modal_destroy" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><i class="fa-solid fa-trash"></i> Eliminar Lista</h4>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="id" id="id">
+                            <div class="text-center" style="text-transform:uppercase">
+                                <i class="fa-solid fa-trash" style="color: red; font-size: 5em;"></i>
+                                <br>
+                                
+                                <p><b>Desea eliminar todos los registro de la lista de embargo?</b></p>
+                            </div>
+                        </div>                
+                        <div class="modal-footer">                            
+                            <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
+                            <a href="{{route('embargos.eliminar')}}" class="btn btn-danger btn-add-new">
+                                Si, eliminar
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,6 +311,16 @@
                     }
                 }
             });
+
+            $(function()
+            {
+                    $('#form-create-customer').submit(function(e){
+                        // e.preventDefault();
+                        $('.btn-add-new').attr('disabled', true);
+                        $('.btn-cerrar').attr('disabled', true);
+                        $('.btn-add-new').val('Importando su archivo...');                       
+                    });
+            })
         </script>
     @endpush
     
