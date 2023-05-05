@@ -219,14 +219,14 @@
                                                         @endif
                                                     </td>
                                                     @php
-                                                        $people = \App\Models\Persona::where('tipo', 'user')->where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
+                                                        // $people = \App\Models\Persona::where('tipo', 'user')->where('user_id', Auth::user()->id)->where('deleted_at', null)->first();
                                                         // dd($people->people_id);
 
                                                     @endphp
                                                     <td>
-                                                        @if ($item->derivation == 0 && $item->ok == 'NO' && $item->via == 0 && $item->visto == NULL && $item->people_id_de == $people->people_id)
+                                                        {{-- @if ($item->derivation == 0 && $item->ok == 'NO' && $item->via == 0 && $item->visto == NULL && $item->people_id_de == $people->people_id)
                                                             <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                        @endif
+                                                        @endif --}}
                                                     </td>
                                                 </tr>
                                                 @php
