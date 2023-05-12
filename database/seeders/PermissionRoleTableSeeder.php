@@ -61,18 +61,48 @@ class PermissionRoleTableSeeder extends Seeder
         $role->permissions()->sync($permissions->pluck('id')->all());
 
 
-        // Para la orden de embargo
+
+        // ORDEN DE EMBARGO
+        // Para la orden de embargo all
         $role = Role::where('name', 'embargos')->firstOrFail();
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 table_name = "embargos" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
-        // Roles de funcionario
-        // $role = Role::where('name', 'certificados')->firstOrFail();
-        // $permissions = Permission::whereRaw('table_name = "certificates" or id = 1')->get();
-        // $role->permissions()->sync(
-        //     $permissions->pluck('id')->all()
-        // );
+
+        // Para las orden de embargos solo vista y funcionalidad de TRAMITE Y CORRESPONDENCIA
+        $role = Role::where('name', 'funcionario_embargos_view')->firstOrFail();
+        $permissions = Permission::whereRaw('   table_name = "admin" or
+                                                table_name = "entradas" or
+                                                table_name = "bandeja" or
+
+                                                `key` = "browse_embargos" or
+
+                                                `key` = "browse_clear-cache"')->get();
+        $role->permissions()->sync($permissions->pluck('id')->all());
+
+
+        // PARA QUE TENGA TODAS LAS FUNCIUONES DE TRAMITE CORRESPONDENCIA Y ORDEN DE EMBARGO
+        $role = Role::where('name', 'funcionario_embargos')->firstOrFail();
+        $permissions = Permission::whereRaw('   table_name = "admin" or
+                                                table_name = "entradas" or
+                                                table_name = "bandeja" or
+
+                                                table_name = "embargos" or
+
+                                                `key` = "browse_clear-cache"')->get();
+        $role->permissions()->sync($permissions->pluck('id')->all());
+        
+        // PARA VER SOLO VISTA DE ENBARGO
+        $role = Role::where('name', 'embargos_view')->firstOrFail();
+        $permissions = Permission::whereRaw('   table_name = "admin" or
+                                                `key` = "browse_embargos" or
+
+                                                `key` = "browse_clear-cache"')->get();
+        $role->permissions()->sync($permissions->pluck('id')->all());
+
+        
+
 
 
     }

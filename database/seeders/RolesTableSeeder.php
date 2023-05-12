@@ -49,9 +49,23 @@ class RolesTableSeeder extends Seeder
         }
 
         //Embargo
+
+        $role = Role::firstOrNew(['name' => 'funcionario_embargos']);
+        if (!$role->exists) {
+            $role->fill(['display_name' => 'Tramite Correspondencia && Orden Embargo "ALL"'])->save();
+        }
+
+        $role = Role::firstOrNew(['name' => 'funcionario_embargos_view']);
+        if (!$role->exists) {
+            $role->fill(['display_name' => 'Tramite Correspondencia && Orden Embargo "VIEW"'])->save();
+        }
         $role = Role::firstOrNew(['name' => 'embargos']);
         if (!$role->exists) {
             $role->fill(['display_name' => 'Orden de Embargos'])->save();
+        }
+        $role = Role::firstOrNew(['name' => 'embargos_view']);
+        if (!$role->exists) {
+            $role->fill(['display_name' => 'Orden de Embargos "VIEW'])->save();
         }
 
 
