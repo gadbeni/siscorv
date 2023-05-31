@@ -757,7 +757,7 @@ class EntradasController extends Controller
         try {
             /* CAmbiar el estado de la entrada a finalizada */
             // Entrada::where('id', $request->id)->update(['estado_id' => 4]);
-            Derivation::where('id',$request->derivacion_id)->update(['ok'=>'ARCHIVADO']);
+            Derivation::where('id',$request->derivacion_id)->update(['ok'=>'ARCHIVADO', 'observationArchivado'=>$request->observacion]);
             return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);

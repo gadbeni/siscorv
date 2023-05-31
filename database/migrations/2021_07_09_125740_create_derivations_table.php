@@ -47,6 +47,8 @@ class CreateDerivationsTable extends Migration
 
             $table->integer('derivation')->default(0);
             $table->string('ok')->default('NO');
+            $table->text('observationArchivado')->nullable();
+
 
             $table->smallInteger('transferred')->default(0);
             $table->text('transferredDetails')->nullable();

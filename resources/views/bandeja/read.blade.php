@@ -286,6 +286,10 @@
                             @csrf
                             <input type="hidden" name="id" value="{{ $data->id }}">
                             <input type="hidden" name="derivacion_id" value="{{ $derivacion->id }}">
+                            <div class="form-group">
+                                <label class="">Observaciones</label>
+                                <textarea name="observacion" class="form-control" rows="5"></textarea>
+                            </div>
                         </div>
                         <div class="modal-footer text-right">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
