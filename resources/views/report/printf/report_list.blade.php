@@ -11,7 +11,7 @@
                 <table style="width:100%"  class="table table-bordered table-striped table-sm">
                     <thead>
                         <tr>
-                            <th style="width:5%">ID&deg;</th>
+                            <th style="width:5%">N&deg;</th>
                             <th style="width:5%">HR|NCI</th>
                             <th style="width:15%">F. INGRESO</th>
                             <th style="width:25%">DESTINATARIO</th>

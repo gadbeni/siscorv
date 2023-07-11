@@ -23,7 +23,7 @@
     <table style="width: 100%; font-size: 12px" border="1" cellspacing="0" cellpadding="5">
         <thead>
             <tr>
-                            <th>ID&deg;</th>
+                            <th>N&deg;</th>
                             <th>HR|NCI</th>
                             <th>F. INGRESO</th>
                             <th>DESTINATARIO</th>
