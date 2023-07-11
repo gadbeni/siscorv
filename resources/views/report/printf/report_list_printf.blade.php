@@ -39,7 +39,7 @@
                         @endphp
                         @forelse ($data as $item)
                             <tr>
-                                <td>{{ $item->id }}</td>
+                                <td>{{ $cont }}</td>
                                 <td>{{ $item->cite }}</td>                               
                                 <td>{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}</td>                               
                                 <td>{{ $item->first_name }} {{ $item->last_name }} <br>{{ $item->job_para }}</td>                               
