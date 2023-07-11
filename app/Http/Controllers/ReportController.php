@@ -29,20 +29,7 @@ class ReportController extends Controller
     {
         // dd($request
         $people = persona::where('user_id', Auth::user()->id)->first();
-        // $data = Entrada::with(['entity', 'person'])->get();
-        // $data = DB::table('entradas as e')
-        //     // ->leftJoin('entities as en', 'e.entity_id', 'en.id')
-        //     ->leftJoin('derivations as d', 'e.id', 'd.parent_id')
-        //     ->select('e.fecha_registro', 'e.cite', 'e.remitente', 'e.referencia')
-        //     ->where('e.deleted_at', null)
-        //     // ->where('d.deleted_at', null)
-        //     ->where('e.people_id_de', $people->people_id)
-        //     // ->where('d.via', 0)
-        //     // ->where('e.tipo', 'I')
-        //     // ->where('e.fecha_registro', '>=', $request->start)
-        //     // ->where('e.fecha_registro', '<=', $request->finish)
-        //     ->groupBy('e.id')
-        //     ->get();
+
 
 
 
@@ -53,8 +40,14 @@ class ReportController extends Controller
             ->where('e.deleted_at', null)
             ->where('e.tipo', 'E')
             ->where('d.deleted_at', null)
-            ->whereDate('e.created_at', '>=', $request->start)
-            ->whereDate('e.created_at', '<=', $request->finish)
+            // ->whereDate('e.created_at', '>=', $request->start)
+            // ->whereDate('e.created_at', '<=', $request->finish)
+
+            ->whereDate('e.created_at', '>=', date('Y-m-d', strtotime($request->start)))
+            ->whereDate('e.created_at', '<=', date('Y-m-d', strtotime($request->finish)))
+
+
+
             ->groupBy('e.cite')
             ->get();
 
@@ -129,30 +122,37 @@ class ReportController extends Controller
         // dd($request);
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
 
-        // return $funcionario;
         // dd($funcionario);
-        $funcionariodea =  DB::connection('mysqlgobe')
-                                ->table('contribuyente as c')
-                                ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
-                                ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
-                                ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
-                                ->where('c.Estado', '=', '1')->where('co.Estado', '1')
-                                ->where('c.id', $funcionario->funcionario_id)
-                                ->select('c.id', 'c.DA')
-                                ->first();
+        // $funcionariodea =  DB::connection('mysqlgobe')
+        //                         ->table('contribuyente as c')
+        //                         ->leftJoin('unidadadminstrativa as ua', 'c.idDependencia', '=', 'ua.id')
+        //                         ->leftJoin('direccionadministrativa as da', 'c.DA', '=', 'da.ID')
+        //                         ->join('contratos as co', 'c.N_Carnet', 'co.idContribuyente')
+        //                         ->where('c.Estado', '=', '1')->where('co.Estado', '1')
+        //                         ->where('c.id', $funcionario->funcionario_id)
+        //                         ->select('c.id', 'c.DA')
+        //                         ->first();
 
-                                if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-                                    $query_filtro = 'e.registrado_por_id_direccion = '.$funcionariodea->DA;
-                                } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
-                                    $query_filtro = 'e.tipo = "E" and e.registrado_por_id_direccion = '.$funcionariodea->DA;
-                                } elseif (auth()->user()->isAdmin() || auth()->user()->id == 28) {
-                                    $query_filtro = 1;
-                                }
-                                elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
-                                    $query_filtro = 'e.tipo = "I" and e.funcionario_id_remitente = '.$funcionario->funcionario_id;
-                                } 
+        // dd($funcionariodea);
+
+        //                         if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+        //                             $query_filtro = 'e.registrado_por_id_direccion = '.$funcionariodea->DA;
+        //                         } elseif (auth()->user()->hasRole('ventanilla') && !auth()->user()->hasRole('funcionario')) {
+        //                             // $query_filtro = 'e.tipo = "E" and e.registrado_por_id_direccion = '.$funcionariodea->DA;
+        //                             $query_filtro = 'e.tipo = "E"';
+        //                         } elseif (auth()->user()->isAdmin() || auth()->user()->id == 28) {
+        //                             $query_filtro = 1;
+        //                         }
+        //                         elseif (!auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario')) {
+        //                             $query_filtro = 'e.tipo = "I" and e.funcionario_id_remitente = '.$funcionario->funcionario_id;
+        //                         } 
         // return $funcionariodea;
         // return $query_filtro;
+
+        $query_filtro = 'e.tipo = "E"';
+
+        // dump($query_filtro);
+
 
         $cat='=';
         if($request->category_id == 0)
@@ -182,8 +182,11 @@ class ReportController extends Controller
             ->whereRaw($query_filtro)
             ->where('e.category_id',$cat, $request->category_id)
             ->where('e.entity_id',$ori, $request->origen)
-            ->where('e.fecha_registro', '>=', $request->start)
-            ->where('e.fecha_registro', '<=', $request->finish)
+            // ->where('e.fecha_registro', '>=', $request->start)
+            // ->where('e.fecha_registro', '<=', $request->finish)
+
+            ->whereDate('e.fecha_registro', '>=', date('Y-m-d', strtotime($request->start)))
+            ->whereDate('e.fecha_registro', '<=', date('Y-m-d', strtotime($request->finish)))
             // ->where('e.id', 8539)
             ->where('e.deleted_at', null)
             ->orderBy('e.id','desc')
@@ -191,24 +194,12 @@ class ReportController extends Controller
 
         // dd($data);
 
-        // dd($data);
-
-
-        // select id, cite, fecha_registro, remitente, referencia from entradas where id = 415
-
-        
-        // return $funcionariodea;
-        // dd($funcionario);
-
-        // return view('report.printf.report_list', compact('data'));
 
 
         if($request->print){
             return view('report.printf.report_list_printf', compact('data', 'name'));
-
         }else{
             return view('report.printf.report_list', compact('data'));
-
         }
     }
 
