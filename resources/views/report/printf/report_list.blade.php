@@ -14,6 +14,7 @@
                             <th style="width:5%">ID&deg;</th>
                             <th style="width:5%">HR|NCI</th>
                             <th style="width:15%">F. INGRESO</th>
+                            <th style="width:25%">DESTINATARIO</th>
                             <th style="width:25%">ORIGEN</th>
                             <th style="width:15%">REMITENTE</th>
                             <th style="width:25%">REFERENCIA</th>
@@ -28,7 +29,9 @@
                             <tr>
                                 <td style="width:5%">{{ $item->id }}</td>
                                 <td style="width:5%">{{ $item->cite }}</td>                               
-                                <td style="width:15%">{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}<br><small>{{\Carbon\Carbon::parse($item->fecha_registro)->diffForHumans()}}</td>                               
+                                <td style="width:15%">{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}</td>   
+                                <td>{{ $item->first_name }} {{ $item->last_name }} <br>{{ $item->job_para }}</td>                               
+
                                 <td style="width:25%">{{ $item->entidad }}</td>                               
                                 <td style="width:15%">{{ $item->remitente }}</td>                               
                                 <td style="width:25%">{{ $item->referencia }}</td>                               

@@ -26,6 +26,7 @@
                             <th>ID&deg;</th>
                             <th>HR|NCI</th>
                             <th>F. INGRESO</th>
+                            <th>DESTINATARIO</th>
                             <th>ORIGEN</th>
                             <th>REMITENTE</th>
                             <th>REFERENCIA</th>
@@ -40,10 +41,12 @@
                             <tr>
                                 <td>{{ $item->id }}</td>
                                 <td>{{ $item->cite }}</td>                               
-                                <td>{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}<br><small>{{\Carbon\Carbon::parse($item->fecha_registro)->diffForHumans()}}</td>                               
+                                <td>{{date('d/m/Y H:i:s', strtotime($item->fecha_registro))}}</td>                               
+                                <td>{{ $item->first_name }} {{ $item->last_name }} <br>{{ $item->job_para }}</td>                               
+                               
                                 <td>{{ $item->entidad }}</td>                               
                                 <td>{{ $item->remitente }}</td>                               
-                                <td>{{ $item->referencia }}</td>                               
+                                <td>{{ $item->referencia }}</td>                                
                                                             
                             </tr>
                             @php

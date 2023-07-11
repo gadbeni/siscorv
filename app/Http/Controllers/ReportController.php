@@ -176,20 +176,20 @@ class ReportController extends Controller
         // dd($cat);
         
         $data = DB::table('entradas as e')
+            ->join('sysadmin.people as p', 'p.id', 'e.people_id_para')
             ->join('entities as t', 't.id', 'e.entity_id')
-            ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia')
+            ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia', 'p.first_name', 'p.last_name', 'e.job_para')
             // ->where('e.registrado_por_id_direccion', $funcionariodea->DA)
             ->whereRaw($query_filtro)
             ->where('e.category_id',$cat, $request->category_id)
             ->where('e.entity_id',$ori, $request->origen)
-            // ->where('e.fecha_registro', '>=', $request->start)
-            // ->where('e.fecha_registro', '<=', $request->finish)
+
 
             ->whereDate('e.fecha_registro', '>=', date('Y-m-d', strtotime($request->start)))
             ->whereDate('e.fecha_registro', '<=', date('Y-m-d', strtotime($request->finish)))
             // ->where('e.id', 8539)
             ->where('e.deleted_at', null)
-            ->orderBy('e.id','desc')
+            ->orderBy('e.id','ASC')
             ->get();
 
         // dd($data);
