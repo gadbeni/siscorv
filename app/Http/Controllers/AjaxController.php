@@ -85,7 +85,6 @@ class AjaxController extends Controller
             )
             ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
             ->limit(5)
-            // ->groupBy('text')
             ->get();
         }      
         return response()->json($funcionarios);

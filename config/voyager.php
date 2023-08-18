@@ -135,7 +135,7 @@ return [
             ],
             'HR a Expirar' => [
                 'route'        => 'documents_expired',
-                'icon_class'   => 'voyager-eye',
+                'icon_class'   => 'voyager-calendar',
                 'target_blank' => true,
             ],
             'voyager::generic.home' => [

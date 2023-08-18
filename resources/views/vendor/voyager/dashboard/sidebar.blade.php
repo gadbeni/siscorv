@@ -21,7 +21,7 @@
                 <div class="panel-content">
                     <img src="{{ asset('storage/users/default.png') }}" class="avatar" alt="{{ Auth::user()->name }} avatar">
                     @php
-                        $name = ucwords(Auth::user()->name);
+                        $name = explode(' ', ucwords(Auth::user()->name))[0];
                     @endphp
                     <h4>{{ strlen($name) > 15 ? substr($name, 0, 15).'...' : $name }}</h4>
                     <p>{{ Auth::user()->email }}</p>

@@ -96,7 +96,7 @@ class ReservasController extends Controller
             $input['user_id'] = auth()->user()->id;
             $input['estado_id'] = 7;
             Reserva::create($input);
-            return redirect()->route('reservas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('reservas.index')->with(['message' => 'Registro guardado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             //throw $th;
         }
@@ -132,7 +132,7 @@ class ReservasController extends Controller
         try {
             $input = $request->all();
             $reserva->update($input);
-            return redirect()->route('reservas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('reservas.index')->with(['message' => 'Registro guardado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
              //throw $th;
         }
@@ -148,6 +148,6 @@ class ReservasController extends Controller
     
     public function destroy(Reserva $reserva) {
         $reserva->delete();
-        return redirect()->route('reservas.index')->with(['message' => 'Reserva anulada exitosamente.', 'alert-type' => 'success']);
+        return redirect()->route('reservas.index')->with(['message' => 'Reserva anulada exitosamente', 'alert-type' => 'success']);
     }
 }

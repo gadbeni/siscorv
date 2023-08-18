@@ -15,6 +15,7 @@ class CreateEntradasTable extends Migration
     {
         Schema::create('entradas', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained('users');
             $table->integer('gestion')->nullable();
             $table->smallInteger('personeria')->nullable();
             $table->char('tipo', 1)->nullable();

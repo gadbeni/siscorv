@@ -128,23 +128,20 @@ class PeopleExtController extends Controller
 
             $ok = PeopleExt::where('person_id', $request->person_id)->where('status', 1)->first();
 
-            if($ok)
-            {
+            if($ok) {
                  return redirect()->route('people_exts.index')->with(['message' => 'La Persona se encuentra registrada', 'alert-type' => 'error']);
-            }
-            else
-            {
+            }else{
                 $request->merge(['status'=>1]);
                 PeopleExt::create($request->all());
                 DB::commit();
                 return redirect()->route('people_exts.index')->with(['message' => 'Registro creado satisfactoriamente', 'alert-type' => 'success']);
             }
             
-            // return redirect()->route('people_exts.index')->with(['message' => 'Persona Externa Registrada Exitosamente.', 'alert-type' => 'success']);
+            // return redirect()->route('people_exts.index')->with(['message' => 'Persona Externa Registrada Exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -165,7 +162,7 @@ class PeopleExtController extends Controller
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
-            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -176,11 +173,11 @@ class PeopleExtController extends Controller
             $peopleExt = PeopleExt::find($request->id);
             $peopleExt->update(['status'=>1]);
             DB::commit();
-            return redirect()->route('people_exts.index')->with(['message' => 'Exitos..', 'alert-type' => 'success']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
-            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -215,7 +212,7 @@ class PeopleExtController extends Controller
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -237,7 +234,7 @@ class PeopleExtController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             // return $th;
-            return redirect()->route('people_exts.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('people_exts.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

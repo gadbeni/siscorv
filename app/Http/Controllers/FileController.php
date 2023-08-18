@@ -53,11 +53,11 @@ class FileController extends Controller
             }
             $entrada->update(['created_at'=>$request->date]);
             DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Cambio de fecha con exito..', 'alert-type' => 'success']);
+            return redirect()->route('entradas.index')->with(['message' => 'Cambio de fecha con exito', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
             return 0;
-            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

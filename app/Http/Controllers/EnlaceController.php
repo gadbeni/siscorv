@@ -42,13 +42,13 @@ class EnlaceController extends Controller
                 }
             }
             DB::commit();
-            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Registro guardado exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollBack();
             return 0;
-            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
     public function destroyFile(Request $request)
@@ -57,11 +57,11 @@ class EnlaceController extends Controller
         try {
             EnlaceFile::where('id', $request->id)->update(['deleted_at'=>Carbon::now(), 'deleteUser_id'=>Auth::user()->id]);
             DB::commit();
-            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Registro eliminado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Registro eliminado exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('enlaces-file.index', ['enlace' => $request->enlace_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 

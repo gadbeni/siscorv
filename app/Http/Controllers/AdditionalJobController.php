@@ -33,11 +33,11 @@ class AdditionalJobController extends Controller
             $request->merge(['status'=>1]);
             AdditionalJob::create($request->all());
             DB::commit();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo Registrado Exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo Registrado Exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Error', 'alert-type' => 'error']);
         }
     }
 
@@ -49,10 +49,10 @@ class AdditionalJobController extends Controller
             $job = AdditionalJob::find($request->id);
             $job->update(['status'=>0]);
             DB::commit();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo dado de baja exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo dado de baja exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -63,10 +63,10 @@ class AdditionalJobController extends Controller
             $job = AdditionalJob::find($request->id);
             $job->update(['deleted_at' => Carbon::now()]);
             DB::commit();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo eliminado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Cargo eliminado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('additional_jobs.index')->with(['message' => 'Error.', 'alert-type' => 'error']);
+            return redirect()->route('additional_jobs.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

@@ -62,11 +62,16 @@
                                 <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
                             </button>
                         @endif --}}
-                        <a href="{{ route('entradas.show', ['entrada' => $item->id]) }}" title="Ver" class="btn btn-sm btn-info view">
+                        @if (auth()->user()->hasRole('admin'))
+                            <button title="Cambio de fecha del trámite" class="btn btn-sm btn-dark" data-toggle="modal" data-target="#modal-change-date" onclick="dateItem('{{ route('entradas-date.update', ['id'=>$item->id]) }}')">
+                                <i class="voyager-calendar"></i> <span class="hidden-xs hidden-sm">Cambiar fecha</span>
+                            </button>
+                        @endif
+                        <a href="{{ route('entradas.show', ['entrada' => $item->id]) }}" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        @if ($item->derivaciones->count() == 0)
-                        <a href="{{ route('entradas.edit', ['entrada' => $item->id]) }}" title="Editar" class="btn btn-sm btn-warning">
+                        @if ($item->derivaciones->count() == 0 || auth()->user()->hasRole('admin'))
+                        <a href="{{ route('entradas.edit', ['entrada' => $item->id]) }}" title="Editar" class="btn btn-sm btn-info">
                             <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                         </a>
                         @endif
@@ -76,11 +81,7 @@
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
                         </button>
                         @endif
-                        @if (auth()->user()->hasRole('admin'))
-                            <button title="Cambio de fecha del tramite" class="btn btn-sm btn-dark" data-toggle="modal" data-target="#modal_Date" onclick="dateItem('{{ route('entradas-date.update', ['id'=>$item->id]) }}')">
-                                <i class="fa-solid fa-calendar"></i>
-                            </button>
-                        @endif
+                        
                     </td>
                 </tr>
             @empty

@@ -32,7 +32,6 @@ class CertificateController extends Component
                                 ->orWhere('certificates.type', 'like', '%' .$this->buscar. '%')
                                 ->orWhere('per.full_name', 'like', '%' .$this->buscar. '%')
                                 ->orderBy('certificates.id','desc')
-                                //->whereNull('certificates.deleted_at')
                                 ->paginate($this->pagination);
         } else{
             $data = Certificate::join('personas as per', 'certificates.persona_id', '=', 'per.id')

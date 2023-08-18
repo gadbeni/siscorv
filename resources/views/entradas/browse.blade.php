@@ -9,7 +9,14 @@
             <div class="row">
                 <div class="col-md-8">
                     <h1 class="page-title">
-                        <i class="voyager-credit-cards"></i> Ingresos
+                        <i class="voyager-credit-cards"></i> 
+                        @if (auth()->user()->hasRole('funcionario'))
+                            NCI
+                        @elseif(auth()->user()->hasRole('ventanilla'))
+                            Correspondencia
+                        @else
+                            Correspondencia/NCI
+                        @endif
                     </h1>
                     <a href="{{ route('entradas.create') }}" class="btn btn-success btn-add-new">
                         <i class="voyager-plus"></i> <span>Crear</span>
@@ -59,25 +66,24 @@
 
 
         {{-- Para cambios de fercha de cada tramites --}}
-        <form action="#" method="POST" class="" id="update_entrada_date" enctype="multipart/form-data">
+        <form action="#" method="POST" class="form-submit" id="update_entrada_date" enctype="multipart/form-data">
         @csrf
-            <div class="modal modal-success fade" tabindex="-1" id="modal_Date" role="dialog">
+            <div class="modal modal-success fade" tabindex="-1" id="modal-change-date" role="dialog">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                            <h4 class="modal-title"><i class="fa-solid fa-calendar"></i> Cambio de Fecha</h4>
+                            <h4 class="modal-title"><i class="fa-solid fa-calendar"></i> Cambio de fecha de trámite</h4>
                         </div>
                         <div class="modal-body">
-
                             <div class="row">
-                                <div class="col-sm-4">
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="">Fecha</label>
                                         <input type="datetime-local" name="date" class="form-control" required>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-12">
                                     <div class="form-group">
                                         <label class="">Documento de Respaldo</label>
                                         <input type="file" name="file" id="" accept="application/pdf" required>
@@ -90,14 +96,10 @@
                                     </div>
                                 </div>
                             </div>
-
-                            
-
-                            
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-success">Subir archivo</button>
+                            <button type="submit" class="btn btn-success btn-submit">Cambiar fecha</button>
                         </div>
                     </div>
                 </div>

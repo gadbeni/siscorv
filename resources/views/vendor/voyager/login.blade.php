@@ -5,7 +5,7 @@
 
         <p>{{ __('voyager::login.signin_below') }}</p>
 
-        <form action="{{ route('voyager.login') }}" method="POST">
+        <form class="form-submit" action="{{ route('voyager.login') }}" method="POST">
             {{ csrf_field() }}
             <div class="form-group form-group-default" id="emailGroup">
                 <label>{{ __('voyager::generic.email') }}</label>
@@ -13,13 +13,6 @@
                     <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="{{ __('voyager::generic.email') }}" class="form-control" required>
                 </div>
             </div>
-
-            {{-- <div class="form-group form-group-default" id="passwordGroup">
-                <label>{{ __('voyager::generic.password') }}</label>
-                <div class="controls">
-                    <input type="password" name="password" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
-                </div>
-            </div> --}}
             <div class="form-group form-group-default" id="passwordGroup">
                 <label>{{ __('voyager::generic.password') }}</label>
                 <div class="input-group controls">
@@ -29,19 +22,6 @@
                     </span>
                 </div>
             </div>
-
-            {{-- @if (env('APP_DEMO', false))
-                <div class="row">
-                    <div class="col-md-12" style="margin-bottom: 0px">
-                        <div class="alert alert-info" style="margin-bottom: 5px">
-                            <small style="font-weight: bold">Ingrese los siguientes datos en el formulario</small><br>
-                            <strong>Email: </strong> admin@admin.com <br>
-                            <strong>Contraseña: </strong> password
-                        </div>
-                    </div>
-                </div>
-            @endif --}}
-
             <div class="form-group" id="rememberMeGroup">
                 <div class="controls">
                     <input type="checkbox" name="remember" id="remember" value="1"><label for="remember" class="remember-me-text">{{ __('voyager::generic.remember_me') }}</label>
@@ -50,7 +30,7 @@
 
             <button type="submit" class="btn btn-block login-button">
                 <span class="signingin hidden"><span class="voyager-refresh"></span> {{ __('voyager::login.loggingin') }}...</span>
-                <span class="signin">{{ __('voyager::generic.login') }}</span>
+                <span class="signin btn-submit">{{ __('voyager::generic.login') }}</span>
             </button>
 
         </form>
@@ -71,7 +51,7 @@
 @endsection
 
 @section('post_js')
-<script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.4.1.min.js') }}"></script>
     <script>
         var btn = document.querySelector('button[type="submit"]');
         var form = document.forms[0];
@@ -105,6 +85,9 @@
 
         $(document).ready(function(){
             let ver_pass = false;
+            $('.form-submit').submit(function(e){
+                $('.form-submit .btn-submit').attr('disabled', 'disabled');
+            });
             $('#btn-verpassword').click(function(){
                 if(ver_pass){
                     ver_pass = false;

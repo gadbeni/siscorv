@@ -211,7 +211,7 @@ class SettingsTableSeeder extends Seeder
                 'id' => 18,
                 'key' => 'configuracion.maintenance',
                 'display_name' => 'Sistema en Mantenimiento',
-                'value' => '0',
+                'value' => '1',
                 'details' => NULL,
                 'type' => 'checkbox',
                 'order' => 1,
@@ -222,11 +222,22 @@ class SettingsTableSeeder extends Seeder
                 'id' => 19,
                 'key' => 'configuracion.navidad',
                 'display_name' => 'Navidad',
-                'value' => '1',
+                'value' => '0',
                 'details' => '',
                 'type' => 'checkbox',
                 'order' => 1,
                 'group' => 'Configuración',
+            ),
+            19 => 
+            array (
+                'id' => 20,
+                'key' => 'servidores.whatsapp',
+                'display_name' => 'Whatsapp',
+                'value' => '',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 13,
+                'group' => 'Servidores',
             ),
         ));
         

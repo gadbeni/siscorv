@@ -1,145 +1,123 @@
 @extends('voyager::master')
 
-@section('page_title', 'Ver Ingresos')
+@section('page_title', 'Ver Detalle de Bandeja')
 
-@if(auth()->user()->hasPermission('read_entradas'))
-
-    @section('page_header')
-        <div class="col-md-6 col-xs-6" style="margin-top: 20px;">
-            <a href="{{ route('entradas.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
-        </div>
-        <div class="col-md-6 col-xs-6 text-right" style="margin-top: 20px;">
-            {{-- @if($data->derivaciones->count() > 0) --}}
-                <div class="dropdown">
-                    <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
-                    <span class="caret"></span></button>
-                    <ul class="dropdown-menu pull-right">
-                      <li>
-                        <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
-                            <span class="glyphicon glyphicon-print"></span>&nbsp;
-                                Comprobante
-                        </a>
-                      </li>
-                      <li>
-                        <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
-                            <span class="glyphicon glyphicon-print"></span>&nbsp;
-                                Hoja de Ruta
-                        </a>
-                      </li>
-                    </ul>
-                    @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
-                        @if (count($nci)>0)
-                            <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $data->id }}, {{ $data->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
-                                <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
-                            </button>
-                        @endif
-                    @endif
-                </div>
-            {{-- @endif --}}
-        </div>
-        {{-- @if ($item->derivaciones->whereNull('deleted_at')->count() == 0) --}}
-                            {{-- <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $data->id }}, {{ $data->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
-                                <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
-                            </button> --}}
-                        {{-- @endif --}}
-        <div class="clearfix"></div>
-        <div class="col-md-12">
-            <h3 class="text-muted page-title" style="padding-left: 10px">{{ $data->referencia }}</h3>
-        </div>
-    @stop
-
+@if(auth()->user()->hasPermission('read_bandeja'))
     @section('content')
         <div class="page-content read container-fluid div-phone">
             <div class="row">
+                <div class="col-md-6" style="margin-top: 20px;">
+                    <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+                </div>
+                <div class="col-md-6 text-right" style="margin-top: 20px;">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
+                        <span class="caret"></span></button>
+                        <ul class="dropdown-menu pull-right">
+                          <li>
+                            <a href="{{ route('entradas.print', ['entrada' => $data->id]) }}" target="_blank">
+                                <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                    Comprobante
+                            </a>
+                          </li>
+                          <li>
+                            <a href="{{ route('entradas.printhr', ['entrada' => $data->id]) }}" target="_blank">
+                                <span class="glyphicon glyphicon-print"></span>&nbsp;
+                                    Hoja de Ruta
+                            </a>
+                          </li>
+                        </ul>
+                        @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
+                            @if (count($nci) > 0)
+                                <button data-toggle="modal" data-target="#modal-derivar" onclick="derivacionItem({{ $data->id }}, {{ $data->people_id_para }})" title="Derivar" class="btn btn-sm btn-dark view" style="border: 0px">
+                                    <i class="voyager-forward"></i> <span class="hidden-xs hidden-sm">Derivar</span>
+                                </button>
+                            @endif
+                        @endif
+                    </div>
+                </div>
                 <div class="col-md-12">
-                    
-                    @if (count($nci)==0)     
-                        <form action="{{route('entradas-file-nci.store')}}" method="POST" enctype="multipart/form-data">
-                            @csrf
-                            <div class="alert" style="background-color: #F5C02A;">
-                                <strong>Advertencia:</strong>
-                                <p>Carge su documento de respaldo..</p>
-                                <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
-                                <input type="file" name="archivos[]" multiple class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
-                                <button type="submit" class="btn btn-success">Subir Archivos</button>
-
-                            </div>
-
-                        </form>
-                    @endif
-
-
                     <div class="panel panel-bordered">
+                        <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
-                            <div class="col-md-3">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Hoja de Ruta</label>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Fecha de Ingreso</label>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ date('d/m/Y H:i:s', strtotime($data->created_at)) }} {{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Número de Cite</label>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $data->cite ?? '' }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-3">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Número de hojas</label>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $data->nro_hojas ?? 'No definida' }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            @if ($data->tipo == 'E')
-                                <div class="col-md-6">
-                                    <div class="panel-heading" style="border-bottom:0;">
-                                        <label class="panel-title">Origen</label>
-                                    </div>
-                                    <div class="panel-body" style="padding-top:0;">
-                                        <small>{{ $data->entity->nombre ?? 'Sin Origen' }}</small>                                    
-                                    </div>
-                                    <hr style="margin:0;">
+                            @if (count($nci)==0)     
+                                <div class="col-md-12">
+                                    <form class="form-submit" action="{{route('entradas-file-nci.store')}}" method="POST" enctype="multipart/form-data">
+                                        @csrf
+                                        <div class="alert alert-warning">
+                                            <h3>Advertencia</h3>
+                                            <p>Debe agregar el documento de respaldo</p>
+                                            <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
+                                            <div class="form-group">
+                                                <input type="file" name="archivos[]" multiple class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
+                                            </div>
+                                            <div class="form-group text-right">
+                                                <button type="submit" class="btn btn-danger btn-submit">Subir Archivos</button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             @endif
                             <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Remitente</label>
+                                    <h3 class="panel-title">Hoja de Ruta</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $data->remitente ? strtoupper($data->remitente) : '' }}</small>
+                                    <p>{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            {{-- @if ($data->tipo == 'I') --}}
                             <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Destino</label>
+                                    <h3 class="panel-title">Fecha de Ingreso</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <small>
-                                        {{ $data->person ? $data->person->first_name.' '.$data->person->last_name : '' }}
-                                    </small>
+                                    <p>{{ date('d/m/Y H:i:s', strtotime($data->created_at)) }} <small>{{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}</small></p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            {{-- @endif --}}
+                            <div class="col-md-6">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Número de Cite</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <p>{{ $data->cite ?? 'No definido' }}</p>
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Número de hojas</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <p>{{ $data->nro_hojas ?? 'No definido' }}</p>
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Remitente</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    {{ $data->remitente ? strtoupper($data->remitente) : '' }}
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            @if ($data->tipo == 'I')
+                            <div class="col-md-6">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 class="panel-title">Destino</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    {{ $data->person ? $data->person->first_name.' '.$data->person->last_name : '' }}
+                                </div>
+                                <hr style="margin:0;">
+                            </div>
+                            @endif
                         </div>
                     </div>
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -148,167 +126,62 @@
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <div class="row">
                                         <div class="col-md-9">
-                                            <label class="panel-title">Archivos</label>
+                                            <h3 class="panel-title">Archivos</h3>
                                         </div>
                                         <div class="col-md-3 text-right">
-                                            <a href="#" data-toggle="modal" data-target="#modal-upload" class="btn btn-success" style="margin: 15px;">
-                                                <span class="voyager-plus"></span>&nbsp;
-                                                Agregar nuevo
-                                            </a>
+                                            @if ($data->estado_id != 4)
+                                            <a href="#" data-toggle="modal" data-target="#modal-upload" class="btn btn-success" style="margin: 15px;"><span class="voyager-plus"></span>&nbsp;Agregar nuevo</a>
+                                            @endif
                                         </div>
                                     </div>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <div class="table-responsive">
-                                        <table id="dataTable" class="table table-bordered table-hover">
-                                            <thead>
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>N&deg;</th>
+                                                <th>ID</th>
+                                                <th>Título</th>
+                                                <th>Adjuntado por</th>
+                                                <th>Fecha de registro</th>
+                                                <th>Archivo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $cont = 1;
+                                            @endphp
+                                            @forelse ($data->archivos as $item)
                                                 <tr>
-                                                    <th>N&deg;</th>
-                                                    <th style="text-align: center">Título</th>
-                                                    <th style="text-align: center">Adjuntado por</th>
-                                                    <th style="text-align: center">Fecha de registro</th>
-                                                    <th width="150px" style="text-align: center">Acciones</th>
+                                                    <td>{{ $cont }}</td>
+                                                    <td>{{ $item->id }}</td>
+                                                    <td>{{ $item->nombre_origen }}</td>
+                                                    <td>{{ $item->user->name ?? 'RDE' }}</td>
+                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                    <td class="no-sort no-click bread-actions text-right">
+                                                        <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank">
+                                                            <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">ver</span>
+                                                        </a>
+                                                        <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file">
+                                                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
+                                                        </button>
+                                                    </td>
                                                 </tr>
-                                            </thead>
-                                            <tbody>
                                                 @php
-                                                    $cont = 1;
+                                                    $cont++;
                                                 @endphp
-                                                @forelse ($data->archivos as $item)
-                                                    <tr>
-                                                        <td width="5px">{{ $cont }}</td>
-                                                        <td style="text-align: center">
-                                                            {{ $item->nombre_origen }}
-                                                        </td>
-                                                        <td style="text-align: center">{{ $item->user->name ?? '' }}</td>
-                                                        <td style="text-align: center">{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                        <td style="text-align: right">
-                                                            <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
-                                                            <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
-                                                        </td>
-                                                    </tr>
-                                                    @php
-                                                        $cont++;
-                                                    @endphp
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
                                 </div>
+                                <hr style="margin:0;">
                             </div>
                         </div>
                     </div>
-                    @if ($data->personeria)    
-                        @php
-                            $name = \App\Models\PjNameReservation::where('entrada_id', $data->id)->where('deleted_at', null)->first();
-                            $fileName = \App\Models\PjNameFile::where('nameReservation_id', $name->id)
-                                                    ->where('deleted_at', null)->first();
-                        @endphp                    
-                        <div class="panel panel-bordered" style="padding-bottom:5px;">
-                            <label class="panel-title">Personería Jurídica</label>
-                                
-                           
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="panel-heading" style="border-bottom:0;">
-                                        <label class="panel-title">Nombre Personería Jurídica</label>
-                                    </div>
-                                    <div class="panel-body" style="padding-top:0;">
-                                        <small>{{$name->name }}</small>
-                                    </div>
-                                    <hr style="margin:0;">
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="panel-heading" style="border-bottom:0;">
-                                        <label class="panel-title">Solicitante</label>
-                                    </div>
-                                    <div class="panel-body" style="padding-top:0;">
-                                        <small>{{$name->applicant }}</small>
-                                    </div>
-                                    <hr style="margin:0;">
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="panel-heading" style="border-bottom:0;">
-                                        <label class="panel-title">Celular</label>
-                                    </div>
-                                    <div class="panel-body" style="padding-top:0;">
-                                        <small>{{$name->phone }}</small>
-                                    </div>
-                                    <hr style="margin:0;">
-                                </div>
-                                <div class="col-md-12">
-                                    
-                                    <div class="panel-body" style="padding-top:0;">
-                                        <div class="table-responsive">
-                                            <table id="dataTable" class="table table-bordered table-hover">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Tipo</th>                
-                                                        <th style="text-align: center">Detalle</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td style="height: 50px">Solicitud</td>
-                                                        <td style="text-align: center">
-                                                            @if (!$fileName->solicitud)
-                                                                <label class="label label-danger">Sin datos</label>
-                                                            @else                                                                
-                                                                <a href="{{asset('../../sidepej/public/storage/'.$fileName->solicitud)}}" title="Ver" target="_blank">
-                                                                    <img src="{{asset('images/icon/pdf.png')}}"  href="{{asset('../../sidepej_v2/public/storage/'.$fileName->solicitud)}}" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
-                                                                </a> 
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="height: 50px">Carnet de Identidad</td>
-                                                          <td style="text-align: center">
-                                                            @if (!$fileName->carnet)
-                                                                <label class="label label-danger">Sin datos</label>
-                                                            @else
-                                                                <a href="{{asset('storage/'.$fileName->carnet)}}" title="Ver" target="_blank">
-                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->carnet)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
-                                                                </a> 
-                                                            @endif
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="height: 50px">Deposito</td>
-                                                        <td style="text-align: center">
-                                                            @if (!$fileName->deposito)
-                                                                <label class="label label-danger">Sin datos</label>
-                                                            @else
-                                                                <a href="{{asset('storage/'.$fileName->deposito)}}" title="Ver" target="_blank">
-                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->deposito)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
-                                                                </a>                                                                
-                                                            @endif                                                            
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="height: 50px">Poder</td>
-                                                        <td style="text-align: center">
-                                                            @if (!$fileName->poder)
-                                                                <label class="label label-danger">Sin datos</label>
-                                                            @else
-                                                                <a href="{{asset('storage/'.$fileName->poder)}}" title="Ver" target="_blank">
-                                                                    <img src="{{asset('images/icon/pdf.png')}}" href="{{asset('storage/'.$fileName->poder)}}" class="zoom" class="zoom" style="width: 30px; height: 30px; border-radius: 30px; margin-right: 10px"/>
-                                                                </a>                                                                
-                                                            @endif                                                            
-                                                        </td>
-                                                    </tr>                                     
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                    
 
                     @if($data->tipo == 'I')
                         <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -327,8 +200,7 @@
                                                         data-target="#modal-derivar-via" 
                                                         title="Nuevo" class="btn btn-success"
                                                         style="margin: 15px;">
-                                                        <i class="voyager-list-add"></i> 
-                                                        Nuevo
+                                                        <span class="voyager-plus"></span>&nbsp;Agregar nueva
                                                     </button>
                                                 @endif
                                             </div>
@@ -336,13 +208,14 @@
                                     </div>
                                     <div class="panel-body" style="padding-top:0;">
                                         <div class="table-responsive">
-                                            <table id="dataTable" class="table table-bordered table-hover">
+                                            <table class="table table-bordered table-hover">
                                                 <thead>
                                                     <tr>
-                                                        <th>ID&deg;</th>
+                                                        <th>N&deg;</th>
+                                                        <th>ID</th>
                                                         <th>Nombre</th>
                                                         <th>Cargo</th>
-                                                        <th>Acciones</th>
+                                                        <th class="text-right">Acciones</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -352,17 +225,13 @@
                                                     @forelse ($data->vias as $item)
                                                         <tr style="text-transform: uppercase;">
                                                             <td>{{ $cont }}</td>
+                                                            <td>{{ $item->id }}</td>
                                                             <td>{{ $item->nombre }}</td>
                                                             <td>{{ $item->cargo }}</td>
-                                                            <td>
+                                                            <td class="no-sort no-click bread-actions text-right">
                                                                 @if ($data->derivaciones->whereNull('deleted_at')->count() == 0)
-                                                                    <button type="button" 
-                                                                    data-toggle="modal" 
-                                                                    data-target="#delete-via-modal" 
-                                                                    data-id="{{ $item->id }}" 
-                                                                    data-entrada_id="{{ $data->id }}"
-                                                                    class="btn btn-danger btn-sm btn-delete-via">
-                                                                        <span class="voyager-trash"></span>
+                                                                    <button type="button" data-toggle="modal" data-target="#delete-via-modal" data-id="{{ $item->id }}" data-entrada_id="{{ $data->id }}" class="btn btn-danger btn-sm btn-delete-via">
+                                                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
                                                                     </button>
                                                                 @endif
                                                             </td>
@@ -372,7 +241,7 @@
                                                         @endphp
                                                     @empty
                                                         <tr>
-                                                            <td colspan="6"><h5 class="text-center">No hay archivos guardados</h5></td>
+                                                            <td colspan="5"><h5 class="text-center">No hay archivos guardados</h5></td>
                                                         </tr>
                                                     @endforelse
                                                 </tbody>
@@ -384,92 +253,106 @@
                             </div>
                         </div>
                     @endif
+
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="panel-heading" style="border-bottom:0;">
-                                    <label class="panel-title">Historial de derivaciones</label>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <div class="table-responsive">
-                                        {{-- para que el dueño del tramite pueda eliminar todas las derivacion --}}
-                                        @php
-                                            $ok = \App\Models\Derivation::where('parent_id', $data->id)->where('entrada_id', $data->id)->where('via', 0)
-                                                    ->where('deleted_at', null)
-                                                    ->where('derivation', 0)
-                                                    ->where('ok', 'NO')->first();
-                                            // dd($ok);
-                                        @endphp
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <h3 class="panel-title">Historial de derivaciones</h3>
+                                        </div>
+                                        <div class="col-md-3 text-right">
+                                            @if (auth()->user()->hasRole('admin'))
+                                                <div class="dropdown">
+                                                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Opciones
+                                                    <span class="caret"></span></button>
+                                                    <ul class="dropdown-menu pull-right">
+                                                        @php
+                                                            $ok = \App\Models\Derivation::where('parent_id', $data->id)->where('entrada_id', $data->id)->where('via', 0)
+                                                                    ->where('deleted_at', null)
+                                                                    ->where('derivation', 0)
+                                                                    ->where('ok', 'NO')->first();
+                                                        @endphp
 
-                                        @if ($ok)
-                                            @if ($ok->visto == null || auth()->user()->hasRole('admin'))
-                                                <button type="button" data-toggle="modal" data-target="#modal_derivacionAnular" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span> Eliminar Derivación</button>                                                
-                                            @endif                                            
-                                        @endif
-
-
-                                        <table id="dataTable" class="table table-bordered-table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th>N&deg;</th>
-                                                    <th>Dirección</th>
-                                                    <th>Unidad</th>
-                                                    <th>Funcionario</th>
-                                                    <th>Observaciones</th>
-                                                    <th>Fecha de derivación</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @php
-                                                    $cont = 1;
-                                                @endphp
-                                                @forelse ($data->derivaciones as $item)
-                                                    <tr  @if ($item->via) style="background-color: rgb(224,223,223)" @endif @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif>
-                                                        <td>{{ $cont }}</td>
-                                                        <td>{{ $item->funcionario_direccion_para }}</td>
-                                                        <td>{{ $item->funcionario_unidad_para }}</td>
-                                                        <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
-                                                        <td>{{ $item->observacion }}</td>
-                                                        <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small><br>
-                                                            @if ($item->visto)
-                                                                <i class="fa-solid fa-eye" style="color: rgb(9,132,41)"></i>
-                                                            @else
-                                                                <i class="fa-solid fa-eye-slash"></i>
+                                                        @if ($ok)
+                                                            @if ($ok->visto == null || auth()->user()->hasRole('admin'))
+                                                                <li>
+                                                                    <a href="#" data-toggle="modal" data-target="#modal-anular_derivaciones" class="btn-anular">Eliminar todas las derivaciones</a>
+                                                                </li>
                                                             @endif
-                                                        </td>
-                                                        <td>
-                                                            @php
-                                                                $ok = \App\Models\Derivation::where('parent_id', $item->id)->get();
-                                                            @endphp
-                                                            @if(0 == count($ok) && $item->via == 0 && auth()->user()->hasRole('admin') && $item->entrada_id != $item->parent_id)
-                                                                <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular"><span class="voyager-trash"></span></button>
-                                                            @endif
-                                                        </td> 
-                                                    </tr>
-                                                    @php
-                                                        $cont++;
-                                                    @endphp
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="7"><h5 class="text-center">No se han realizado derivaciones</h5></td>
-                                                    </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
+                                                        @endif
+                                                        
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                                
+                                @if ($data->derivaciones->count() > 0)
+                                <div class="panel-body" style="padding-top:0;">
+                                    <table class="table table-bordered-table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>N&deg;</th>
+                                                <th>Dirección Administrativa</th>
+                                                <th>Funcionario</th>
+                                                <th>Observaciones</th>
+                                                <th></th>
+                                                <th>Fecha</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $cont = 1;
+                                            @endphp
+                                            @forelse ($data->derivaciones as $item)
+                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif @if ($item->via) style="background-color: rgb(224,223,223)" @endif>
+                                                    <td>{{ $cont }}</td>
+                                                    <td>{{ $item->funcionario_direccion_para }} <br> {{ Str::upper($item->funcionario_unidad_para) }}</td>
+                                                    <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
+                                                    <td>{{ $item->observacion }}</td>
+                                                    <td>
+                                                        @if ($item->visto)
+                                                            <i class="fa-solid fa-eye" style="color: rgb(9,132,41)" data-toggle="tooltip" title="Derivación abierta"></i>
+                                                        @else
+                                                            <i class="fa-solid fa-eye-slash" data-toggle="tooltip" title="Derivación no abierta"></i>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
+                                                    <td class="no-sort no-click bread-actions text-right">
+                                                        @php
+                                                            $ok = \App\Models\Derivation::where('parent_id', $item->id)->get();
+                                                        @endphp
+                                                        @if(0 == count($ok) && $item->via == 0 && $item->entrada_id != $item->parent_id && auth()->user()->hasRole('admin'))
+                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular">
+                                                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
+                                                            </button>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                                @php
+                                                    $cont++;
+                                                @endphp
+                                            @empty
+                                                <tr>
+                                                    <td colspan="8"><h5 class="text-center">No se han realizado derivaciones</h5></td>
+                                                </tr>
+                                            @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
+                                @endif
+                                 
                             </div>
                         </div>
                     </div>
-
-                    
                 </div>
             </div>
         </div>
 
-        {{-- anulación modal --}}
+        {{-- Modal para eliminar las derivacion --}}
         <div class="modal modal-danger fade" tabindex="-1" id="anular_modal" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -478,20 +361,20 @@
                         <h4 class="modal-title"><i class="voyager-trash"></i> Desea anular la siguiente derivación?</h4>
                     </div>
                     <div class="modal-footer">
-                        <p></p>
-                        <form id="anulacion_form" action="{{ route('delete.derivacion') }}" method="POST">
+                        <form class="form-submit" id="anulacion_form" action="{{ route('bandeja-derivation.delete') }}" method="POST">
                             @csrf
                             <input type="hidden" name="entrada_id" value="{{ $data->id }}">
                             <input type="hidden" name="id">
                             <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, anular">
                         </form>
-                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-default pull-right btn-submit" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="modal modal-danger fade" tabindex="-1" id="modal_derivacionAnular" role="dialog">
+
+        {{-- Modal eliminar todas las derivaciones --}}
+        <div class="modal modal-danger fade" tabindex="-1" id="modal-anular_derivaciones" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -500,17 +383,19 @@
                     </div>
                     <div class="modal-footer">
                         <p></p>
-                        <form action="{{ route('delete.derivacions') }}" method="POST">
+                        <form class="form-submit" action="{{ route('delete.derivacions') }}" method="POST">
                             @csrf
                             <input type="hidden" name="entrada_id" value="{{ $data->id }}">
 
                             <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, anular">
                         </form>
-                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-default pull-right btn-submit" data-dismiss="modal">Cancelar</button>
                     </div>
                 </div>
             </div>
         </div>
+
+        @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
 
         {{-- delete file modal --}}
         <div class="modal modal-danger fade" tabindex="-1" id="delete-file-modal" role="dialog">
@@ -533,16 +418,40 @@
                 </div>
             </div>
         </div>
-
-        {{-- para derivar la correspondencia --}}
+        
+        {{-- Personas modal --}}
         @include('partials.modal-derivar')
-
-        {{-- delete via modal --}}
-        @include('partials.modal-delete-via')
-        @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
 
         {{-- Personas modal --}}
         @include('partials.modal-agregar-vias', ['id' => $data->id])
+        {{-- delete via modal --}}
+        @include('partials.modal-delete-via')
+
+        {{-- rechazar modal --}}
+        <form class="form-submit" action="{{ route('bandeja.rechazar', ['id' => $data->id]) }}" method="post">
+            <div class="modal modal-danger fade" tabindex="-1" id="modal-rechazar" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><i class="voyager-warning"></i> Rechazar correspondencia</h4>
+                        </div>
+                        <div class="modal-body">
+                            @csrf
+                            <input type="hidden" name="derivacion_id" value="{{ $data->id }}">
+                            <div class="form-group">
+                                <label>Motivo del rechazo</label>
+                                <textarea name="observacion" class="form-control" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer text-right">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger btn-submit">Rechazar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
 
         {{-- info modal --}}
         <div class="modal modal-success fade" tabindex="-1" id="info_modal" role="dialog">
@@ -575,63 +484,19 @@
     @stop
 
     @section('css')
-    <style>
-        .select2-container {
-            width: 100% !important;
-        }
-        /* CSS to style Treeview menu  */
-        ol.tree {
-                    padding: 0 0 0 30px;
-                    /* width: 500px; */
+        <style>
+            .select2-container {
+                width: 100% !important;
             }
-            .li { 
-                    position: relative; 
-                    margin-left: -15px;
-                    list-style: none;
-            }      
-            .li input {
-                    position: absolute;
-                    left: 0;
-                    margin-left: 0;
-                    opacity: 0;
-                    z-index: 2;
-                    cursor: pointer;
-                    height: 1em;
-                    width: 1em;
-                    top: 0;
+            .bread-actions .btn{
+                margin: 5px 0px;
+                padding: 5px 10px;
+                font-size: 12px;
+                text-decoration: none
             }
-            .li input + ol {
-                    background: url({{asset("/images/treeview/toggle-small-expand.png")}}) 40px 0 no-repeat;
-                    margin: -1.600em 0px 8px -44px; 
-                    height: 1em;
-            }
-            .li input + ol > .li { 
-                    display: none; 
-                    margin-left: -14px !important; 
-                    padding-left: 1px; 
-            }
-            .li label {
-                    background: url({{asset("/images/treeview/default.png")}}) 15px 1px no-repeat;
-                    cursor: pointer;
-                    display: block;
-                    padding-left: 37px;
-            }
-            .li input:checked + ol {
-                    background: url({{asset("images/treeview/toggle-small.png")}}) 40px 5px no-repeat;
-                    margin: -1.96em 0 0 -44px; 
-                    padding: 1.563em 0 0 80px;
-                    height: auto;
-            }
-            .li input:checked + ol > .li { 
-                    display: block; 
-                    margin: 8px 0px 0px 0.125em;
-            }
-            .li input:checked + ol > .li:last-child { 
-                    margin: 8px 0 0.063em;
-            }
-    </style>
+        </style>
     @endsection
-
+        
     @section('javascript')
         <script>
             var destinatario_id = 0;
@@ -652,26 +517,15 @@
                     $('#delete_via_form input[name="id"]').val(id);
                     $('#delete_via_form input[name="entrada_id"]').val(entrada_id);
                 });
-                $('.btn-showinfo').click(function(){
-                    let id = $(this).data('id');
-                    let unidad_para = $(this).data('unidad_para');
-                    let direccion_para = $(this).data('direccion_para');
-                    let observacion = $(this).data('observacion');
-                    $('#info_form input[name="id"]').val(id);
-                    $('#info_form input[name="direccion_para"]').val(direccion_para);
-                    $('#info_form input[name="unidad_para"]').val(unidad_para);
-                    $('#info_form textarea[name="observacion"]').val(observacion);
-                });
             });
 
-            function derivacionItem(id,destinoid=0){
+            function derivacionItem(id, destinoid = 0){
                 $('#form-derivacion input[name="id"]').val(id);
                 destinatario_id = destinoid;
-                // alert(destinatario_id);
             }
         </script>
     @stop
-
+    
 @else
     @section('content')
         @include('errors.403')

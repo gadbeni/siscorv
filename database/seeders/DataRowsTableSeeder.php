@@ -1587,6 +1587,22 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 14,
             ),
+            98 => 
+            array (
+                'id' => 99,
+                'data_type_id' => 1,
+                'field' => 'phone',
+                'type' => 'text',
+                'display_name' => 'Celular',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 9,
+            ),
         ));
         
         

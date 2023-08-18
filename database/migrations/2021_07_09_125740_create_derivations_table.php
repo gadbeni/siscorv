@@ -55,7 +55,7 @@ class CreateDerivationsTable extends Migration
             $table->integer('transferredPeople_id')->nullable();
             $table->dateTime('transferredDate')->nullable();
             $table->foreignId('transferredUser_id')->nullable()->constrained('users');
-            
+            $table->foreignId('user_id')->nullable()->constrained('users');
         });
     }
 

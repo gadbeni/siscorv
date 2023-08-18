@@ -99,17 +99,17 @@ class ExchangeController extends Controller
                     $i++;
                 }
                 DB::commit();
-            return redirect()->route('exchange.index')->with(['message' => 'Mensaje Transferido Exitosamente..', 'alert-type' => 'success']);
+            return redirect()->route('exchange.index')->with(['message' => 'Mensaje Transferido Exitosamente', 'alert-type' => 'success']);
 
             } catch (\Throwable $th) {
                 DB::rollBack();
                 // return 0;
-                return redirect()->route('exchange.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+                return redirect()->route('exchange.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
             }
         }
         else
         {
-            return redirect()->route('exchange.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('exchange.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

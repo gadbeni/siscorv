@@ -1,5 +1,5 @@
 {{-- Derivación modal --}}
-<form id="form-derivacion" action="{{ route('store.derivacion') }}" method="post">
+<form class="form-submit" id="form-derivacion" action="{{ route('store.derivacion') }}" method="post">
     <div class="modal modal-primary fade" id="modal-derivar" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -17,27 +17,21 @@
                         <input type="hidden" name="redirect" value="{{ $redirect }}">
                     @endif
                     <div class="form-group">
-                        <label class="control-label">INTERNO</label>
-                        <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Seleccione no si el funcionario no depende de la gobernacion."></span>
-                        <input 
-                            type="checkbox" 
-                            name="tipo"
-                            id="toggleswitch" 
-                            data-toggle="toggle" 
-                            data-on="Sí" 
-                            data-off="No"
-                            checked 
-                            >
-                    </div>
-                    <div class="form-group">
-                        <label class="">Destinatario</label>
-                        <select 
-                            name="destinatarios[]" 
-                            class="form-control" 
-                            id="select-destinatario"
-                            multiple="multiple"
-                            >
-                        </select>
+                        <label class="">Destinatario <i class="voyager-info-circled" data-toggle="tooltip" data-placement="right" title="Puede elegir uno o varios destinatarios"></i></label>
+                        <div class="input-group">
+                            <select name="destinatarios[]" class="form-control" id="select-destinatario" multiple></select>
+                            <span class="input-group-btn">
+                                <input 
+                                    type="checkbox"
+                                    name="tipo"
+                                    id="toggleswitch"
+                                    data-toggle="toggle"
+                                    data-on="Interno"
+                                    data-off="Externo"
+                                    checked 
+                                >
+                            </span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label class="">Observaciones</label>
@@ -45,20 +39,21 @@
                     </div>
                 </div>
                 <div class="modal-footer text-right">
-                    <button type="button" id="btn_block_cancel" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" onclick="func_block()" id="btn_block" class="btn btn-dark">Derivar</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="btn_block" class="btn btn-dark btn-submit">Derivar</button>
                 </div>
             </div>
         </div>
     </div>
 </form>
-
+<style>
+    .toggle {
+        width: 100px !important
+    }
+</style>
 <script src="{{ asset('js/jquery-3.4.1.min.js')}}" ></script>
-
 <script>
     $(document).ready(function () {
-        
-        // ruta = "{{ route('certificados.getFuncionariosDerivacion') }}";
         ruta = "{{ route('mamore.getpeoplederivacion') }}";
         $("#select-destinatario").select2({
             maximumSelectionLength: 20,
@@ -91,11 +86,5 @@
                 intern_externo = 0;
             }
         });
-
-        
     });
-    function func_block() {
-        $('#btn_block').fadeOut();
-        $('#btn_block_cancel').fadeOut();
-    }
 </script>

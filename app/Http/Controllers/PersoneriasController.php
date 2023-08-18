@@ -120,6 +120,6 @@ class PersoneriasController extends Controller
     public function destroy(Personeria $personeria)
     {
         $personeria->delete();
-        return redirect()->route('personerias.index')->with(['message' => 'Personeria anulada exitosamente.', 'alert-type' => 'success']);
+        return redirect()->route('personerias.index')->with(['message' => 'Personeria anulada exitosamente', 'alert-type' => 'success']);
     }
 }

@@ -11,10 +11,10 @@
                 $url = route('voyager.dashboard');
                 @endphp
                 @if(count($segments) == 0)
-                    <li class="active"><i class="voyager-boat"></i> {{ __('voyager::generic.dashboard') }}</li>
+                    <li class="active"><i class="voyager-home"></i> {{ __('voyager::generic.dashboard') }}</li>
                 @else
                     <li class="active">
-                        <a href="{{ route('voyager.dashboard')}}"><i class="voyager-boat"></i> {{ __('voyager::generic.dashboard') }}</a>
+                        <a href="{{ route('voyager.dashboard')}}"><i class="voyager-home"></i> {{ __('voyager::generic.dashboard') }}</a>
                     </li>
                     @foreach ($segments as $segment)
                         @php
@@ -33,23 +33,16 @@
             @show
         </div>
         <ul class="nav navbar-nav @if (__('voyager::generic.is_rtl') == 'true') navbar-left @else navbar-right @endif">
-            <li id="badge-notification">
-                
-            </li>
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    <img src="{{ asset('storage/users/default.png') }}" width="40px" class="profile-img"> <span class="caret"></span>
-                </a>
+            <li class="dropdown profile">
+                <a href="#" class="dropdown-toggle text-right" data-toggle="dropdown" role="button"
+                   aria-expanded="false"><img src="{{ $user_avatar }}" class="profile-img"> <span
+                            class="caret"></span></a>
                 <ul class="dropdown-menu dropdown-menu-animated">
                     <li class="profile-img">
-                        <div class="row">
-                            <div class="col-md-4" style="padding: 0px">
-                                <img src="{{ asset('storage/users/default.png') }}" width="60px" class="profile-img">
-                            </div>
-                            <div class="col-md-8" style="margin: 0px">
-                                <h5>{{ Auth::user()->name }}</h5>
-                                    <h6>{{ Auth::user()->email }}</h6>
-                            </div>
+                        <img src="{{ $user_avatar }}" class="profile-img">
+                        <div class="profile-body">
+                            <h5>{{ explode(' ', ucwords(Auth::user()->name))[0] }}</h5>
+                            <h6>{{ Auth::user()->email }}</h6>
                         </div>
                     </li>
                     <li class="divider"></li>
@@ -80,6 +73,6 @@
                     @endif
                 </ul>
             </li>
-          </ul>
+        </ul>
     </div>
 </nav>

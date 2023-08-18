@@ -92,12 +92,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
 
     //Report RDE
-    Route::get('report_list-document', [ReportController::class, 'view_list_document'])->name('view.list-document');
-    Route::post('report/list-document', [ReportController::class, 'printf_list_document'])->name('prinft.list-document');
-
-    // Report
-    Route::get('report', [ReportController::class, 'view_report_list'])->name('view.report.list');
-    Route::post('report/print/list', [ReportController::class, 'printf_report_list'])->name('print.report.list');
+    Route::get('report/rde', [ReportController::class, 'rde_index'])->name('report.rde.index');
+    Route::post('report/rde/list', [ReportController::class, 'rde_list'])->name('report.rde.list');
+    Route::get('report/rde-documents', [ReportController::class, 'rde_documents_index'])->name('report.rde.documents.index');
+    Route::post('report/list-document', [ReportController::class, 'rde_documents_list'])->name('prinft.list-document');
 
     //Ingreso
     Route::get('report/ingreso', [ReportController::class, 'view_report_ingreso'])->name('view.report.ingreso');
@@ -130,6 +128,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     // LEVANTAMIENTO DE EMBARGO
     Route::get('embargos', [EmbargoController::class, 'index'])->name('voyager.embargos.index');
+    Route::get('embargos/list/ajax', [EmbargoController::class, 'list'])->name('voyager.embargos.list');
     Route::get('embargos/list/eliminar', [EmbargoController::class, 'eliminar'])->name('embargos.eliminar');
     Route::post('embargos/import/excel', [EmbargoController::class, 'importExcel'])->name('embargos-embargo.excel');
     Route::post('embargos/list/inhabilitar', [EmbargoController::class, 'inhabilitar'])->name('embargos-list.inhabilitar');
@@ -199,7 +198,7 @@ Route::get('/import', [ImportController::class,'import']);
 
 Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');
-    return redirect('/admin/profile')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);
+    return redirect('/admin/profile')->with(['message' => 'Cache eliminada', 'alert-type' => 'success']);
 })->name('clear.cache');
 
 Route::get('services', function () {

@@ -166,6 +166,7 @@ class UsersController extends Controller
                 'email' => $request->email,
                 'avatar' => 'users/default.png',
                 'password' => bcrypt($request->password),
+                'phone' => $request->phone,
             ]);
             
             
@@ -207,7 +208,6 @@ class UsersController extends Controller
     }
 
     public function update_user(Request $request, User $user){
-       
         $rules = [
             'email' => "required|max:255|unique:users,email,{$user->id}",
         ];
@@ -223,6 +223,7 @@ class UsersController extends Controller
             $user->update([
                 'role_id' => $request->role_id,
                 'email' => $request->email,
+                'phone' => $request->phone,
             ]);
             if ($request->warehouses[0]) {
                 $user->warehouses()->sync($request->warehouses);

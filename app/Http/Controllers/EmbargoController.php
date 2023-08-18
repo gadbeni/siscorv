@@ -11,27 +11,43 @@ use Illuminate\Support\Facades\DB;
 
 class EmbargoController extends Controller
 {
-    public function index()
-    {
-        $embargo = Embargo::where('deleted_at', null)->get();
-        return view('embargo.browse', compact('embargo'));
+    public function index(){
+        return view('embargo.browse');
     }
 
+    public function list(){
+        $search = request('search') ?? NULL;
+        $paginate = request('paginate') ?? 10;
+        $embargo = Embargo::where('deleted_at', null)
+                    ->where(function($query) use ($search){
+                        if($search){
+                            // $query->OrwhereHas('city', function($query) use($search){
+                            //     $query->whereRaw("name like '%$search%'");
+                            // })
+                            $query->OrWhereRaw("id = '$search'")
+                            ->OrWhereRaw("nro like '%$search%'")
+                            ->OrWhereRaw("nroPiet like '%$search%'")
+                            ->OrWhereRaw("rutNit like '%$search%'")
+                            ->OrWhereRaw("ci like '%$search%'")
+                            ->OrWhereRaw("nombre like '%$search%'")
+                            ->OrWhereRaw("notaEmbargo like '%$search%'");
+                        }
+                    })
+                    ->orderBy('id', 'DESC')->paginate($paginate);
+        return view('embargo.list', compact('embargo'));
+    }
+
+    
     public function importExcel(Request $request)
     {
         $nro = Embargo::max('nroImportacion');
-        if($nro == null)
-        {
+        if($nro == null){
             $nro = 1;
-        }
-        else
-        {
+        }else{
             $nro++;
         }
-        // Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
         $file = $request->file('file');
         Excel::import(new EmbargoImport, $file);
-        // return 1;
         return back()->with('message', 'Importacion completada..');
     }
 
@@ -41,25 +57,24 @@ class EmbargoController extends Controller
         try {
             Embargo::where('id', $request->id)->update(['status'=>0]);
             DB::commit();
-            return redirect()->route('voyager.embargos.index')->with(['message' => 'Inhabilitado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('voyager.embargos.index')->with(['message' => 'Inhabilitado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrió un error', 'alert-type' => 'error']);
         }
         
     }
 
     public function eliminar()
     {
-        // return 1;
         DB::beginTransaction();
         try {
             Embargo::where('deleted_at', null)->update(['deleted_at'=>Carbon::now()]);
             DB::commit();
-            return redirect()->route('voyager.embargos.index')->with(['message' => 'Eliminado todo los registro exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('voyager.embargos.index')->with(['message' => 'Eliminado todo los registro exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrió un error', 'alert-type' => 'error']);
         }
         
     }
@@ -69,19 +84,11 @@ class EmbargoController extends Controller
         try {
             Embargo::where('id', $request->id)->update(['status'=>1]);
             DB::commit();
-            return redirect()->route('voyager.embargos.index')->with(['message' => 'Habilitado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('voyager.embargos.index')->with(['message' => 'Habilitado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('voyager.embargos.index')->with(['message'=>'Ocurrió un error', 'alert-type' => 'error']);
         }
         
     }
-    // public function delete()
-    // {
-    //     DB::delete('DELETE FROM embargos');
-    //     return back()->with('message', 'Importacion completada..');
-    // }
-
-
-    
 }

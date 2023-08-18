@@ -17,18 +17,12 @@
 
 
     <link rel="stylesheet" href="{{ asset('css/dataTable.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/small.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/h.css') }}">
-    {{-- <link rel="stylesheet" href="{{ asset('css/loader.css') }}"> --}}
     <style>
         .form-control, .select2-selection, .mce-tinymce {
             border: 1px solid #464545 !important;
-            /* color: #f40202; */
             color:rgb(30, 29, 29) !important;
-            /* font-weight: 200; */
         }
-        label
-        {
+        label{
             color: rgb(33, 33, 33) !important;
         }
     </style>
@@ -193,8 +187,10 @@
     </script>
     @include('voyager::media.manager')
 
+    {{-- Socket.io --}}
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
     <script>
-        const IP_ADDRESS = "{{ env('APP_URL', '127.0.0.1') }}";
+        const IP_ADDRESS = "{{ env('SOCKET_URL', '127.0.0.1') }}";
         const SOCKET_PORT = "{{ env('SOCKET_PORT', '3000') }}";
 
         $(function() {
@@ -236,8 +232,13 @@
     @endif
     @livewireScripts
 
-    {{-- Socket.io --}}
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script> --}}
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+            $('.form-submit').submit(function(e){
+                $('.form-submit .btn-submit').attr('disabled', 'disabled');
+            });
+        });
+    </script>
 </body>
 </html>

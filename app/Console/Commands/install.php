@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use File;
+use Illuminate\Support\Facades\DB;
 use TCG\Voyager\VoyagerServiceProvider;
 
 class install extends Command
@@ -39,11 +40,22 @@ class install extends Command
      */
     public function handle()
     {
-        $this->call('key:generate');
-        $this->call('migrate:fresh');
-        $this->call('db:seed');
-        $this->call('storage:link');
-        $this->call('vendor:publish', ['--provider' => VoyagerServiceProvider::class, '--tag' => ['config', 'voyager_avatar']]);
-        $this->info('Gracias por instalar SISCOR');
+        $empty_database = false;
+        try {
+            DB::table('users')->first();
+        } catch (\Throwable $th) {
+            $empty_database = true;
+        }
+
+        if($empty_database){
+            $this->call('key:generate');
+            $this->call('migrate:fresh');
+            $this->call('db:seed');
+            $this->call('storage:link');
+            $this->call('vendor:publish', ['--provider' => VoyagerServiceProvider::class, '--tag' => ['config', 'voyager_avatar']]);
+            $this->info('Gracias por instalar SISCOR');
+        }else{
+            $this->error('Ya se encuentra instalado SISCOR');
+        }
     }
 }

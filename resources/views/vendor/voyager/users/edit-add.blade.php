@@ -16,7 +16,7 @@
 
 @section('content')
     <div class="page-content container-fluid">
-        <form class="form-edit-add" role="form"
+        <form class="form-edit-add form-submit" role="form"
               action="@if(!is_null($dataTypeContent->getKey())){{ route('update.users', $dataTypeContent->getKey()) }}@else{{ route('store.users') }}@endif"
               method="POST" enctype="multipart/form-data" autocomplete="off">
             <!-- PUT Method if we are editing -->
@@ -71,17 +71,20 @@
                             <input type="hidden" name="departamento_id" id="departamento_id"> -->
                             <div class="form-group">
                                 <label for="email">{{ __('Usuario') }}</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}"
-                                       value="{{ old('email', $dataTypeContent->email ?? '') }}">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}" value="{{ old('email', $dataTypeContent->email ?? '') }}">
                             </div>
 
                             <div class="form-group">
                                 <label for="password">{{ __('voyager::generic.password') }}</label>
-                                @if(isset($dataTypeContent->password))
-                                    <br>
-                                    <small>{{ __('voyager::profile.password_hint') }}</small>
-                                @endif
                                 <input type="password" class="form-control" id="password" name="password" value="" autocomplete="new-password">
+                                @if(isset($dataTypeContent->password))
+                                    <small class="text-muted">{{ __('voyager::profile.password_hint') }}</small>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Celular</label>
+                                <input type="phone" class="form-control" name="phone" value="{{ old('phone', $dataTypeContent->phone ?? '') }}">
                             </div>
 
                             @can('editRoles', $dataTypeContent)
@@ -89,7 +92,6 @@
                                     <label for="default_role">{{ __('voyager::profile.role_default') }}</label>
                                     @php
                                         $dataTypeRows = $dataType->{(isset($dataTypeContent->id) ? 'editRows' : 'addRows' )};
-
                                         $row     = $dataTypeRows->where('field', 'user_belongsto_role_relationship')->first();
                                         $options = $row->details;
                                     @endphp
@@ -147,8 +149,7 @@
                     </div>
                 </div>
             </div>
-
-            <button type="submit" class="btn btn-primary pull-right save">
+            <button type="submit" class="btn btn-primary pull-right btn-submit save">
                 {{ __('voyager::generic.save') }}
             </button>
         </form>

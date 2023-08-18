@@ -1,5 +1,4 @@
-{{-- Single delete modal --}}
-<form action="{{ isset($action) ? $action : '#' }}" method="POST" class="" id="my-awesome-dropzone " enctype="multipart/form-data">
+<form class="form-submit" action="{{ isset($action) ? $action : '#' }}" method="POST" enctype="multipart/form-data">
     <div class="modal modal-success fade" tabindex="-1" id="modal-upload" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -14,7 +13,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Subir archivo</button>
+                    <button type="submit" class="btn btn-success btn-submit">Subir archivo</button>
                 </div>
             </div>
         </div>

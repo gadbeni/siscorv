@@ -1,0 +1,9 @@
+**Instrucciones**
+- Ejecutar migraciones
+- Ejecutar SettingsTableSeeder, UpdateBreadSeeder, UpdatePermissionsSeeder
+- Eliminar update_derivations_table
+- Crear users.phone
+
+**Observaciones**
+- Validar si la nota está en su bandeja antes de derivarla (en el controlador)
+- Cambiar todo el CRUD de certificados

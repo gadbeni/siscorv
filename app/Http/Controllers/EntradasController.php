@@ -2,9 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Storage;
-use DataTables;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FileController;
+use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use Storage;
+
+// Models
 use App\Models\Via;
 use App\Models\Person;
 use App\Models\Archivo;
@@ -12,24 +19,17 @@ use App\Models\Entrada;
 use App\Models\Persona;
 use App\Models\Category;
 use App\Models\PeopleExt;
-
-// Models
 use App\Models\Derivation;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use App\Models\PjNameReservation;
+use App\Models\PjNameFile;
+
 use Barryvdh\DomPDF\Facade\Pdf;
 use function PHPSTORM_META\map;
 use PhpParser\Node\Stmt\Return_;
-use App\Models\PjNameReservation;
-use Illuminate\Support\Facades\DB;
-use Prophecy\Promise\ReturnPromise;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\FileController;
-use App\Models\PjNameFile;
-use Database\Seeders\PersonasTableSeeder;
-use Illuminate\Database\Eloquent\Builder;
-use function PHPUnit\Framework\returnSelf;
 
+use Prophecy\Promise\ReturnPromise;
+use Database\Seeders\PersonasTableSeeder;
+use function PHPUnit\Framework\returnSelf;
 use phpDocumentor\Reflection\Types\Nullable;
 use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
@@ -45,13 +45,10 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
-
-        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
-        {
+        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin')) {
             Auth::logout();
             return redirect()->route('maintenance');
         }
-
         return view('entradas.browse');
     }
 
@@ -59,11 +56,10 @@ class EntradasController extends Controller
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $query_filtro = 'people_id_de = '.$funcionario->people_id;
+        $query_filtro = 'people_id_de = '.($funcionario ? $funcionario->people_id : 0);
         if (auth()->user()->isAdmin()) {
             $query_filtro = 1;
         }
-        // dd($funcionario);
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->whereRaw($query_filtro)
                         ->select([
@@ -71,10 +67,6 @@ class EntradasController extends Controller
                         ])
                         ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
                         ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
-        // dd($data);
-        
-
-        
         return view('entradas.list', compact('data'));
     }
 
@@ -83,25 +75,18 @@ class EntradasController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-        
+    public function create(){
         $entrada = new Entrada;
+        $funcionario = null;
         $user_auth = Persona::where('user_id', Auth::user()->id)->first();
-        // $funcionario = $this->getFuncionario($user_auth->funcionario_id);
-
-        $funcionario = $this->getPeople($user_auth->people_id);
-        if(!$funcionario)
-        {
-            
-            $funcionario = $this->getPeopleExt($user_auth->people_id);
+        if($user_auth){
+            if($user_auth->people_id == null){
+                $funcionario = $this->getFuncionario($user_auth->funcionario_id);
+            }else{
+                $funcionario = $this->getPeople($user_auth->people_id);
+            }
         }
-        
-        $category = Category::with(['organization' => function($q){
-            $q->where('tipo','tptramites');
-        }])->get() ;
-     
-        return view('entradas.edit-add', compact('entrada','funcionario', 'category'));
+        return view('entradas.edit-add', compact('entrada', 'funcionario'));
     }
 
     /**
@@ -110,113 +95,92 @@ class EntradasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {  
-        // return $request;
-        
+    public function store(Request $request){  
+        // return $request->all();
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
         //para verificar si exixte el cite regsitrado
-        $oldtramite = Entrada::where('tipo',$request->tipo)
-                            ->where('cite',$request->cite)
-                            ->where('deleted_at',NULL)
+        $oldtramite = Entrada::where('tipo', $request->tipo)
+                            ->where('cite', $request->cite)
+                            ->where('deleted_at', NULL)
                             ->first();       
         if ($oldtramite) {
             return redirect()->route('entradas.index')->with(['message'=>'El cite ya se encuentra registrado', 'alert-type' => 'error']);
         }
-
         DB::beginTransaction();
         try {
-
             $persona = Persona::where('user_id', Auth::user()->id)->first();
-            $unidad_id_remitente = NULL;
-            $direccion_id_remitente = null;
-            $funcionario_remitente = NULL;
-            /*
-                Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id) 
-            */
-
-
-            if($persona->people_id)
-            {
-                // return $request->funcionario_id_remitente;
-                if($request->tipo == 'I'){
-                    $unidad_id_remitente = $this->getIdDireccionPeople($request->funcionario_id_remitente)->idDependencia;
-                    $direccion_id_remitente = $this->getIdDireccionPeople($request->funcionario_id_remitente)->DA;
-                }
-                // return $this->getPeople($persona->people_id)->cargo;
-                $job = $this->getPeople($persona->people_id)->cargo;
-                
-                $data = Entrada::create([
-                    'gestion' => date('Y'),
-                    'tipo' => $request->tipo,
-                    'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
-                    'cite' => $request->cite,
-                    'referencia' => $request->referencia,
-                    'nro_hojas' => $request->nro_hojas,
-                    'urgent' => ($request->urgent) ? true : false,
-                    'deadline' => $request->deadline,
-                    // 'estado' => 'activo',
-                    'fecha_registro' => $request->fecha_registro,
-                    'detalles' => $request->detalles,
-                    // 'funcionario_id_remitente' => $request->funcionario_id_remitente,
-                    'people_id_de' => $request->funcionario_id_remitente,
-                    'job_de' => $job,
-                    'unidad_id_remitente' => $unidad_id_remitente,
-                    'direccion_id_remitente' => $direccion_id_remitente,
-                    // 'funcionario_id_destino' => $request->funcionario_id_destino,
-                    'people_id_para' => $request->funcionario_id_destino,
-                    'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
-                    'registrado_por' => Auth::user()->email,
-                    // Cambiar el parámetro de la llamada a la funcion getIdDireccionFuncionario
-                    'registrado_por_id_direccion' => $this->getIdDireccionPeople($persona ? $persona->people_id : 844)->DA,
-                    'registrado_por_id_unidad' => $this->getIdDireccionPeople($persona ? $persona->people_id : 844)->idDependencia,
-                    'entity_id' => $request->entity_id,
-                    'category_id' => $request->category_id,
-                    'estado_id' => 6,
-                    'personeria'=>$request->pj?1:0
-                ]);
-
-                if($request->pj)
-                {
-                    // return $request;
-                    $objFile = new FileController();
-                    // return $request;    
-                    // dd($request);
-                    $reservation = PjNameReservation::create([
-                        'entrada_id'=>$data->id,
-                        'applicant'=>$request->nameSolicitante,
-                        'name'=>$request->namePersoneria,
-                        'phone'=>$request->cellPersoneria,
-                        'status'=>'pendiente'
+            if ($persona) {
+                if($persona->people_id){
+                    // Obtener información del funcionario que está registrando la nota
+                    $funcionario_remitente = $this->getPeople($persona->people_id);
+                    if(!$funcionario_remitente){
+                        return redirect()->route('entradas.index')->with(['message' => 'El remitente no tienes contrato vigente', 'alert-type' => 'error']);
+                    }
+                    
+                    $data = Entrada::create([
+                        'gestion' => date('Y'),
+                        'tipo' => $request->tipo,
+                        'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
+                        'cite' => $request->cite,
+                        'referencia' => $request->referencia,
+                        'nro_hojas' => $request->nro_hojas,
+                        'urgent' => ($request->urgent) ? true : false,
+                        'deadline' => $request->deadline,
+                        'fecha_registro' => $request->fecha_registro,
+                        'detalles' => $request->detalles,
+                        'people_id_de' => $request->funcionario_id_remitente,
+                        'job_de' => $funcionario_remitente->cargo,
+                        'direccion_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_direccion : null,
+                        'unidad_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_unidad : null,
+                        'people_id_para' => $request->funcionario_id_destino,
+                        'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
+                        'registrado_por' => Auth::user()->email,
+                        'registrado_por_id_direccion' => $funcionario_remitente->id_direccion,
+                        'registrado_por_id_unidad' => $funcionario_remitente->id_unidad,
+                        'entity_id' => $request->entity_id,
+                        'category_id' => $request->category_id,
+                        'estado_id' => 6,
+                        'personeria'=>$request->pj ? 1 : 0,
+                        'user_id' => Auth::user()->id
                     ]);
-                    $fileP = PjNameFile::create([
-                        'nameReservation_id'=>$reservation->id,
-                        'registerUser' => Auth::user()->name
-                    ]);
-                    // return 1;
-
-                    $file = $request->file('solicitud_p');
-                    if ($file) {
-                        $fileP->update(['solicitud'=>$objFile->file($file, 'sidepej/solicitud')]);                        
-                    }
-                    // return 1;
-
-                    $file = $request->file('carnet_p');
-                    if ($file) {
-                        $fileP->update(['carnet'=>$objFile->file($file, 'sidepej/carnet')]);                                                
-                    }
-                    $file = $request->file('deposito_p');
-                    if ($file) {
-                        $fileP->update(['deposito'=>$objFile->file($file, 'sidepej/deposito')]);                                                                        
-                    }
-                    $file = $request->file('poder_p');
-                    if ($file) {
-                        $fileP->update(['poder'=>$objFile->file($file, 'sidepej/poder')]);                                                                        
+    
+                    if($request->pj){
+                        $objFile = new FileController();
+                        $reservation = PjNameReservation::create([
+                            'entrada_id'=>$data->id,
+                            'applicant'=>$request->nameSolicitante,
+                            'name'=>$request->namePersoneria,
+                            'phone'=>$request->cellPersoneria,
+                            'status'=>'pendiente'
+                        ]);
+                        $fileP = PjNameFile::create([
+                            'nameReservation_id'=>$reservation->id,
+                            'registerUser' => Auth::user()->name
+                        ]);
+    
+                        $file = $request->file('solicitud_p');
+                        if ($file) {
+                            $fileP->update(['solicitud'=>$objFile->file($file, 'sidepej/solicitud')]);                        
+                        }
+    
+                        $file = $request->file('carnet_p');
+                        if ($file) {
+                            $fileP->update(['carnet'=>$objFile->file($file, 'sidepej/carnet')]);                                                
+                        }
+                        $file = $request->file('deposito_p');
+                        if ($file) {
+                            $fileP->update(['deposito'=>$objFile->file($file, 'sidepej/deposito')]);                                                                        
+                        }
+                        $file = $request->file('poder_p');
+                        if ($file) {
+                            $fileP->update(['poder'=>$objFile->file($file, 'sidepej/poder')]);                                                                        
+                        }
                     }
                 }
+            }else{
+                return redirect()->route('entradas.index')->with(['message' => 'No estas asociado a un funcionario contratado', 'alert-type' => 'error']);
             }
-            // return 1;
             
             $file = $request->file('archivos');
             if ($file) {
@@ -235,43 +199,27 @@ class EntradasController extends Controller
                 }
             }
             DB::commit();
-            
-            return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.index')->with(['message' => 'Registro guardado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            //  dd($th);
             DB::rollback();
-            return 100;
-            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            //  dd($th);
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
-
     }
 
 
-    public function show($id)
-    {
-        // return 2;
+    public function show($id){
         $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
                     $q->where('deleted_at', NULL);
-                      //->whereNull('parent_id');
                 }, 'archivos' => function($q){
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
         $nci = Archivo::where('entrada_id', $id)->where('deleted_at', null)->get();
-        /*
-            En caso de se una nota interna obtener los datos del remietente
-        */
-        $origen = '';
-        $destino = NULL;
-        if($data->tipo == 'I'){
-            $destino = $this->getPeopleSN($data->people_id_para);
-        }
-
-        return view('entradas.read', compact('data', 'destino', 'nci'));
+        return view('entradas.read', compact('data', 'nci'));
     }
 
-    public function entradaFile(Request $request)
-    {
+    public function entradaFile(Request $request){
         // return $request;
         DB::beginTransaction();
         try {
@@ -293,66 +241,49 @@ class EntradasController extends Controller
                 }
             }
             DB::commit();
-            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Registro guardado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Registro guardado exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
 
         }
     }
   
-    public function edit(Entrada $entrada)
-    {
+    public function edit(Entrada $entrada){
         $user_auth = Persona::where('user_id', Auth::user()->id)->first();
-        // $funcionario = $this->getFuncionario($user_auth->funcionario_id)        
-
-        if($user_auth->people_id == null)
-        {
-            
+        if($user_auth->people_id == null){
             $funcionario = $this->getFuncionario($user_auth->funcionario_id);
-        }
-        else
-        {
-            // return 2;
+        }else{
             $funcionario = $this->getPeople($user_auth->people_id);
         }
-
-        // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
         return view('entradas.edit-add', compact('entrada','funcionario'));
     }
 
-    
-    public function update(Request $request, Entrada $entrada)
-    {
+    public function update(Request $request, Entrada $entrada){
         DB::beginTransaction();
         try {
 
             // return $entrada;
             $request->merge(['cite' =>  strtoupper($request->cite)]);
-
             $persona = Persona::where('user_id', Auth::user()->id)->first();
 
             $unidad_id_remitente = NULL;
             $direccion_id_remitente = null;
             $funcionario_remitente = NULL;
-            /*
-                Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id) 
-            */
-            if($request->tipo == 'I'){
-                // $unidad_id_remitente = $this->getIdDireccionPeople($request->funcionario_id_remitente)->idDependencia;
-                // $direccion_id_remitente = $this->getIdDireccionPeople($request->funcionario_id_remitente)->DA;
+            // Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id)
+            
+            $tipo_entrada = $request->tipo ? 'I' : 'E';
+            if($tipo_entrada == 'I'){
                 $unidad_id_remitente = $entrada->unidad_id_remitente;
                 $direccion_id_remitente = $entrada->direccion_id_remitente;
             }
 
-            // return $direccion_id_remitente;
-            // return $entrada;
             $date = Carbon::now();
 
             $entrada->update([
-                'tipo' => $request->tipo,
-                'remitente' => $request->tipo == 'E' ? $request->remitente : $request->remitent_interno,
+                'tipo' => $tipo_entrada,
+                'remitente' => $tipo_entrada == 'E' ? $request->remitente : $request->remitent_interno,
                 'cite' => $request->cite,
                 'referencia' => $request->referencia,
                 'nro_hojas' => $request->nro_hojas,
@@ -372,7 +303,6 @@ class EntradasController extends Controller
                 'category_id' => $request->category_id,
                 'fecha_actualizacion' => $date->toDateTimeString()
             ]);
-            // return $entrada;
 
             $file = $request->file('archivos');
             if ($file) {
@@ -392,23 +322,15 @@ class EntradasController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.index')->with(['message' => 'Registro actualizado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             //  dd($th);
             DB::rollback();
-            return 1;
-            return redirect()->route('entradas.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {  
+    public function destroy($id){  
         // return $id;
         DB::beginTransaction();
         try {
@@ -425,14 +347,15 @@ class EntradasController extends Controller
             $entrada->delete();
 
             DB::commit();
-            return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.index')->with(['message' => 'Registro anulado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();
-            // return 1;
-        }   
-       
+            return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
     }
+
+    // Imprimir
 
     public function print(Entrada $entrada){
 
@@ -448,72 +371,6 @@ class EntradasController extends Controller
                 ->select('*')
                 ->get();      
         $via = Via::where('entrada_id', $entrada->id)->where('deleted_at', null)->get();
-        // return $via;
-        // return $additional;
-        // if($entrada->people_id_de != null && $entrada->people_id_para != null)
-        // {
-        //     $destino = $entrada->people_id_para;
-
-        //     $funcionario = DB::table('derivations')
-        //         ->where('via', 0)
-        //         ->where('deleted_at', null)
-        //         ->where('entrada_id', $entrada->id)
-        //         ->select('*')
-        //         ->first();
-        //         // return $funcionario;
-
-        //     $additional = DB::table('additional_jobs')
-        //         ->where('person_id',$funcionario->people_id_para)
-        //         ->where('status', 1)
-        //         ->select('*')
-        //         ->get();            
-
-        
-        // //              DE
-        //     $funcionarios = DB::connection('mamore')->table('contracts as c')
-        //         ->leftJoin('jobs as j', 'j.id', 'c.job_id')
-        //         ->where('c.status', 'firmado')
-        //         ->where('c.deleted_at', null)
-        //         ->where('c.person_id', $entrada->people_id_de)
-        //         ->select('c.cargo_id', 'c.job_id', 'j.name as cargo')
-        //         ->first();
-            
-        //     if($funcionarios && $funcionarios->cargo_id != NULL)
-        //     {
-        //         $cargo = DB::connection('mysqlgobe')->table('cargo')
-        //             ->where('id',$funcionarios->cargo_id)
-        //             ->select('*')
-        //             ->first();        
-        //         $funcionarios->cargo=$cargo->Descripcion;
-        //     }   
-        //     if(!$funcionarios)
-        //     {
-        //         $funcionarios = PeopleExt::where('person_id', $entrada->people_id_de)
-        //             ->where('status',1)
-        //             ->select('*')
-        //             ->first();
-        //     }
-
-        //     // return $funcionarios;
-        //     $additionals = DB::table('additional_jobs')
-        //         ->where('person_id',$entrada->people_id_de)
-        //         ->where('status', 1)
-        //         ->select('*')
-        //         ->get();
-        
-        //     $de = Person::where('id',$entrada->people_id_de)->first();
-        // }
-        // else
-        // {
-        //     return "Contactese con el Administrador de Sistema";            
-        // }
-
-        // return view('entradas.hr', ['entrada' => $entrada->load(['derivaciones' => function ($q) use($destino){
-        //     $q->where('deleted_at', null)->where('via', 0)->get();
-        //     }],'entity'),'funcionario' => $funcionario
-        // ], compact('additional', 'funcionarios', 'additionals', 'de'));
-
-
         return view('entradas.hr', compact('entrada', 'via', 'additional', 'additionals'));
     }
 
@@ -525,7 +382,9 @@ class EntradasController extends Controller
         $pdf->loadHTML($view);
         return $pdf->stream();
     }
-    
+
+
+    // Guardar Archivo
     public function store_file(Request $request){
         try {
             $file = $request->file('file');
@@ -542,36 +401,120 @@ class EntradasController extends Controller
                     'user_id' => Auth::user()->id
                 ]);
             }
-            return redirect()->back()->with(['message' => 'Archivo agregado correctamente.', 'alert-type' => 'success']);
+            return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'Archivo agregado correctamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
-            return redirect()->back()->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+
+    // Derivaciones
+    public function derivacion_index(){
+
+        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin')){
+            Auth::logout();
+            return redirect()->route('maintenance');
+        }
+
+        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        $funcionario_id = null;
+
+        if ($funcionario) {
+            $funcionario_id = $funcionario->people_id;
+            if (!$funcionario_id) {
+                return redirect('admin')->with(['message' => 'Falta tu código de funcionario contáctate con la Unidad de Sistemas para solucionarlo por favor', 'alert-type' => 'error']);
+            }
+        }
+        return view('bandeja.browse', compact('funcionario_id'));
+    }
+
+    public function derivacion_list($funcionario_id, $type){
+        $paginate = request('paginate') ?? 10;
+        $search = request('search') ?? null;
+        switch ($type) {
+            case 'pendientes':
+                $derivaciones = Derivation::whereHas('entrada', function($q){
+                                        $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                    ->where('ok', 'NO')
+                                    ->where(function($query) use ($search){
+                                        if($search){
+                                            $query->OrwhereHas('entrada', function($query) use($search){
+                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                            })
+                                            ->OrWhereRaw("id = '$search'");
+                                        }
+                                    })
+                                    ->orderBy('id', 'DESC')->paginate($paginate);
+                return view('bandeja.pendientes', compact('derivaciones'));
+                break;
+            case 'derivados':
+                $derivaciones = Derivation::whereHas('entrada', function($q){
+                                        $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                    ->where('ok', 'SI')
+                                    ->where(function($query) use ($search){
+                                        if($search){
+                                            $query->OrwhereHas('entrada', function($query) use($search){
+                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                            })
+                                            ->OrWhereRaw("id = '$search'");
+                                        }
+                                    })
+                                    ->orderBy('id', 'DESC')->paginate($paginate);
+                return view('bandeja.pendientes', compact('derivaciones'));
+                break;
+            case 'urgentes':
+                $derivaciones = Derivation::whereHas('entrada', function($q){
+                                        $q->where('personeria', 0)->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
+                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                    ->where('ok', 'NO')
+                                    ->where(function($query) use ($search){
+                                        if($search){
+                                            $query->OrwhereHas('entrada', function($query) use($search){
+                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                            })
+                                            ->OrWhereRaw("id = '$search'");
+                                        }
+                                    })
+                                    ->orderBy('id', 'DESC')->paginate($paginate);
+                return view('bandeja.urgentes', compact('derivaciones'));
+                break;
+            case 'archivados':
+                    $derivaciones = Derivation::where('transferred', 0)->where('people_id_para', $funcionario_id)
+                                        ->where('ok', 'ARCHIVADO')
+                                        ->where(function($query) use ($search){
+                                            if($search){
+                                                $query->OrwhereHas('entrada', function($query) use($search){
+                                                    $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
+                                                })
+                                                ->OrWhereRaw("id = '$search'");
+                                            }
+                                        })
+                                        ->orderBy('id', 'DESC')->paginate($paginate);
+                    return view('bandeja.archivados', compact('derivaciones'));
+                    break;
         }
     }
 
     public function store_derivacion(Request $request){
-    //    return $request;
+        // dd($request->all());
         $destinatarios = $request->destinatarios;
         $persona = Persona::where('user_id', Auth::user()->id)->first();
-        // return $persona;
         if(!$persona){
-            return redirect()->back()->with(['message' => 'No estás registrado como funcionario.', 'alert-type' => 'error']);
+            return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'No estás registrado como funcionario', 'alert-type' => 'error']);
         }
         DB::beginTransaction();
         try {
             $cont = 0; 
             foreach ($destinatarios as $valor) {
-                
-                // $user = Persona::where('funcionario_id', $valor)->first();
+        
                 $user = Persona::where('people_id', $valor)->first();
                 /*Si la derivación viene del RDE no se registra al funcionario de origen*/
                 $rde = $request->redirect ? null : 1;
                 $redirect = $request->redirect ?? 'entradas.index';
                 $entrada = Entrada::findOrFail($request->id);
-                // return $entrada;
-                // dd($valor);
                 $funcionario = $this->getPeople($valor);
-                // dd($funcionario);
                 if($funcionario){
                     // Actualizar estado de la correspondencia
                     $detaillast = array();
@@ -587,9 +530,7 @@ class EntradasController extends Controller
                     ];
                   
                     if (count($detaillast) == 0) {
-                    //    return $entrada;
                         $entrada->details = $detalle;
-                        // return $entrada;
                     } else {
                         array_push($detaillast,$detalle);
                         $entrada->details = $detaillast;
@@ -606,107 +547,23 @@ class EntradasController extends Controller
                     }
                     DB::commit();
                 }else{
-                    return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+                    return redirect()->route($redirect)->with(['message' => 'El destinatario elegido no es un funcionario', 'alert-type' => 'error']);
                 }
             }
-            if($request->der_id)
-            {
+            if($request->der_id){
                 Derivation::where('id', $request->der_id)->update(['derivation' => 1, 'ok' => 'SI']);
             }
-            return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente.', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
+            return redirect()->route($redirect)->with(['message' => 'Correspondecia derivada exitosamente', 'alert-type' => 'success', 'funcionario_id' => $user ? $user->user_id : null]);
         } catch (\Throwable $th) {
             DB::rollback();
-            // dd($th);
-            return 1;
-        
-            return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
-    public function derivacion_index(){
-
-        if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))
-        {
-            Auth::logout();
-            return redirect()->route('maintenance');
-        }
-
-        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $funcionario_id = null;
-
-        if ($funcionario) {
-            $funcionario_id = $funcionario->people_id;
-            if (!$funcionario_id) {
-                return redirect()->back()->with(['message' => 'Falta tu código de funcionario contáctate con sistema para solucionarlo por favor.', 'alert-type' => 'error']);
-            }
-            
-        }
-        // dd($derivaciones);
-        return view('bandeja.browse', compact('funcionario_id'));
-    }
-
-    public function derivacion_list($funcionario_id, $type){
-        $paginate = request('paginate') ?? 10;
-        $search = request('search') ?? null;
-        switch ($type) {
-            case 'pendientes':
-                $derivaciones = Derivation::whereHas('entrada', function($q){
-                                        $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
-                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                    ->where('ok', '!=', 'ARCHIVADO')
-                                    ->where(function($query) use ($search){
-                                        if($search){
-                                            $query->OrwhereHas('entrada', function($query) use($search){
-                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                            })
-                                            ->OrWhereRaw("id = '$search'");
-                                        }
-                                    })
-                                    ->orderBy('id', 'DESC')->paginate($paginate);
-                return view('bandeja.pendientes', compact('derivaciones'));
-                break;
-            case 'urgentes':
-                $derivaciones = Derivation::whereHas('entrada', function($q){
-                                        $q->where('personeria', 0)->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
-                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                    ->where('ok', '!=', 'ARCHIVADO')
-                                    ->where(function($query) use ($search){
-                                        if($search){
-                                            $query->OrwhereHas('entrada', function($query) use($search){
-                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                            })
-                                            ->OrWhereRaw("id = '$search'");
-                                        }
-                                    })
-                                    ->orderBy('id', 'DESC')->paginate($paginate);
-                return view('bandeja.urgentes', compact('derivaciones'));
-                break;
-            case 'archivados':
-                    $derivaciones = Derivation::where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                        // ->whereHas('entrada', function($q){
-                                        //     $q->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
-                                        // })
-                                        ->where('ok', 'ARCHIVADO')
-                                        ->where(function($query) use ($search){
-                                            if($search){
-                                                $query->OrwhereHas('entrada', function($query) use($search){
-                                                    $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                                })
-                                                ->OrWhereRaw("id = '$search'");
-                                            }
-                                        })
-                                        ->orderBy('id', 'DESC')->paginate($paginate);
-                    return view('bandeja.archivados', compact('derivaciones'));
-                    break;
-        }
-    }
-
-    public function derivacion_show($id)
-    {
+    public function derivacion_show($id){
         
         try {
             $derivacion =  Derivation::where('id',$id)->first();    
-    
             $derivacion->visto = Carbon::now();
             $derivacion->save();              
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
@@ -715,16 +572,13 @@ class EntradasController extends Controller
                             ->where('id', $derivacion->entrada_id)
                             ->where('deleted_at', NULL)
                             ->first();
-                        
             $ok = date("d-m-Y", strtotime($data->created_at));
             
             $origen = '';
             $destino = NULL;
             if($data->tipo == 'I'){
-                // return 1;
                 $direccion = $this->getIdDireccionInfo($data->direccion_id_remitente);
                 $unidad = $this->getIdUnidadInfo($data->unidad_id_remitente);
-                // return $direccion;
                 if($direccion){
                     $origen = $direccion->nombre;
                 }
@@ -732,10 +586,8 @@ class EntradasController extends Controller
                     $origen = $unidad->nombre;
                 }
             }
-            // return 1;
             return view('bandeja.read', compact('data', 'origen','derivacion', 'ok'));
         } catch (\Throwable $th) {
-            //  dd($th);
             return redirect()->route('voyager.dashboard');
         }
     }
@@ -753,15 +605,13 @@ class EntradasController extends Controller
     }
 
     public function derivacion_archivar(Request $request){
-        // return $request;
         try {
-            /* CAmbiar el estado de la entrada a finalizada */
-            // Entrada::where('id', $request->id)->update(['estado_id' => 4]);
+            /* Cambiar el estado de la entrada a finalizada */
             Derivation::where('id',$request->derivacion_id)->update(['ok'=>'ARCHIVADO', 'observationArchivado'=>$request->observacion]);
-            return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('bandeja.index')->with(['message' => 'Correspondencia archivada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             // dd($th);
-            return redirect()->route('bandeja.index')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('bandeja.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -774,23 +624,17 @@ class EntradasController extends Controller
 
             $derivacion = Derivation::where('id', $request->derivacion_id)->first();
 
-            // return $derivacion;
-
             if ($derivacion->people_id_de)
             {
-                // return $derivacion;
                 $funcionario = $this->getPeople($derivacion->people_id_de);
-                // return $funcionario;
                 if($funcionario == 'Error')
                 {
-                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador.', 'alert-type' => 'error']);
+                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador', 'alert-type' => 'error']);
                 }
 
                 Derivation::create([
                     'entrada_id' => $id,
-                    // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
                     'people_id_de' => $derivacion->people_id_para,
-                    // 'funcionario_id_para' => $funcionario->id_funcionario,
                     'people_id_para' => $funcionario->id_funcionario,
                     'funcionario_nombre_para' => $funcionario->nombre,
                     'funcionario_cargo_para' => $funcionario->cargo,
@@ -801,6 +645,7 @@ class EntradasController extends Controller
                     'responsable_actual' => 1,
                     'rechazo' => 1,
                     'via'   => 0,
+                    'user_id' => Auth::user()->id,
                     'registro_por' => Auth::user()->email,
                     'observacion' => $request->observacion,
                     'parent_id' => $request->derivacion_id,
@@ -811,17 +656,12 @@ class EntradasController extends Controller
             {
                 $entrada = Entrada::where('id', $id)->where('deleted_at', null)->first();
                 $funcionario = $this->getPeople($entrada->people_id_de);
-                // return $funcionario;
-                if($funcionario =='Error')
-                {
-                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible... Contactese con el administrador.', 'alert-type' => 'error']);
+                if($funcionario =='Error'){
+                    return redirect()->route('bandeja.index')->with(['message' => 'El funcionario no se encuentra disponible, contáctese con el administrador de SISCOR', 'alert-type' => 'error']);
                 }
-                // return $entrada;
                 Derivation::create([
                     'entrada_id' => $id,
-                    // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
                     'people_id_de' => $entrada->people_id_para,
-                    // 'funcionario_id_para' => $funcionario->id_funcionario,
                     'people_id_para' => $funcionario->id_funcionario,
                     'funcionario_nombre_para' => $funcionario->nombre,
                     'funcionario_cargo_para' => $funcionario->cargo,
@@ -832,21 +672,33 @@ class EntradasController extends Controller
                     'responsable_actual' => 1,
                     'rechazo' => 1,
                     'via'   => 0,
+                    'user_id' => Auth::user()->id,
                     'registro_por' => Auth::user()->email,
                     'observacion' => $request->observacion,
                     'parent_id' => $request->derivacion_id,
                     'parent_type' => 'App\Models\Derivation'
                 ]);
             }
-
             Derivation::where('id', $request->derivacion_id)->update(['derivation' => 1, 'ok' => 'RECHAZADO']);
+
+            // Enviar notificación de Whastapp
+            if(setting('servidores.whatsapp') && $derivacion->user){
+                if($derivacion->user->phone){
+                    $phone = strlen($derivacion->user->phone) == 8 ? '591'.$derivacion->user->phone : $derivacion->user->phone;
+                    Http::post(setting('servidores.whatsapp').'/send', [
+                        'phone' => $phone,
+                        'text' => $request->observacion
+                    ]);
+                }
+            }
+
             DB::commit();
-            return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('bandeja.index')->with(['message' => 'Correspondecia rehazada exitosamente', 'alert-type' => 'success']);
 
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th);
-            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            // dd($th);
+            return redirect()->route('voyager.dashboard')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -859,10 +711,10 @@ class EntradasController extends Controller
             Via::where('entrada_id', $request->entrada_id)->where('deleted_at', null)->update(['deleted_at' => Carbon::now()]);
 
             DB::commit();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -870,12 +722,9 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
             $ok = Derivation::where('id', $request->id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->first();
-            // return $ok;
             $ok->update(['deleted_at' => Carbon::now()]);
 
             $data = Derivation::where('parent_id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->count();
-            
-            // return $data;
             if($data == 0)
             {
                 Derivation::where('id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)
@@ -883,21 +732,19 @@ class EntradasController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
     public function delete_derivacion_file(Request $request){
-        // dd($request);
         try {
             Archivo::where('id', $request->id)->update(['deleted_at' => Carbon::now()]);
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Archivo eliminado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Archivo eliminado exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
@@ -906,25 +753,16 @@ class EntradasController extends Controller
 
     public function add_derivacion($funcionario, $request, $rechazo = NULL, $rde = null){
         $persona = Persona::where('user_id', Auth::user()->id)->first();
-        // dd($request);
-        // return $request;
-
         $vias = Via::where('entrada_id',$request->id)->where('deleted_at', null)->get();
-        // dd($funcionario->id_funcionario);
         $cant = count(Derivation::where('entrada_id',$request->id)->where('via',1)->where('deleted_at', null)->get());
-        // dd($vias);
         if($cant == 0)
         {
             foreach($vias as $data)
             {   
-                // dd($data->people_id);
                 $viafuncionario = $this->getPeople($data->people_id);
-                // dd($viafuncionario);
                 $a = Derivation::create([
                     'entrada_id' => $request->id,
-                    // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
                     'people_id_de' => $rde ? null : $persona->people_id,
-                    // 'funcionario_id_para' => $viafuncionario->id_funcionario,
                     'people_id_para' => $viafuncionario->id_funcionario,
                     'funcionario_nombre_para' => $viafuncionario->nombre,
                     'funcionario_cargo_para' => $viafuncionario->cargo,
@@ -935,6 +773,7 @@ class EntradasController extends Controller
                     'responsable_actual' => 1,
                     'rechazo' => $rechazo,
                     'via'   => 1,
+                    'user_id' => Auth::user()->id,
                     'registro_por' => Auth::user()->email,
                     'observacion' => $request->observacion,
                     'parent_id' => $request->der_id ? $request->der_id : $request->id,
@@ -946,9 +785,7 @@ class EntradasController extends Controller
 
         return Derivation::create([
             'entrada_id' => $request->id,
-            // 'funcionario_id_de' => $rde ? null : $persona->funcionario_id,
             'people_id_de' => $rde ? null : $persona->people_id,
-            // 'funcionario_id_para' => $funcionario->id_funcionario,
             'people_id_para' => $funcionario->id_funcionario,
             'funcionario_nombre_para' => $funcionario->nombre,
             'funcionario_cargo_para' => $funcionario->cargo,
@@ -959,12 +796,12 @@ class EntradasController extends Controller
             'responsable_actual' => 1,
             'rechazo' => $rechazo,
             'via'   => 0,
+            'user_id' => Auth::user()->id,
             'registro_por' => Auth::user()->email,
             'observacion' => $request->observacion,
             'parent_id' => $request->der_id ? $request->der_id : $request->id,
             'parent_type' => $request->der_id ? 'App\Models\Derivation' : 'App\Models\Entrada',
         ]);
-        // dd($si);
     }
 
     public function bandejaDerivationDelete(Request $request)
@@ -975,62 +812,53 @@ class EntradasController extends Controller
         try {
             $ok = Derivation::where('deleted_at', null)->where('visto', null)->where('entrada_id', $request->entrada_id)->where('id',$request->id)->first();
             $ok->update(['deleted_at'=> Carbon::now()]);
-            // return $ok->parent_id;
-
             $data = Derivation::where('deleted_at', null)->where('entrada_id', $request->entrada_id)->where('parent_id', $ok->parent_id)->get();
-            // return count($data);
             if(count($data)==0)
             {
                 Derivation::where('deleted_at', null)->where('id', $ok->parent_id)->where('entrada_id', $request->entrada_id)->update(['derivation'=>0, 'ok'=>'NO']);
             }
             DB::commit();
-            // window.location = "{{ url('admin/bandeja') }}/"+id;
 
-            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
+            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Derivación anulada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect('admin/bandeja/'.$ok->parent_id)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
 
     public function store_vias(Request $request){
         DB::beginTransaction();
-        // return $request;
         try {
             $entrada = Entrada::findOrFail($request->id);
-            $via = $this->getPeople($request->via);
-            // return $via;
-            
-            if($via){
-                $entrada->vias()->create([
-                    'funcionario_id' => $via->id_funcionario,
-                    'people_id' => $via->id_funcionario,
-                    'nombre' => $via->nombre,
-                    'cargo' => $via->cargo,
-                ]);
-                DB::commit();
-               
-            }else{
-                return redirect()->back()->with(['message' => 'El destinatario elegido no es un funcionario.', 'alert-type' => 'error']);
+            foreach ($request->via as $item) {
+                $via = $this->getPeople($item);
+                if($via){
+                    $entrada->vias()->create([
+                        'funcionario_id' => $via->id_funcionario,
+                        'people_id' => $via->id_funcionario,
+                        'nombre' => $via->nombre,
+                        'cargo' => $via->cargo,
+                    ]);               
+                }else{
+                    return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'El destinatario elegido no es un funcionario', 'alert-type' => 'error']);
+                }
             }
        
-            return redirect()->back()->with(['message' => 'Via agregada exitosamente.', 'alert-type' => 'success']);
+            DB::commit();
+            return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'Via agregada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            //dd($th);
-            return 'Contactese con el Administrador';
-            return redirect()->route($redirect)->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route($redirect)->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 
     public function anulacion_via(Request $request){
         try {
             Via::findOrFail($request->id)->delete();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Via Anulada exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Via Anulada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
-            // dd($th);
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
 }

@@ -17,7 +17,6 @@ class Derivation extends Model
     public function getImgAttribute()
     {
         return config('voyager.user.default_avatar');
-        //return 'storage/users/default.png';
     }
     
     protected $fillable = [
@@ -27,8 +26,8 @@ class Derivation extends Model
         'fecha_fisico', 'observacion', 'estado', 'registro_por', 'actualizado_por', 'entrada_id', 'visto', 
         'rechazo','parent_id','parent_type', 'via',
         'people_id_de', 'people_id_para',
-        'derivation', 'ok', 'observationArchivado', 'transferred', 'transferredUser_id', 'transferredDetails', 'transferredPeople_id', 'transferredDate', 'deleted_at'
-
+        'derivation', 'ok', 'observationArchivado', 'transferred', 'transferredUser_id', 'transferredDetails', 'transferredPeople_id', 'transferredDate',
+        'user_id'
     ];
 
 
@@ -49,5 +48,9 @@ class Derivation extends Model
     public function parents()
     {
         return $this->morphMany(Derivation::class, 'parent');
+    }
+
+    public function user() {
+        return $this->belongsTo(User::class, 'user_id')->withTrashed();
     }
 }
