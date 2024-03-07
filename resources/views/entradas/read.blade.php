@@ -8,9 +8,16 @@
             <div class="row">
                 <div class="col-md-6 col-xs-6" style="margin-top: 20px;">
                     <a href="{{ route('entradas.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
-                    <button class="btn btn-sm btn-success">
-                        <i class="voyager-paper-plane"></i> Notificar <i class="fa-brands fa-whatsapp"></i>
-                    </button>
+                    @if(setting('servidores.whatsapp') && setting('servidores.whatsapp-session'))
+                        @if ($data->tipo == 'I' && $data->estado_id != 6)
+                        <button class="btn btn-sm btn-success btn-send-message"
+                            data-toggle="modal" data-target="#send-message-modal"
+                            {{-- data-phone="{{ $item->phone }}" @if(!$item->phone) disabled @endif > --}}
+                            data-phone="{{$user_entrada->phone}}" @if(!$user_entrada->phone) disabled @endif >
+                            <i class="fa fa-paper-plane"></i> Notificar <i class="fa-brands fa-whatsapp"></i>
+                        </button>
+                        @endif
+                    @endif
                     {{-- <i class="voyager-paper-plane"></i> --}}
                 </div>
                 <div class="col-md-6 text-right" style="margin-top: 20px;">
@@ -491,6 +498,42 @@
                 </div>
             </div>
         </div>
+        {{-- Modal msj WhatsApp --}}
+        {{-- {{ route('send.whatsapp') }} --}}
+        <form action="{{ route('send.whatsapp') }}" id="form-submit-message" method="post">
+            @csrf
+            <div class="modal fade" tabindex="-1" id="send-message-modal" role="dialog">
+                <div class="modal-dialog modal-success">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title"><i class="fa fa-paper-plane"></i> Enviar mensaje de información</h4>
+                        </div>
+                        <div class="modal-body">
+                            @php
+                                $lastDerivation = $data->derivaciones->last();
+                            @endphp
+                            <div class="form-group">
+                                @if ($lastDerivation)
+                                <label class="radio-inline"><input type="radio" name="radio_messaje" value="Su tramite: {{ $data->referencia }}. Se encuentra en {{$lastDerivation->funcionario_direccion_para}}." checked>Mensaje 1</label>
+                                @endif
+                                
+                                <label class="radio-inline"><input type="radio" name="radio_messaje" value="Estimad@ {{ $data->remitente ? strtoupper($data->remitente) : 'usuario' }}, su tramite {{ $data->referencia }} tiene una observación.">Mensaje 2</label>
+                                <label class="radio-inline"><input type="radio" name="radio_messaje" value="Su tramite: {{ $data->referencia }} Se encuentra observado">Mensaje 3</label>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="textarea-message" name="message" class="form-control" rows="5"></textarea>
+                            </div>
+                            <input type="hidden" name="phone" id="input-phone-number">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" id="btn-submit-message" class="btn btn-success"> <i class="fa fa-paper-plane"></i> Enviar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     @stop
 
     @section('css')
@@ -533,6 +576,30 @@
                 $('#form-derivacion input[name="id"]').val(id);
                 destinatario_id = destinoid;
             }
+        </script>
+        <script>
+        $('.btn-send-message').click(function(){
+            $('#input-phone-number').val($(this).data('phone'));
+            $('#textarea-message').val($('#form-submit-message input[name="radio_messaje"]:checked').val());
+        });
+
+        $('#form-submit-message input[name="radio_messaje"]').click(function(){
+            $('#textarea-message').val($('#form-submit-message input[name="radio_messaje"]:checked').val());
+        });
+
+        $('#form-submit-message').submit(function(e){
+            $('#btn-submit-message').attr('disabled', 'disabled');
+            e.preventDefault();
+            $.post($('#form-submit-message').attr('action'), $('#form-submit-message').serialize(), function(res){
+                $('#btn-submit-message').removeAttr('disabled');
+                if (res.success) {
+                    $('#send-message-modal').modal('hide');
+                    toastr.success('Mensaje enviado');
+                } else {
+                    toastr.error('Ocurrió un error');
+                }
+            })
+        });
         </script>
     @stop
     

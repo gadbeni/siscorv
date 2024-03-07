@@ -22,6 +22,8 @@ use App\Models\PeopleExt;
 use App\Models\Derivation;
 use App\Models\PjNameReservation;
 use App\Models\PjNameFile;
+use App\Models\User;
+use Illuminate\Support\Facades\Http;
 
 use Barryvdh\DomPDF\Facade\Pdf;
 use function PHPSTORM_META\map;
@@ -215,8 +217,10 @@ class EntradasController extends Controller
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
+        $people_entrada = Persona::where('people_id', $data->people_id_de)->first();
+        $user_entrada = User::where('id', $people_entrada->user_id)->first();
         $nci = Archivo::where('entrada_id', $id)->where('deleted_at', null)->get();
-        return view('entradas.read', compact('data', 'nci'));
+        return view('entradas.read', compact('data', 'nci','user_entrada'));
     }
 
     public function entradaFile(Request $request){
@@ -864,6 +868,22 @@ class EntradasController extends Controller
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Via Anulada exitosamente', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+        }
+    }
+    //funcion msj agustin
+    public function send_message(Request $request){
+        try {
+            if (setting('servidores.whatsapp') && setting('servidores.whatsapp-session')) {
+                $phone = strlen($request->phone) == 8 ? '591'.$request->phone : $request->phone;
+                Http::post(setting('servidores.whatsapp').'/send?id='.setting('servidores.whatsapp-session'), [
+                    'phone' => $phone,
+                    'text' => $request->message
+                ]);
+            }
+            return response()->json(['success' => 1, 'phone' => $request->phone, 'message' => $request->message]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' => 1]);
         }
     }
 }

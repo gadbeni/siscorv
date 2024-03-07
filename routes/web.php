@@ -74,7 +74,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
     Route::post('entradas/read/nci/file', [EntradasController::class, 'entradaFile'])->name('entradas-file-nci.store');
     Route::post('entradas/{id?}/date/update', [FileController::class, 'UpdateDateEntrada'])->name('entradas-date.update');//Para cambio d fecha del documemto y agrgera oc respaldo
-
+    Route::post('send-whatsapp', [EntradasController::class, 'send_message'])->name('send.whatsapp');
 
 
     // Bandeja
