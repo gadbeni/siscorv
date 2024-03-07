@@ -12,6 +12,9 @@ use Carbon\Carbon;
 use App\Models\OldData;
 use Illuminate\Support\Facades\DB;
 
+// Models count
+use App\Models\User;
+
 class HomeController extends Controller
 {
     public function index(){
@@ -23,7 +26,16 @@ class HomeController extends Controller
             ]);
         } catch (\Throwable $th) {}
 
-        return view('welcome');
+        // Contadores
+        $count = [
+            'visitas' => RequestsClient::count(),
+            'usuarios' => user::count(),
+            'tramites' => Entrada::where('deleted_at', NULL)->count(),
+            'tramites_pendientes' => Entrada::where('estado_id', 6)->count(),
+        ];
+
+
+        return view('welcome', compact('count'));
     }
 
     public function search(Request $request){

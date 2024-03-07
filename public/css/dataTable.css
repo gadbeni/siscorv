@@ -15,3 +15,12 @@
     background-color: #0fa738;
     color: white;
 }
+
+#dataTable td{
+    border: 1px solid #ddd;
+    padding: 8px;
+    color: #232323;
+}
+#dataTable td small{
+    font-weight: bold;
+}

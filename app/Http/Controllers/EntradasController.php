@@ -720,11 +720,16 @@ class EntradasController extends Controller
 
     public function delete_derivacion(Request $request){
         DB::beginTransaction();
+        // dd($request->all());
         try {
             $ok = Derivation::where('id', $request->id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->first();
-            $ok->update(['deleted_at' => Carbon::now()]);
+            // return $ok;
+            // $ok->update(['deleted_at' => Carbon::now()]);
+            $ok->delete();
 
             $data = Derivation::where('parent_id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)->count();
+            
+            // return $data;
             if($data == 0)
             {
                 Derivation::where('id', $ok->parent_id)->where('deleted_at', null)->where('entrada_id', $request->entrada_id)
@@ -732,10 +737,10 @@ class EntradasController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente', 'alert-type' => 'success']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Derivación anulada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
+            return redirect()->route('entradas.show', ['entrada' => $request->entrada_id])->with(['message' => 'Ocurrio un error.', 'alert-type' => 'error']);
         }
     }
 

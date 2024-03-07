@@ -1,6 +1,18 @@
 @extends('voyager::master')
 
 @section('css')
+    <style>
+    .page-title{
+        line-height:1.5rem;
+        max-width: 320px
+    }
+
+    @media (max-width: 767px) {
+        .container-toggle-nci {
+            text-align: left !important;
+        }
+    }
+    </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @stop
 
@@ -23,7 +35,7 @@
                     @endif
                 </h1>
             </div>
-            <div class="col-md-2 col-sm-6 text-right" style="margin: 0px; padding-top: 30px">
+            <div class="col-md-2 col-sm-6 text-right container-toggle-nci" style="margin: 0px; padding-top: 30px; margin-bottom: 30px;">
                 <input 
                     type="checkbox" 
                     id="toggleswitch-tipo"

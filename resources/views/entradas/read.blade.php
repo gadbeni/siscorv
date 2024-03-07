@@ -1,17 +1,22 @@
 @extends('voyager::master')
 
-@section('page_title', 'Ver Detalle de Bandeja')
+@section('page_title', 'Ver Detalle de Ingreso')
 
-@if(auth()->user()->hasPermission('read_bandeja'))
+@if(auth()->user()->hasPermission('read_entradas'))
     @section('content')
         <div class="page-content read container-fluid div-phone">
             <div class="row">
-                <div class="col-md-6" style="margin-top: 20px;">
-                    <a href="{{ route('bandeja.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+                <div class="col-md-6 col-xs-6" style="margin-top: 20px;">
+                    <a href="{{ route('entradas.index') }}" class="btn btn-default"><i class="voyager-angle-left"></i> Volver</a>
+                    <button class="btn btn-sm btn-success">
+                        <i class="voyager-paper-plane"></i> Notificar <i class="fa-brands fa-whatsapp"></i>
+                    </button>
+                    {{-- <i class="voyager-paper-plane"></i> --}}
                 </div>
                 <div class="col-md-6 text-right" style="margin-top: 20px;">
+                    
                     <div class="dropdown">
-                        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
+                        <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown">Imprimir
                         <span class="caret"></span></button>
                         <ul class="dropdown-menu pull-right">
                           <li>
@@ -36,9 +41,14 @@
                         @endif
                     </div>
                 </div>
+                
+            </div>
+            <div class="row">
                 <div class="col-md-12">
                     <div class="panel panel-bordered">
-                        <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+                        <div class="panel-body">
+                            <h3 class="text-muted page-title" style="padding: 0; padding-left: 10px;">{{ $data->referencia }}</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-12">
@@ -135,7 +145,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="panel-body" style="padding-top:0;">
+                                <div class="panel-body table-responsive" style="padding-top:0;">
                                     <table class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
@@ -361,7 +371,7 @@
                         <h4 class="modal-title"><i class="voyager-trash"></i> Desea anular la siguiente derivación?</h4>
                     </div>
                     <div class="modal-footer">
-                        <form class="form-submit" id="anulacion_form" action="{{ route('bandeja-derivation.delete') }}" method="POST">
+                        <form class="form-submit" id="anulacion_form" action="{{ route('delete.derivacion') }}" method="POST">
                             @csrf
                             <input type="hidden" name="entrada_id" value="{{ $data->id }}">
                             <input type="hidden" name="id">

@@ -18,6 +18,9 @@
 
     <link rel="stylesheet" href="{{ asset('css/dataTable.css') }}">
     <style>
+        .page-title{
+            color: #232323 !important;
+        }
         .form-control, .select2-selection, .mce-tinymce {
             border: 1px solid #464545 !important;
             color:rgb(30, 29, 29) !important;

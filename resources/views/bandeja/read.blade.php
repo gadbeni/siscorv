@@ -22,7 +22,9 @@
                 </div>
                 <div class="col-md-12">
                     <div class="panel panel-bordered">
-                        <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+                        <div class="panel-body">
+                            <h3 class="text-muted" style="padding-left: 10px">{{ $data->referencia }}</h3>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-12">

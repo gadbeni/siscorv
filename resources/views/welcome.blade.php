@@ -46,7 +46,7 @@
                     <div class="col-lg-3 col-md-6 mt-5 mt-lg-0">
                         <div class="count-box">
                         <i class="bi bi-link-45deg"></i>
-                        <span data-purecounter-start="0" data-purecounter-end="{{ \App\Models\RequestsClient::count() }}" data-purecounter-duration="1" class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $count['visitas'] }}" data-purecounter-duration="1" class="purecounter"></span>
                         <p>Visitas</p>
                         </div>
                     </div>
@@ -54,10 +54,7 @@
                     <div class="col-lg-3 col-md-6">
                         <div class="count-box">
                         <i class="bi bi-people-fill"></i>
-                        @php
-                            $usuarios = \App\Models\User::count();
-                        @endphp
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $usuarios }}" data-purecounter-duration="1" class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $count['usuarios'] }}" data-purecounter-duration="1" class="purecounter"></span>
                         <p>Usuarios registrados</p>
                         </div>
                     </div>
@@ -65,10 +62,7 @@
                     <div class="col-lg-3 col-md-6 mt-5 mt-md-0">
                         <div class="count-box">
                         <i class="bi bi-mailbox"></i>
-                        @php
-                            $ingresos = \App\Models\Entrada::where('deleted_at', NULL)->get();
-                        @endphp
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $ingresos->count() }}" data-purecounter-duration="1" class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $count['tramites'] }}" data-purecounter-duration="1" class="purecounter"></span>
                         <p>Trámites recibidos</p>
                         </div>
                     </div>
@@ -76,7 +70,7 @@
                     <div class="col-lg-3 col-md-6 mt-5 mt-lg-0">
                         <div class="count-box">
                         <i class="bi bi-clock"></i>
-                        <span data-purecounter-start="0" data-purecounter-end="{{ $ingresos->where('estado_id', 6)->count() }}" data-purecounter-duration="1" class="purecounter"></span>
+                        <span data-purecounter-start="0" data-purecounter-end="{{ $count['tramites_pendientes'] }}" data-purecounter-duration="1" class="purecounter"></span>
                         <p>Trámites Pendientes</p>
                         </div>
                     </div>
