@@ -52,6 +52,11 @@
             </div>
             <div class="row">
                 <div class="col-md-12">
+                    @if(setting('servidores.whatsapp') && setting('servidores.whatsapp-session'))
+                    <a class="btn btn-default" href="{{ route('entradas.mensajes', ['entrada' => $data->id]) }}">
+                        <i class="fa fa-paper-plane"></i> Ver Mensajes enviados
+                    </a>
+                    @endif
                     <div class="panel panel-bordered">
                         <div class="panel-body">
                             <h3 class="text-muted page-title" style="padding: 0; padding-left: 10px;">{{ $data->referencia }}</h3>

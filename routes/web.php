@@ -24,6 +24,8 @@ use App\Models\Category;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\MensajesController;
+
 use App\Models\Derivation;
 
 /*
@@ -74,6 +76,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
     Route::post('entradas/read/nci/file', [EntradasController::class, 'entradaFile'])->name('entradas-file-nci.store');
     Route::post('entradas/{id?}/date/update', [FileController::class, 'UpdateDateEntrada'])->name('entradas-date.update');//Para cambio d fecha del documemto y agrgera oc respaldo
+    
+    // Mensajes WhatsApp
+    Route::get('entradas/{entrada}/mensajes', [MensajesController::class,'showMensajes'])->name('entradas.mensajes');
     Route::post('send-whatsapp', [EntradasController::class, 'send_message'])->name('send.whatsapp');
 
 
