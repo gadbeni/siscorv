@@ -20,6 +20,7 @@ use App\Models\Persona;
 use App\Models\Category;
 use App\Models\PeopleExt;
 use App\Models\Derivation;
+use App\Models\MensajeEnviado;
 use App\Models\PjNameReservation;
 use App\Models\PjNameFile;
 use App\Models\User;
@@ -879,8 +880,21 @@ class EntradasController extends Controller
                     'phone' => $phone,
                     'text' => $request->message
                 ]);
+
+                $usuario = User::where('id', $request->user_id)->first();
+                $nombre_del_usuario = $usuario->name;
+                // Crear un nuevo registro en la tabla de mensajes enviados
+                MensajeEnviado::create([
+                    'nombre_persona' => $nombre_del_usuario,
+                    'phone' => $request->phone,
+                    'message' => $request->message,
+                    'fecha_envio' => now(),
+                    'user_id' => $request->user_id,
+                    'entrada_id' => $request->entrada_id
+                ]);
             }
             return response()->json(['success' => 1, 'phone' => $request->phone, 'message' => $request->message]);
+        
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['error' => 1]);
