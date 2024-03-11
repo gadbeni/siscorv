@@ -9,8 +9,10 @@
             <div class="row">
                 <div class="col-md-8">
                     <h1 class="page-title">
-                        <i class="voyager-credit-cards"></i> 
-                        @if (auth()->user()->hasRole('funcionario'))
+                        <i class="voyager-credit-cards"></i>
+                        @if (auth()->user()->hasRole('funcionario') && auth()->user()->hasRole('ventanilla'))
+                            Correspondencia/NCI
+                        @elseif (auth()->user()->hasRole('funcionario'))
                             NCI
                         @elseif(auth()->user()->hasRole('ventanilla'))
                             Correspondencia

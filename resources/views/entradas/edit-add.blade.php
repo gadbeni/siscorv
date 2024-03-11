@@ -25,8 +25,10 @@
             <div class="col-md-10 col-sm-6" style="margin: 0px">
                 <h1 class="page-title">
                     <i class="voyager-credit-cards"></i>
-                    Añadir 
-                    @if (auth()->user()->hasRole('funcionario'))
+                    Añadir
+                    @if (auth()->user()->hasRole('funcionario') && auth()->user()->hasRole('ventanilla'))
+                        Correspondencia/NCI 
+                    @elseif (auth()->user()->hasRole('funcionario'))
                         NCI
                     @elseif(auth()->user()->hasRole('ventanilla'))
                         Correspondencia
@@ -379,7 +381,7 @@
 
                 // Por defecto muestra el formulario de "Entrada Externa"
                 setTimeout(() => {
-                    cambiarTipo('E');
+                //     cambiarTipo('E');
                 }, 0);
 
                 // Si es funcionario se habilita (Interno)
@@ -389,6 +391,9 @@
                 // Si no es administrador se deshabilita
                 @if (!auth()->user()->hasRole('admin'))
                     $('#toggleswitch-tipo').attr('disabled', 'disabled');
+                @endif
+                @if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario'))
+                    $('#toggleswitch-tipo').removeAttr('disabled');
                 @endif
 
                 $("#bloquear").on('paste', function(e){
@@ -690,7 +695,6 @@
                     }
                 }
             }
-
         </script>
     @stop
     
