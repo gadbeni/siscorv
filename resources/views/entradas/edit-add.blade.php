@@ -25,7 +25,12 @@
             <div class="col-md-10 col-sm-6" style="margin: 0px">
                 <h1 class="page-title">
                     <i class="voyager-credit-cards"></i>
-                    Añadir
+                    @if ($entrada->id)
+                        Editar
+                    @else
+                        Añadir
+                    @endif
+                    
                     @if (auth()->user()->hasRole('funcionario') && auth()->user()->hasRole('ventanilla'))
                         Correspondencia/NCI 
                     @elseif (auth()->user()->hasRole('funcionario'))
@@ -377,24 +382,54 @@
             var oknumero = true;
             var auxl=0;
             var auxn=0;
+            let bolFuncionario = false;
+            let bolVentanilla = false;
+            let boladmin = false;
             $(document).ready(function(){
 
-                // Por defecto muestra el formulario de "Entrada Externa"
+                // Por cambiar el tipo de entrada inicial dependiendo del rol
+                // se necesita inicializar desde aqui
                 setTimeout(() => {
-                //     cambiarTipo('E');
-                }, 0);
+                    //  en caso de edit
+                    @if ($entrada->id)
+                        let tipoedit = '{{ $entrada->tipo }}';
+                        cambiarTipo(tipoedit);
+                        if(tipoedit == 'I'){
+                            $('#toggleswitch-tipo').bootstrapToggle('on');
+                        }else{
+                            $('#toggleswitch-tipo').bootstrapToggle('off');
+                        }
+                        $('#toggleswitch-tipo').attr('disabled', 'disabled');
+                    @else
+                        @if (auth()->user()->hasRole('funcionario'))
+                            cambiarTipo('I');
+                            $('#toggleswitch-tipo').bootstrapToggle('on');
+                            bolFuncionario = true;
+                        @endif
+                        @if (auth()->user()->hasRole('ventanilla'))
+                            cambiarTipo('E');
+                            $('#toggleswitch-tipo').bootstrapToggle('off');
+                            bolVentanilla = true;
+                        @endif
+                        @if (auth()->user()->hasRole('admin'))
+                            cambiarTipo('E');
+                            $('#toggleswitch-tipo').bootstrapToggle('off');
+                            boladmin = true;
+                        @endif
 
-                // Si es funcionario se habilita (Interno)
-                @if (auth()->user()->hasRole('funcionario'))
-                    $('#toggleswitch-tipo').bootstrapToggle('on');
-                @endif
-                // Si no es administrador se deshabilita
-                @if (!auth()->user()->hasRole('admin'))
-                    $('#toggleswitch-tipo').attr('disabled', 'disabled');
-                @endif
-                @if (auth()->user()->hasRole('ventanilla') && auth()->user()->hasRole('funcionario'))
-                    $('#toggleswitch-tipo').removeAttr('disabled');
-                @endif
+                        //desabilitar el toggle si no es funcionario y ventanilla
+                        if(!(bolFuncionario && bolVentanilla)){
+                            $('#toggleswitch-tipo').attr('disabled', 'disabled');
+                        }
+                        // habilitar el toggle si es admin
+                        if(boladmin){
+                            $('#toggleswitch-tipo').removeAttr('disabled');
+                        }
+                    @endif
+
+                    
+                }, 0);
+                
 
                 $("#bloquear").on('paste', function(e){
                     e.preventDefault();
