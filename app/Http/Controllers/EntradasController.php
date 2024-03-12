@@ -277,8 +277,8 @@ class EntradasController extends Controller
             $direccion_id_remitente = null;
             $funcionario_remitente = NULL;
             // Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id)
-            
-            $tipo_entrada = $request->tipo ? 'I' : 'E';
+            //dd($request->tipo);
+            $tipo_entrada = $request->tipo;
             if($tipo_entrada == 'I'){
                 $unidad_id_remitente = $entrada->unidad_id_remitente;
                 $direccion_id_remitente = $entrada->direccion_id_remitente;
