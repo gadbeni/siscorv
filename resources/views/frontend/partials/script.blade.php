@@ -15,16 +15,41 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script>
-    $(document).ready(function(){
-        $('#btn-search').click(function(){
-            let search = $('#input-search').val();
-            if(search){
-                $('#form-search input[name="search"]').val($('#input-search').val());
-                window.location = './#div-search';
-                $.post($('#form-search').attr('action'), $('#form-search').serialize(), function(res){
-                    $('#div-search').html(res);
-                });
-            }
-        });
+// buscar dando click al botton
+$('#btn-search').on('click', function(e) {
+    e.preventDefault();
+
+    var searchValue = $('#input-search').val();
+
+    performSearch(searchValue);
+});
+// buscar al presionar enter en el input
+$('#input-search').on('keypress', function(e) {
+    if (e.which == 13) {  // 13 es el código de tecla para Enter
+        e.preventDefault();
+
+        var searchValue = $(this).val();
+
+        performSearch(searchValue);
+    }
+});
+
+// función para realizar la búsqueda
+function performSearch(searchValue) {
+    $.ajax({
+        url: "{{ route('home.search') }}",
+        method: 'POST',
+        data: {
+            search: searchValue,
+            _token: "{{ csrf_token() }}"
+        },
+        success: function(response) {
+            $('#div-search').html(response);
+
+            $('html,body').animate({
+                scrollTop: $("#div-search").offset().top
+            }, 10);
+        }
     });
+}
 </script>

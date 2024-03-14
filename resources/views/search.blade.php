@@ -28,7 +28,9 @@
             <div class="col-md-12 mt-1">
                 <b>Número de Cite: </b> &nbsp; {{ $data->cite }} <br>
                 <b>Número de hojas: </b> &nbsp; {{ $data->nro_hojas }} <br>
+                @if ($data->entity)
                 <b>Origen: </b> &nbsp; {{ $data->entity->nombre }} <br>
+                @endif
                 <b>Remitente: </b> &nbsp; {{ $data->remitente }} <br>
                 <b>Referencia: </b> &nbsp; {{ $data->referencia }} <br>
                 <b>Estado: </b> &nbsp; <span class="bg-{{ $data->estado->color }} text-white" style="padding: 2px 5px">{{ $data->estado->nombre }}</span>
