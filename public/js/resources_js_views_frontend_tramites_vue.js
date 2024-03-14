@@ -121,7 +121,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       try {
-        axios__WEBPACK_IMPORTED_MODULE_0___default().get('/buscartramite?search=' + this.search).then(function (res) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().get('/buscartramite?search=' + this.search).then(function (response) {
           _this.tramite = response.data.entrada;
           _this.nodes = response.data.derivaciones;
           _this.msg = '';
@@ -788,7 +788,7 @@ var render = function() {
                       _c("b", [_vm._v("Origen: ")]),
                       _vm._v(
                         "   " +
-                          _vm._s(_vm.tramite ? _vm.tramite.entity.nombre : "")
+                        _vm._s(_vm.tramite && _vm.tramite.entity ? _vm.tramite.entity.nombre : "")
                       ),
                       _c("br"),
                       _vm._v(" "),

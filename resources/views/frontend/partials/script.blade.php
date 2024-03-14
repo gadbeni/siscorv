@@ -1,5 +1,5 @@
  <!-- Vendor JS Files -->
-<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="{{ asset('lp/assets/vendor/aos/aos.js') }}"></script>
 <script src="{{ asset('lp/assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('lp/assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
