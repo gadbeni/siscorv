@@ -120,6 +120,17 @@
                                 </div>
                                 <hr style="margin:0;">
                             </div>
+                            @if ($data->tipo == 'E')
+                                <div class="col-md-6">
+                                    <div class="panel-heading" style="border-bottom:0;">
+                                        <h3 class="panel-title">Origen</h3>
+                                    </div>
+                                    <div class="panel-body" style="padding-top:0;">
+                                        {{ $data->entity->nombre ?? 'Sin Origen' }}                                   
+                                    </div>
+                                    <hr style="margin:0;">
+                                </div>
+                            @endif
                             <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Remitente</h3>
@@ -129,7 +140,7 @@
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            @if ($data->tipo == 'I')
+                            {{-- @if ($data->tipo == 'I') --}}
                             <div class="col-md-6">
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Destino</h3>
@@ -139,7 +150,7 @@
                                 </div>
                                 <hr style="margin:0;">
                             </div>
-                            @endif
+                            {{-- @endif --}}
                         </div>
                     </div>
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
@@ -285,29 +296,29 @@
                                             <h3 class="panel-title">Historial de derivaciones</h3>
                                         </div>
                                         <div class="col-md-3 text-right">
-                                            @if (auth()->user()->hasRole('admin'))
+                                            {{-- @if (auth()->user()->hasRole('admin')) --}}
+                                            @php
+                                                $ok = \App\Models\Derivation::where('parent_id', $data->id)->where('entrada_id', $data->id)->where('via', 0)
+                                                        ->where('deleted_at', null)
+                                                        ->where('derivation', 0)
+                                                        ->where('ok', 'NO')->first();
+                                            @endphp
+                                            @if ($ok)
+                                                @if ($ok->visto == null || auth()->user()->hasRole('admin'))
                                                 <div class="dropdown">
-                                                    <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Opciones
+                                                    <button class="btn btn-danger dropdown-toggle" type="button" data-toggle="dropdown">Opciones
                                                     <span class="caret"></span></button>
                                                     <ul class="dropdown-menu pull-right">
-                                                        @php
-                                                            $ok = \App\Models\Derivation::where('parent_id', $data->id)->where('entrada_id', $data->id)->where('via', 0)
-                                                                    ->where('deleted_at', null)
-                                                                    ->where('derivation', 0)
-                                                                    ->where('ok', 'NO')->first();
-                                                        @endphp
-
-                                                        @if ($ok)
-                                                            @if ($ok->visto == null || auth()->user()->hasRole('admin'))
-                                                                <li>
-                                                                    <a href="#" data-toggle="modal" data-target="#modal-anular_derivaciones" class="btn-anular">Eliminar todas las derivaciones</a>
-                                                                </li>
-                                                            @endif
-                                                        @endif
                                                         
+                                                                <li>
+                                                                    <a href="#" data-toggle="modal" data-target="#modal-anular_derivaciones" class="btn-anular"><span class="voyager-trash"> Eliminar Derivación</a>
+                                                                </li>
+                                                            
                                                     </ul>
                                                 </div>
+                                                @endif
                                             @endif
+                                            {{-- @endif --}}
                                         </div>
                                     </div>
                                 </div>
