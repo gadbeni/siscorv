@@ -29,6 +29,9 @@
                                 @endif                                                            
                             @endif
                         @endif
+                        @if ($item->entrada->urgent)
+                        <span class="badge badge-secondary">URGENTE</span>
+                        @endif
                     </td>
                     <td>
                         @if ($item->created_at)

@@ -455,7 +455,7 @@ class EntradasController extends Controller
                 break;
             case 'derivados':
                 $derivaciones = Derivation::whereHas('entrada', function($q){
-                                        $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                                        $q->where('personeria', 0)->whereNotIn('estado_id', [4, 6]);
                                     })->where('transferred', 0)->where('people_id_para', $funcionario_id)
                                     ->where('ok', 'SI')
                                     ->where(function($query) use ($search){
