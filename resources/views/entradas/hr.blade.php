@@ -227,7 +227,9 @@
                                     @php
                                         $name = \DB::connection('mamore')->table('people')->where('id', $entrada->people_id_para)->first();                                        
                                     @endphp
-                                    {{$name->first_name}} {{$name->last_name}} 
+                                    @if ($name)
+                                        {{$name->first_name}} {{$name->last_name}} 
+                                    @endif
                                     <select id="location-id" style="text-transform: uppercase;">
                                         <option value=" - {{$entrada->job_para}}"> - {{$entrada->job_para}}</option>
                                      
