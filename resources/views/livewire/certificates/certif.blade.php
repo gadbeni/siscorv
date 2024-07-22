@@ -179,7 +179,8 @@
                         <table style="width: 100%;">
                             <tr>
                                 <td class="text-left" style="font-size: 10px;"></td>
-                                <td class="text-right" style="font-size: 10px;">{{ 'Fecha y hora de impresión: ' . date('d/m/Y H:i:s') }}</td>
+                                {{-- <td class="text-right" style="font-size: 10px;">{{ 'Fecha y hora de impresión: ' . date('d/m/Y H:i:s') }}</td> --}}
+                                <td class="text-right" style="font-size: 10px;">Fecha: {{ $certificado->fecha }} {{$certificado->hora}}</td>
                                 {{-- <td class="text-right" style="font-size: 10px;">Fecha y hora de impresión: 03/04/2023 10:56:48</td> --}}
                             </tr>
                         </table>
