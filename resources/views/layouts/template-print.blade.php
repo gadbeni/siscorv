@@ -103,8 +103,8 @@
             <img src="{{ asset('images/icon.png') }}" /> 
         </div>
         <div class="container">
-            <div class="sheet">
-                <div class="options" style="position: fixed; bottom: 10px; right: 20px">
+            <div class="sheet" style="position: relative">
+                <div class="options" style="position: fixed; bottom: 10px; right: 20px; z-index:100;">
                     <button type="button" class="btn btn-print">Imprimir</button>
                 </div>
         

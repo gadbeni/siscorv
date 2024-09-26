@@ -379,13 +379,16 @@ class EntradasController extends Controller
         return view('entradas.hr', compact('entrada', 'via', 'additional', 'additionals'));
     }
 
+    // public function printhr(Entrada $entrada){
+    //     // return 3;
+    //     $view = view('entradas.print-hoja-ruta',['entrada' => $entrada->load('derivaciones','entity')]);
+    //     //return $view;
+    //     $pdf = \App::make('dompdf.wrapper');
+    //     $pdf->loadHTML($view);
+    //     return $pdf->stream();
+    // }
     public function printhr(Entrada $entrada){
-        // return 3;
-        $view = view('entradas.print-hoja-ruta',['entrada' => $entrada->load('derivaciones','entity')]);
-        //return $view;
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($view);
-        return $pdf->stream();
+        return view('entradas.documents.hoja-ruta',['entrada' => $entrada]);
     }
 
 
