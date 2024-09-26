@@ -237,7 +237,7 @@ class SettingsTableSeeder extends Seeder
                 'key' => 'servidores.whatsapp',
                 'order' => 13,
                 'type' => 'text',
-                'value' => '',
+                'value' => NULL,
             ),
             20 => 
             array (
@@ -248,6 +248,28 @@ class SettingsTableSeeder extends Seeder
                 'key' => 'servidores.whatsapp-session',
                 'order' => 14,
                 'type' => 'text',
+                'value' => NULL,
+            ),
+            21 => 
+            array (
+                'details' => NULL,
+                'display_name' => 'Activar logo adicional',
+                'group' => 'NCI',
+                'id' => 27,
+                'key' => 'nci.activate_logo',
+                'order' => 15,
+                'type' => 'checkbox',
+                'value' => '1',
+            ),
+            22 => 
+            array (
+                'details' => NULL,
+                'display_name' => 'Logo adicional en NCI',
+                'group' => 'NCI',
+                'id' => 28,
+                'key' => 'nci.imagen',
+                'order' => 16,
+                'type' => 'image',
                 'value' => '',
             ),
         ));

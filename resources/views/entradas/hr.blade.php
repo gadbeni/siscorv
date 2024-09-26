@@ -143,33 +143,64 @@
                     {{-- ENCABEZADO --}}
                     <table class="alltables text-center">
                         <tbody>
-                            <tr>
-                                <td><img src="{{ asset('images/lg.png') }}" width="100px"></td>
-                                <td>
-                                    <table class="alltables">
-                                        <tr>
-                                            <td colspan="3" class="text-center">
-                                                <h4 style="font-size: 27px;"><strong>GOBIERNO AUTONOMO DEPARTAMENTAL DEL BENI</strong></h4>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center" style="width: 45%">
-                                                <span style="line-height: 8px; font-size: 25px;"><strong>{{($entrada->tipo == 'E') ? 'HOJA DE RUTA N°:' : 'NOTA DE COMUNICACION INTERNA:'}}</strong></span>
-                                            </td>
-                                            @if($entrada->tipo == 'E')
-                                                <td class="text-left" style="width: 30%; border: 1px solid #000; padding: 5px; font-weight: bold;">
-                                                    {{$entrada->tipo .'-' . $entrada->cite }}
+                            @if (setting('nci.activate_logo'))
+                                <tr>
+                                    <td><img src="{{ asset('images/lg.png') }}" width="100px"></td>
+                                    <td>
+                                        <table class="alltables">
+                                            <tr>
+                                                <td colspan="3" class="text-center">
+                                                    <h4 style="font-size: 24px;"><strong>GOBIERNO AUTONOMO DEPARTAMENTAL DEL BENI</strong></h4>
                                                 </td>
-                                            @else
-                                                <td class="text-left" style="width: 20%; border: 1px solid #000; padding: 5px; font-weight: bold;">
-                                                    {{$entrada->tipo .'-' . $entrada->cite }}
+                                            </tr>
+                                            <tr style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                                                <td class="text-center" >
+                                                    <span style="line-height: 8px; font-size: 24px;"><strong>{{($entrada->tipo == 'E') ? 'HOJA DE RUTA N°:' : 'NOTA DE COMUNICACIÓN INTERNA:'}}</strong></span>
                                                 </td>
-                                            @endif
-                                            
-                                        </tr>
-                                    </table>
-                                </td>
-                            </tr>
+                                                @if($entrada->tipo == 'E')
+                                                    <td class="text-left" style="flex: 1; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                        {{$entrada->tipo .'-' . $entrada->cite }}
+                                                    </td>
+                                                @else
+                                                    <td class="text-left" style="flex: 1; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                        {{$entrada->tipo .'-' . $entrada->cite }}
+                                                    </td>
+                                                @endif
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td><img src="{{ Voyager::image( Voyager::setting('nci.imagen'),asset('images/bicentenariobo.png')) }}" width="100px" alt="logo adicional"></td>
+                                </tr>
+                            @else
+                                <tr>
+                                    <td><img src="{{ asset('images/lg.png') }}" width="100px"></td>
+                                    <td>
+                                        <table class="alltables">
+                                            <tr>
+                                                <td colspan="3" class="text-center">
+                                                    <h4 style="font-size: 27px;"><strong>GOBIERNO AUTONOMO DEPARTAMENTAL DEL BENI</strong></h4>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-center" style="width: 45%">
+                                                    <span style="line-height: 8px; font-size: 25px;"><strong>{{($entrada->tipo == 'E') ? 'HOJA DE RUTA N°:' : 'NOTA DE COMUNICACION INTERNA:'}}</strong></span>
+                                                </td>
+                                                @if($entrada->tipo == 'E')
+                                                    <td class="text-left" style="width: 30%; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                        {{$entrada->tipo .'-' . $entrada->cite }}
+                                                    </td>
+                                                @else
+                                                    <td class="text-left" style="width: 20%; border: 1px solid #000; padding: 5px; font-weight: bold;">
+                                                        {{$entrada->tipo .'-' . $entrada->cite }}
+                                                    </td>
+                                                @endif
+                                                
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            @endif
                         </tbody>
                     </table>
 
