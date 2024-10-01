@@ -218,8 +218,14 @@ class EntradasController extends Controller
                     $q->where('deleted_at', NULL);
                 },'vias'])->where('id', $id)
                 ->where('deleted_at', NULL)->first();
-        $people_entrada = Persona::where('people_id', $data->people_id_de)->first();
-        $user_entrada = User::where('id', $people_entrada->user_id)->first();
+                
+        if ($data->user_id){
+            $user_entrada = User::where('id', $data->user_id)->first();
+        }else{
+            $people_entrada = Persona::where('people_id', $data->people_id_de)->orderBy('created_at','DESC')->first();
+            $user_entrada = User::where('id', $people_entrada->user_id)->first();
+        }
+        
         $nci = Archivo::where('entrada_id', $id)->where('deleted_at', null)->get();
         return view('entradas.read', compact('data', 'nci','user_entrada'));
     }

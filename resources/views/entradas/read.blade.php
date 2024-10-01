@@ -541,13 +541,13 @@
                                 <textarea id="textarea-message" name="message" class="form-control" rows="5"></textarea>
                             </div>
                             <input type="hidden" name="phone" id="input-phone-number">
-                            <input type="hidden" name="user_id" id="input-user-id" value="{{$user_entrada->id}}">
+                            <input type="hidden" name="user_id" id="input-user-id" value="{{ $user_entrada ? $user_entrada->id: null }}">
                             <input type="hidden" name="entrada_id" id="input-entrada-id" value="{{ $data->id }}">
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" id="btn-submit-message" class="btn btn-success"> <i class="fa fa-paper-plane"></i> Enviar</button>
-                        </div>
+                            <button type="submit" id="btn-submit-message" class="btn btn-success"> 
+                                
                     </div>
                 </div>
             </div>
