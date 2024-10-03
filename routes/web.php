@@ -25,6 +25,7 @@ use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ExchangeController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\MensajesController;
+use App\Http\Controllers\DirectorioTelefonicoController;
 
 use App\Models\Derivation;
 
@@ -95,6 +96,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
+    Route::get('searchad/', [UsersController::class, 'getFuncionarioDireccionUnidad'])->name('user.getFuncionarioAll');
 
     //Report RDE
     Route::get('report/rde', [ReportController::class, 'rde_index'])->name('report.rde.index');
@@ -145,6 +147,13 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('enlaces/file/store', [EnlaceController::class, 'storeFile'])->name('enlaces-file.store');
     Route::post('enlaces/file/delete', [EnlaceController::class, 'destroyFile'])->name('enlaces-file.delete');
 
+    //Directorio Telefonico
+    Route::get('directorio-telefonico', [DirectorioTelefonicoController::class, 'index'])->name('directorio-telefonico.index');
+    Route::get('directorio-telefonico/ajax/list', [DirectorioTelefonicoController::class, 'list'])->name('directorio-telefonico.list');
+    Route::get('directorio-telefonico/create', [DirectorioTelefonicoController::class, 'create'])->name('directorio-telefonico.create');
+    Route::post('directorio-telefonico/store', [DirectorioTelefonicoController::class, 'store'])->name('directorio-telefonico.store');
+    //traer las unidades administrativas
+    Route::get('directorio-telefonico/get-unidades/{direccion_id}', [DirectorioTelefonicoController::class, 'getUnidades'])->name('directorio-telefonico.get-unidades');
 
 
 

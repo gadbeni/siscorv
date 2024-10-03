@@ -69,6 +69,61 @@ class UsersController extends Controller
             }  
         return response()->json($response);
     }
+    public function getFuncionarioDireccionUnidad(Request $request){
+        $search = $request->search;
+        $type = $request->type;
+            if($type==1)
+            {
+                $personas = DB::connection('mamore')->table('people as p')
+                    ->join('contracts as c', 'c.person_id', 'p.id')
+                    ->leftJoin('jobs as j', 'j.id', 'c.job_id')
+                    // ->join('direcciones as da', 'da.id', 'c.direccion_administrativa_id')
+                    // ->join('unidades as u', 'u.id', 'c.unidad_administrativa_id')
+                    ->select('p.id', 'p.first_name as nombre', 'p.last_name as apellido', 'p.ci' , DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre_completo"),'c.direccion_administrativa_id as direccion_id','c.unidad_administrativa_id as unidad_id','c.cargo_id as cargo_id','j.name as cargo')
+                    ->where('c.status', 'firmado')
+                    ->where('p.deleted_at', null)
+                    ->where('c.deleted_at', null)
+                    // ->where('p.ci', 'like', '%' .$search . '%')
+                    ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)"). 'like "%' . $search . '%")')
+                    ->get();
+
+                $cargoIds = $personas->pluck('cargo_id')->filter()->unique();
+
+                $cargos = DB::connection('mysqlgobe')->table('cargo')
+                    ->whereIn('id', $cargoIds)
+                    ->select('id', 'Descripcion')
+                    ->get()
+                    ->keyBy('id');
+                
+                $personas->each(function ($persona) use ($cargos) {
+                    if ($persona->cargo_id != null && isset($cargos[$persona->cargo_id])) {
+                        $persona->cargo = $cargos[$persona->cargo_id]->Descripcion;
+                    } else {
+                        $persona->cargo = $persona->cargo;
+                    }
+                });
+
+                $response = array();
+
+                foreach($personas as $persona){
+
+                    $response[] = array(
+                        "id"=>$persona->id,
+                        "text"=>$persona->nombre_completo,
+                        "nombre" => $persona->nombre,
+                        "apellido" => $persona->apellido,
+                        // "ap_materno" => $persona->apellido,
+                        "ci" => $persona->ci,
+                        "direccion_id" => $persona->direccion_id,
+                        "unidad_id" => $persona->unidad_id,
+                        "cargo" => $persona->cargo,
+                        // "alfanum" => $persona->alfanu,
+                        // "departamento_id" => $persona->Expedido
+                    );
+                }
+            }
+        return response()->json($response);
+    }
 
     // public function create_user(Request $request){
         
