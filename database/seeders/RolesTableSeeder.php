@@ -68,6 +68,11 @@ class RolesTableSeeder extends Seeder
             $role->fill(['display_name' => 'Orden de Embargos "VIEW'])->save();
         }
 
+        $role = Role::firstOrNew(['name' => 'admin_directorio_telefonico']);
+        if (!$role->exists) {
+            $role->fill(['display_name' => 'Administrador del directorio telefonico'])->save();
+        }
+
 
         // \DB::table('roles')->delete();
         

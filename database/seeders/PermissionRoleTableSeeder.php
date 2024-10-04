@@ -31,7 +31,8 @@ class PermissionRoleTableSeeder extends Seeder
                                                 
                                                 `key` = "browse_report" or
                                                 `key` = "browse_report_list-document" or
-
+                                                
+                                                `key` = "browse_directorio_telefonico" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
 
@@ -47,6 +48,7 @@ class PermissionRoleTableSeeder extends Seeder
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 table_name = "entradas" or
                                                 table_name = "bandeja" or
+                                                `key` = "browse_directorio_telefonico" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
 
@@ -61,6 +63,7 @@ class PermissionRoleTableSeeder extends Seeder
         $role = Role::where('name', 'certificados')->firstOrFail();
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 table_name = "certificates" or
+                                                `key` = "browse_directorio_telefonico" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
 
@@ -71,6 +74,8 @@ class PermissionRoleTableSeeder extends Seeder
         $role = Role::where('name', 'embargos')->firstOrFail();
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 table_name = "embargos" or
+                                                `key` = "browse_directorio_telefonico" or
+
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
 
@@ -81,6 +86,7 @@ class PermissionRoleTableSeeder extends Seeder
                                                 table_name = "bandeja" or
 
                                                 `key` = "browse_embargos" or
+                                                `key` = "browse_directorio_telefonico" or
 
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
@@ -94,6 +100,8 @@ class PermissionRoleTableSeeder extends Seeder
 
                                                 table_name = "embargos" or
 
+                                                `key` = "browse_directorio_telefonico" or
+
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
         
@@ -102,12 +110,18 @@ class PermissionRoleTableSeeder extends Seeder
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 `key` = "browse_embargos" or
 
+                                                `key` = "browse_directorio_telefonico" or
+
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
 
         
 
-
-
+        // admin_directorio_telefonico
+        $role = Role::where('name', 'admin_directorio_telefonico')->firstOrFail();
+        $permissions = Permission::whereRaw('   table_name = "admin" or
+                                                table_name = "directorio_telefonico" or
+                                                `key` = "browse_clear-cache"')->get();
+        $role->permissions()->sync($permissions->pluck('id')->all());
     }
 }

@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="col-sm-3" style="margin-bottom: 0px">
-                                <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>
+                                {{-- <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br> --}}
                             </div>
                         </div>
                         <div class="row" id="div-results" style="min-height: 120px"></div>
