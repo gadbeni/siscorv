@@ -148,12 +148,15 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('enlaces/file/delete', [EnlaceController::class, 'destroyFile'])->name('enlaces-file.delete');
 
     //Directorio Telefonico
-    Route::get('directorio-telefonico', [DirectorioTelefonicoController::class, 'index'])->name('directorio-telefonico.index');
-    Route::get('directorio-telefonico/ajax/list', [DirectorioTelefonicoController::class, 'list'])->name('directorio-telefonico.list');
-    Route::get('directorio-telefonico/create', [DirectorioTelefonicoController::class, 'create'])->name('directorio-telefonico.create');
-    Route::post('directorio-telefonico/store', [DirectorioTelefonicoController::class, 'store'])->name('directorio-telefonico.store');
+    Route::get('directorio_telefonico', [DirectorioTelefonicoController::class, 'index'])->name('directorio-telefonico.index');
+    Route::get('directorio_telefonico/ajax/list', [DirectorioTelefonicoController::class, 'list'])->name('directorio-telefonico.list');
+    Route::get('directorio_telefonico/create', [DirectorioTelefonicoController::class, 'create'])->name('directorio-telefonico.create');
+    Route::post('directorio_telefonico/store', [DirectorioTelefonicoController::class, 'store'])->name('directorio-telefonico.store');
+    Route::get('directorio_telefonico/{id}/edit', [DirectorioTelefonicoController::class, 'edit'])->name('directorio-telefonico.edit');
+    Route::put('directorio_telefonico/{id}/update', [DirectorioTelefonicoController::class, 'update'])->name('directorio-telefonico.update');
+    Route::delete('directorio_telefonico/{id}/delete', [DirectorioTelefonicoController::class, 'destroy'])->name('directorio-telefonico.delete');
     //traer las unidades administrativas
-    Route::get('directorio-telefonico/get-unidades/{direccion_id}', [DirectorioTelefonicoController::class, 'getUnidades'])->name('directorio-telefonico.get-unidades');
+    Route::get('directorio_telefonico/get-unidades/{direccion_id}', [DirectorioTelefonicoController::class, 'getUnidades'])->name('directorio-telefonico.get-unidades');
 
 
 

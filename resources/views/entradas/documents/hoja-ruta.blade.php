@@ -5,20 +5,25 @@
 @section('content')
 <table width="100%" style="margin-bottom: 3px">
     <tr>
-        <td width="150px">
-            <img src="{{ asset('images/lg.png') }}" width="100px" alt="logo">
-        </td>
-        
         @if (setting('nci.activate_logo'))
+            <td width="150px">
+                <img src="{{ Voyager::image( Voyager::setting('nci.imagen'),asset('images/bicentenariobo.png')) }}" width="100px" alt="logo adicional">
+            </td>
             <td>
                 <h2 style="margin: 0px; margin-bottom: 10px; text-align:center">GOBIERNO AUTÓNOMO <br> DEPARTAMENTAL DEL BENI <br>
                 
                 </h2>
             </td>
+            
             <td width="150px">
-                <img src="{{ Voyager::image( Voyager::setting('nci.imagen'),asset('images/bicentenariobo.png')) }}" width="100px" alt="logo adicional">
+                <img src="{{ asset('images/lg.png') }}" width="100px" alt="logo">
             </td>
+            
         @else
+            <td width="150px">
+                <img src="{{ asset('images/lg.png') }}" width="100px" alt="logo">
+            </td>
+        
             <td align="right">
                 <h3 style="margin: 0px; margin-bottom: 10px">GOBIERNO AUTÓNOMO DEPARTAMENTAL DEL BENI <br>
                 

@@ -4,12 +4,12 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @stop
 
-@section('page_title', 'Title')
+@section('page_title', 'Actualizar registro Telefónico')
 
 @section('page_header')
     <h1 class="page-title">
-        <i class="voyager-basket"></i>
-        Title
+        <i class="voyager-telephone"></i>
+        Actualizar registro Telefónico
     </h1>
 @stop
 
@@ -42,26 +42,32 @@
                 <div class="panel panel-bordered">
                     <div class="panel-body">
                         <div>
-                            <form action="{{route('directorio-telefonico.store')}}" method="POST">
+                            <form action="{{route('directorio-telefonico.update', $directorio->id)}}" method="POST">
                                 {{ csrf_field() }}
+                                {{ method_field('PUT') }}
                                 <div class="form-group">
                                     <label for="cargo_responsable">Cargo responsable</label>
-                                    <input type="text" class="form-control" name="cargo_responsable" id="cargo_responsable" placeholder="Cargo responsable" value="" required>
+                                    <input type="text" class="form-control" name="cargo_responsable" id="cargo_responsable" placeholder="Cargo responsable" value="{{$directorio->cargo_responsable}}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="nombre">Nombre</label>
-                                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" value="" required>
+                                    <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Nombre" value="{{$directorio->nombre}}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="numero_interno">Telefono interno</label>
-                                    <input type="text" class="form-control" name="numero_interno" id="numero_interno" placeholder="Telefono interno" value="" required>
+                                    <input type="text" class="form-control" name="numero_interno" id="numero_interno" placeholder="Telefono interno" value="{{$directorio->numero_interno}}" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="DireccionAdministrativa">Dirección administrativa</label>
                                     <select name="direccion_id" id="direccion_id" class="form-control select2" required>
                                         <option value="">Seleccione una opción</option>
                                         @foreach ($direccionesAdministrativas as $item)
-                                            <option value="{{ $item->id}}">{{$item->nombre}}</option>
+                                            <option value="{{ $item->id}}"
+                                                @if ($item->id == $directorio->direccion_id)
+                                                    selected
+                                                @endif
+                                                >{{$item->nombre}}
+                                            </option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -69,6 +75,14 @@
                                     <label for="UnidadAdministrativa">Unidad Administrativa</label>
                                     <select name="unidad_id" id="unidad_id" class="form-control select2" required>
                                         <option value="">Seleccione una opción</option>
+                                        @foreach ($unidadesAdministrativas as $item)
+                                            <option value="{{ $item->id}}"
+                                                @if ($item->id == $directorio->unidad_id)
+                                                    selected
+                                                @endif
+                                                >{{$item->nombre}}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Guardar</button>

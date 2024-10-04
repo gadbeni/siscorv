@@ -10,9 +10,11 @@
                     <i class="voyager-telephone"></i>
                     Directorio Telefónico
                 </h1>
-                <a href="{{route('directorio-telefonico.create')}}" class="btn btn-success btn-add-new">
-                    <i class="voyager-plus"></i> <span>Crear</span>
-                </a>
+                @if (auth()->user()->hasPermission('delete_directorio_telefonico'))
+                    <a href="{{route('directorio-telefonico.create')}}" class="btn btn-success btn-add-new">
+                        <i class="voyager-plus"></i> <span>Crear</span>
+                    </a>
+                @endif
             </div>
             <div class="col-md-4">
 
@@ -49,6 +51,7 @@
             </div>
         </div>
     </div>
+    @include('partials.modal-delete',['name'=>'Desea Eliminar este registro telefónico?'])
 @stop
 
 @section('css')
@@ -80,7 +83,7 @@
 
         function list(page = 1){
             $("#div-results").LoadingOverlay("show");
-            let url = '{{ url("admin/directorio-telefonico/ajax/list") }}';
+            let url = '{{ url("admin/directorio_telefonico/ajax/list") }}';
             let search = $('#input-search').val() ? $('#input-search').val() : '';
             $.ajax({
                 url: `${url}?search=${search}&paginate=${countPage}&page=${page}`,
@@ -90,6 +93,9 @@
                     $("#div-results").LoadingOverlay("hide");
                 }
             });
+        }
+        function deleteItem(url){
+            $('#delete_form').attr('action', url);
         }
     </script>
 @endpush

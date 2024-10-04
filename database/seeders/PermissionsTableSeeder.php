@@ -51,6 +51,7 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('bandeja');
         Permission::generateFor('people_exts');
         Permission::generateFor('additional_jobs');
+        Permission::generateFor('directorio_telefonico');
 
 
 
