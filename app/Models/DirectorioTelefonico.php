@@ -17,7 +17,7 @@ class DirectorioTelefonico extends Model
         'numero_interno',
         'direccion_id',
         'unidad_id',
-        'mamore_people_id',
+        'directorio_grupo_id',
     ];
 
     public function direccion_administrativa()
@@ -27,5 +27,9 @@ class DirectorioTelefonico extends Model
     public function unidad_administrativa()
     {
         return $this->belongsTo(UnidadAdministrativa::class, 'unidad_id');
+    }
+    public function directorio_grupo()
+    {
+        return $this->belongsTo(DirectorioGrupo::class, 'directorio_grupo_id');
     }
 }

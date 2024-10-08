@@ -57,15 +57,24 @@
                                     <input type="text" class="form-control" name="numero_interno" id="numero_interno" placeholder="Telefono interno" value="" required>
                                 </div>
                                 <div class="form-group">
+                                    <label for="DirectorioGrupo">Directorio Grupo</label>
+                                    <select name="directorio_grupo_id" id="directorio_grupo_id" class="form-control select2" required>
+                                        <option value="">Seleccione una opción</option>
+                                        @foreach ($directorioGrupos as $item)
+                                            <option value="{{ $item->id}}">{{$item->nombre}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group hidden">
                                     <label for="DireccionAdministrativa">Dirección administrativa</label>
-                                    <select name="direccion_id" id="direccion_id" class="form-control select2" required>
+                                    <select name="direccion_id" id="direccion_id" class="form-control select2">
                                         <option value="">Seleccione una opción</option>
                                         @foreach ($direccionesAdministrativas as $item)
                                             <option value="{{ $item->id}}">{{$item->nombre}}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group hidden">
                                     <label for="UnidadAdministrativa">Unidad Administrativa</label>
                                     <select name="unidad_id" id="unidad_id" class="form-control select2" required>
                                         <option value="">Seleccione una opción</option>

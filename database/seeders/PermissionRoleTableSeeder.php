@@ -121,6 +121,7 @@ class PermissionRoleTableSeeder extends Seeder
         $role = Role::where('name', 'admin_directorio_telefonico')->firstOrFail();
         $permissions = Permission::whereRaw('   table_name = "admin" or
                                                 table_name = "directorio_telefonico" or
+                                                table_name = "directorio_grupos" or
                                                 `key` = "browse_clear-cache"')->get();
         $role->permissions()->sync($permissions->pluck('id')->all());
     }

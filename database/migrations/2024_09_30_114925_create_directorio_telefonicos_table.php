@@ -18,9 +18,9 @@ class CreateDirectorioTelefonicosTable extends Migration
             $table->string('cargo_responsable');
             $table->string('nombre');
             $table->string('numero_interno');
-            $table->unsignedBigInteger('direccion_id');
+            $table->unsignedBigInteger('direccion_id')->nullable();
             $table->unsignedBigInteger('unidad_id')->nullable();
-            $table->unsignedBigInteger('mamore_people_id')->nullable();
+            $table->unsignedBigInteger('directorio_grupo_id')->nullable();
             $table->timestamps();
         });
     }

@@ -2,25 +2,25 @@
     @php
         $permisoEditarOBorrrar = auth()->user()->hasPermission('delete_directorio_telefonico') or auth()->user()->hasPermission('edit_directorio_telefonico')
     @endphp
-    @foreach($directorio as $direccionId => $items)
+    @foreach($directorio as $directorio_grupo_id => $items)
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th 
                         @if($permisoEditarOBorrrar)
-                            colspan="5"
-                        @else
                             colspan="4"
+                        @else
+                            colspan="3"
                         @endif
                     >
-                        <h4 class="text-center">{{ $items->first()->direccion_administrativa->nombre }}</h4>
+                        <h4 class="text-center">{{ $items->first()->directorio_grupo->nombre }}</h4>
                     </th>
                 </tr>
                 <tr>
                     <th>Cargo Responsable</th>
                     <th>Nombre</th>
                     <th>Número Interno</th>
-                    <th>Unidad Administrativa</th>
+                    {{-- <th>Unidad Administrativa</th> --}}
                     @if($permisoEditarOBorrrar)
                     <th>Acciones</th>
                     @endif
@@ -32,7 +32,7 @@
                         <td>{{ $item->cargo_responsable }}</td>
                         <td>{{ $item->nombre }}</td>
                         <td>{{ $item->numero_interno }}</td>
-                        <td>{{ $item->unidad_administrativa->nombre ?? 'N/A' }}</td>
+                        {{-- <td>{{ $item->unidad_administrativa->nombre ?? 'N/A' }}</td> --}}
                         @if($permisoEditarOBorrrar)
                             <td class="no-sort no-click bread-actions text-right">
                                 @if (auth()->user()->hasPermission('edit_directorio_telefonico'))

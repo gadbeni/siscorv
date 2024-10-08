@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\DirectorioTelefonico;
+use App\Models\DirectorioGrupo;
 use App\Models\DireccionAdministrativa;
 use App\Models\UnidadAdministrativa;
 
@@ -22,10 +23,10 @@ class DirectorioTelefonicoController extends Controller
 
     public function list(){
         $paginate = request('paginate') ?? 10;
-        $data = DirectorioTelefonico::with(['direccion_administrativa','unidad_administrativa'])
+        $data = DirectorioTelefonico::with(['direccion_administrativa','unidad_administrativa','directorio_grupo'])
             ->orderBy('numero_interno','asc')
             ->paginate($paginate); 
-        $directorio = $data->groupBy('direccion_id');
+        $directorio = $data->groupBy('directorio_grupo_id');
         // dd($directorio);
         return view('directorio_telefonico.list', compact('directorio','data'));
 
@@ -47,20 +48,21 @@ class DirectorioTelefonicoController extends Controller
     public function create()
     {
         $direccionesAdministrativas = DireccionAdministrativa::all();
-        return view('directorio_telefonico.add', compact('direccionesAdministrativas'));
+        $directorioGrupos = DirectorioGrupo::all();
+        return view('directorio_telefonico.add', compact('direccionesAdministrativas','directorioGrupos'));
     }
     public function store(Request $request){
         $request->validate([
             'cargo_responsable' => 'required',
             'nombre' => 'required',
             'numero_interno' => 'required',
-            'direccion_id' => 'required',
-            'unidad_id' => 'required',
+            'directorio_grupo_id' => 'required',
         ]);
         $directorio = new DirectorioTelefonico();
         $directorio->cargo_responsable = $request->cargo_responsable;
         $directorio->nombre = $request->nombre;
         $directorio->numero_interno = $request->numero_interno;
+        $directorio->directorio_grupo_id = $request->directorio_grupo_id;
         $directorio->direccion_id = $request->direccion_id;
         $directorio->unidad_id = $request->unidad_id;
         $directorio->save();
@@ -69,21 +71,22 @@ class DirectorioTelefonicoController extends Controller
     public function edit($id){
         $directorio = DirectorioTelefonico::find($id);
         $direccionesAdministrativas = DireccionAdministrativa::all();
+        $directorioGrupos = DirectorioGrupo::all();
         $unidadesAdministrativas = UnidadAdministrativa::where('direccion_id', $directorio->direccion_id)->get();
-        return view('directorio_telefonico.edit', compact('directorio', 'direccionesAdministrativas', 'unidadesAdministrativas'));
+        return view('directorio_telefonico.edit', compact('directorio','directorioGrupos', 'direccionesAdministrativas', 'unidadesAdministrativas'));
     }
     public function update(Request $request, $id){
         $request->validate([
             'cargo_responsable' => 'required',
             'nombre' => 'required',
             'numero_interno' => 'required',
-            'direccion_id' => 'required',
-            'unidad_id' => 'required',
+            'directorio_grupo_id' => 'required',
         ]);
         $directorio = DirectorioTelefonico::find($id);
         $directorio->cargo_responsable = $request->cargo_responsable;
         $directorio->nombre = $request->nombre;
         $directorio->numero_interno = $request->numero_interno;
+        $directorio->directorio_grupo_id = $request->directorio_grupo_id;
         $directorio->direccion_id = $request->direccion_id;
         $directorio->unidad_id = $request->unidad_id;
         $directorio->save();
