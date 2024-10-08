@@ -76,7 +76,7 @@
                                 </div>
                                 <div class="form-group hidden">
                                     <label for="UnidadAdministrativa">Unidad Administrativa</label>
-                                    <select name="unidad_id" id="unidad_id" class="form-control select2" required>
+                                    <select name="unidad_id" id="unidad_id" class="form-control select2">
                                         <option value="">Seleccione una opción</option>
                                     </select>
                                 </div>
