@@ -18,14 +18,21 @@ class DirectorioTelefonicoController extends Controller
     
     public function index()
     {
-        return view('directorio_telefonico.browse');
+        $directorioGrupos = DirectorioGrupo::all();
+        return view('directorio_telefonico.browse',compact('directorioGrupos'));
     }
 
     public function list(){
         $paginate = request('paginate') ?? 10;
+        $directorioGrupo = request('directorioGrupo');
         $data = DirectorioTelefonico::with(['direccion_administrativa','unidad_administrativa','directorio_grupo'])
-            ->orderBy('numero_interno','asc')
-            ->paginate($paginate); 
+            ->orderBy('numero_interno','asc');
+            
+        if($directorioGrupo){
+            $data = $data->where('directorio_grupo_id',$directorioGrupo);
+        }
+        $data = $data->paginate($paginate); 
+
         $directorio = $data->groupBy('directorio_grupo_id');
         // dd($directorio);
         return view('directorio_telefonico.list', compact('directorio','data'));
