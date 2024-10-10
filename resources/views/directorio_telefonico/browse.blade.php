@@ -41,11 +41,15 @@
                                     </select> registros</label>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="margin-bottom: 5px">
-                                {{-- <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br> --}}
+                            <div class="col-sm-3" style="margin-bottom: 0px">
+                                <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>  
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6 col-md-3" style="margin-bottom: 10px">
                                 <div style="display: flex; gap: 10px; align-items: center;"> 
-                                    <label>Filtro: </label>
-                                    <select id="select-grupo" name="directorioGrupo" class="form-control input-sm">
+                                    <label class="hidden-xs">Filtro: </label>
+                                    <select id="select-grupo" name="directorioGrupo" class="form-control select2">
                                         <option value="">TODOS</option>
                                         @foreach ( $directorioGrupos as $item )
                                             <option value="{{$item->id}}">{{$item->nombre}}</option>
@@ -98,9 +102,9 @@
         function list(page = 1){
             $("#div-results").LoadingOverlay("show");
             let url = '{{ url("admin/directorio_telefonico/ajax/list") }}';
-            // let search = $('#input-search').val() ? $('#input-search').val() : '';
+            let search = $('#input-search').val() ? $('#input-search').val() : '';
             $.ajax({
-                url: `${url}?directorioGrupo=${directorioGrupo}&paginate=${countPage}&page=${page}`,
+                url: `${url}?directorioGrupo=${directorioGrupo}&search=${search}&paginate=${countPage}&page=${page}`,
                 type: 'get',
                 success: function(response){
                     $('#div-results').html(response);

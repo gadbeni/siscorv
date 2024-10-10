@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\DirectorioTelefonico;
 use App\Models\DirectorioGrupo;
 use App\Models\DireccionAdministrativa;
@@ -15,50 +16,39 @@ class DirectorioTelefonicoController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     public function index()
     {
         $directorioGrupos = DirectorioGrupo::all();
-        return view('directorio_telefonico.browse',compact('directorioGrupos'));
+        return view('directorio_telefonico.browse', compact('directorioGrupos'));
     }
 
-    public function list(){
+    public function list()
+    {
         $paginate = request('paginate') ?? 10;
         $directorioGrupo = request('directorioGrupo');
-        $data = DirectorioTelefonico::with(['direccion_administrativa','unidad_administrativa','directorio_grupo'])
-            ->orderBy('numero_interno','asc');
-            
-        if($directorioGrupo){
-            $data = $data->where('directorio_grupo_id',$directorioGrupo);
+        $search = request('search');
+        $data = DirectorioTelefonico::with(['direccion_administrativa', 'unidad_administrativa', 'directorio_grupo'])
+            ->where('nombre', 'LIKE', "%{$search}%")->orWhere('cargo_responsable', 'LIKE', "%{$search}%")
+            ->orderBy('numero_interno', 'asc');
+
+        if ($directorioGrupo) {
+            $data = $data->where('directorio_grupo_id', $directorioGrupo);
         }
-        $data = $data->paginate($paginate); 
+        $data = $data->paginate($paginate);
 
         $directorio = $data->groupBy('directorio_grupo_id');
-        // dd($directorio);
-        return view('directorio_telefonico.list', compact('directorio','data'));
-
-        // $paginate = request('paginate') ?? 1;
-        // $directorio = DirectorioTelefonico::with(['direccion_administrativa', 'unidad_administrativa'])
-        //     ->orderBy('numero_interno', 'asc')
-        //     ->paginate($paginate);
-
-        // // Agrupar los datos paginados
-        // $directoriosAgrupados = $directorio->getCollection()->groupBy('direccion_id');
-
-        // // Reemplazar la colección paginada con la colección agrupada
-        // $directorio->setCollection($directoriosAgrupados->flatten());
-        // dd($directorio);
-
-        // return view('directorio_telefonico.list', compact('directorio'));
+        return view('directorio_telefonico.list', compact('directorio', 'data'));
     }
 
     public function create()
     {
         $direccionesAdministrativas = DireccionAdministrativa::all();
         $directorioGrupos = DirectorioGrupo::all();
-        return view('directorio_telefonico.add', compact('direccionesAdministrativas','directorioGrupos'));
+        return view('directorio_telefonico.add', compact('direccionesAdministrativas', 'directorioGrupos'));
     }
-    public function store(Request $request){
+    public function store(Request $request)
+    {
         $request->validate([
             'cargo_responsable' => 'required',
             'nombre' => 'required',
@@ -75,14 +65,16 @@ class DirectorioTelefonicoController extends Controller
         $directorio->save();
         return redirect()->route('directorio-telefonico.index');
     }
-    public function edit($id){
+    public function edit($id)
+    {
         $directorio = DirectorioTelefonico::find($id);
         $direccionesAdministrativas = DireccionAdministrativa::all();
         $directorioGrupos = DirectorioGrupo::all();
         $unidadesAdministrativas = UnidadAdministrativa::where('direccion_id', $directorio->direccion_id)->get();
-        return view('directorio_telefonico.edit', compact('directorio','directorioGrupos', 'direccionesAdministrativas', 'unidadesAdministrativas'));
+        return view('directorio_telefonico.edit', compact('directorio', 'directorioGrupos', 'direccionesAdministrativas', 'unidadesAdministrativas'));
     }
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $request->validate([
             'cargo_responsable' => 'required',
             'nombre' => 'required',
@@ -99,7 +91,8 @@ class DirectorioTelefonicoController extends Controller
         $directorio->save();
         return redirect()->route('directorio-telefonico.index');
     }
-    public function destroy($id){
+    public function destroy($id)
+    {
         $directorio = DirectorioTelefonico::find($id);
         $directorio->delete();
         return redirect()->route('directorio-telefonico.index');
@@ -108,7 +101,7 @@ class DirectorioTelefonicoController extends Controller
     public function getUnidades($direccion_id)
     {
         $unidades = UnidadAdministrativa::where('direccion_id', $direccion_id)
-            ->where('estado',1)
+            ->where('estado', 1)
             ->get();
         return response()->json($unidades);
     }
