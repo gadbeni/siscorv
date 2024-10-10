@@ -32,7 +32,9 @@ class DirectorioTelefonicoController extends Controller
             ->orderBy('numero_interno', 'asc');
 
         if ($search) {
-            $data = $data->where('nombre', 'LIKE', "%{$search}%")->orWhere('cargo_responsable', 'LIKE', "%{$search}%");
+            $data = $data->where(function ($query) use ($search) {
+                $query->where('nombre', 'LIKE', "%{$search}%")->orWhere('cargo_responsable', 'LIKE', "%{$search}%");
+            });
         }
         if ($directorioGrupo) {
             $data = $data->where('directorio_grupo_id', $directorioGrupo);
