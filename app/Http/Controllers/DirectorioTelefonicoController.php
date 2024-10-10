@@ -29,9 +29,11 @@ class DirectorioTelefonicoController extends Controller
         $directorioGrupo = request('directorioGrupo');
         $search = request('search');
         $data = DirectorioTelefonico::with(['direccion_administrativa', 'unidad_administrativa', 'directorio_grupo'])
-            ->where('nombre', 'LIKE', "%{$search}%")->orWhere('cargo_responsable', 'LIKE', "%{$search}%")
             ->orderBy('numero_interno', 'asc');
 
+        if ($search) {
+            $data = $data->where('nombre', 'LIKE', "%{$search}%")->orWhere('cargo_responsable', 'LIKE', "%{$search}%");
+        }
         if ($directorioGrupo) {
             $data = $data->where('directorio_grupo_id', $directorioGrupo);
         }
