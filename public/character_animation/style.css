@@ -1,0 +1,299 @@
+:root{
+    --body-c-500: #45a9eb;
+    --body-c-600: #1d8eda;
+    --body-c-700: #0f6fb8;
+    --body-c-800: #104c7c;
+}
+/* body{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    place-items: center;
+} */
+.card{
+    margin-top: 100px;
+    height: 600px;
+    width: 300px;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.5);
+    border: 1px solid black;
+}
+.form{
+    padding: 20px;
+}
+.groud input{
+    display: block;
+    width: 100%;
+}
+/* Character */
+.box-character{
+    width: 100%;
+    height: 200px;
+    margin-top: -300px;
+    display: grid;
+    place-items: center;
+    position: absolute;
+    top: 50%;
+}
+.character{
+    position: relative;
+    width: 130px;
+    height: 130px;
+    overflow: hidden;
+    border-radius: 50%;
+    transition: transform 0.5s linear;
+}
+.round-character{
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: rgb(53, 157, 74);
+}
+.head-character{
+    width: 80px;
+    height: 80px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 25%;
+    border-bottom-right-radius: 25%;
+    /* border-radius: 50%; */
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 30px;
+    margin: 0 auto;
+    background-color: var(--body-c-500);
+    background: linear-gradient(90deg, var(--body-c-700) 30%, var(--body-c-600) 30%);
+    z-index: 2;
+    overflow: hidden;
+    transition: all 0.2s linear;
+}
+.head-col-character{
+    width: 100px;
+    height: 60px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    background-color: #ff2323;
+    background: linear-gradient(90deg, var(--body-c-700) 34%, var(--body-c-600) 30%);
+}
+.body-col{
+    width: 50px;
+    height: 20px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    position: absolute;
+    bottom: 0px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    background-color: #ff2323;
+    background: linear-gradient(90deg, rgb(212, 163, 3) 18%, rgb(255, 197, 8) 15%);
+}
+.groud-eye{
+    width: 25px;
+    height: 60px;
+    background-color: white;
+    position: absolute;
+    border-bottom: 2px solid black;
+    
+}
+.groud-eye.left{
+    left: 0px;
+    top: 25px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    transition: left 0.2s linear, top 0.2s linear  ;
+}
+.groud-eye.right{
+    right: 0px;
+    top: 25px;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    transition: right 0.2s linear, top 0.2s linear  ;
+}
+.eye-character{
+    width: 2px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: white;
+    border: 3px solid black;
+    box-sizing: initial;
+
+    animation-name: blink;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+}
+@keyframes blink{
+    1%{
+        height: 4px;
+        opacity: 1;
+    }
+    2%{
+        height: 1px;
+        transform: translate(0px, 2px);
+        opacity: 0;
+    }
+    3%{
+        height: 4px;
+        transform: translate(0px, 0px);
+        opacity: 1;
+    }
+}
+.eye-character.left{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    transition: left 0.2s linear, top 0.2s linear ;
+}
+.eye-character.right{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    transition: right 0.2s linear, top 0.2s linear ;
+}
+.my-beak{
+    width: 30px;
+    height: 50px;
+    background-color: rgb(255, 197, 8);
+    background: linear-gradient(90deg, rgb(219, 168, 0) 55%, rgb(255, 197, 8) 30%);
+    border-top: 2px solid black;
+    position: absolute;
+    top: 65px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    /* border-radius: 50%; */
+    border-top-left-radius: 20%;
+    border-top-right-radius: 20%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    box-shadow: 0px 5px 2px rgba(0, 0, 0, 0.5);
+    z-index: 3;
+    transition: right 0.2s linear, top 0.2s linear ;
+}
+.my-beak::after{
+    content: "";
+    display: block;
+    width: 10px;
+    height: 10px;
+    bottom: -15px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    
+    position: absolute;
+    transform: rotate(45deg);
+    width: 30px;
+    height: 30px;
+    background-image:
+      linear-gradient(to bottom right, transparent 50%, rgb(255, 197, 8) 0),
+      linear-gradient(to top right, rgb(255, 220, 10) 50%, transparent 0);
+      background-image:
+      linear-gradient(to bottom right, transparent 50%, black 0),
+      linear-gradient(to top right, black 50%, transparent 0);
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    background-position: left, right;
+    transform: rotate(180deg);
+}
+.wing{
+    width: 70px;
+    height: 150px;
+    background-color: red;
+    position: absolute;
+    top: 20px;
+    left: 60px;
+    z-index: 5;
+    /* border-bottom-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-top-left-radius: 10px; */
+    border-left: 4px solid var(--body-c-800);
+    background: linear-gradient(to bottom,
+      var(--body-c-500),
+      var(--body-c-600) 50%,
+      var(--body-c-600) 55%,
+      var(--body-c-500) 70%,
+      var(--body-c-500) 80%
+    );
+    border-radius: 50% 30% 50% 10%;
+    transition: all 0.2s linear;
+    transform: translate(130px, 100px) skew(0deg, -10deg) rotate(90deg);
+}
+
+/* Para Mirar el inpu de email o ususario */
+#character.look-at-input .head-character{
+    background: linear-gradient(100deg, var(--body-c-700) 30%, var(--body-c-600) 20%);
+}
+#character.look-at-input .groud-eye.left{
+    left: -10px;
+    top: 35px;
+}
+#character.look-at-input .groud-eye.right{
+    right: 10px;
+    top: 35px;
+}
+#character.look-at-input .eye-character.left{
+    left: 15px;
+    top: 15px;
+}
+#character.look-at-input .eye-character.right{
+    top: 16px;
+    right: 16px;
+}
+#character.look-at-input  .my-beak{
+    right: 22px;
+    top: 75px;
+    border-top-left-radius: 30%;
+    border-top-right-radius: 50%;
+    background: linear-gradient(100deg, rgb(219, 168, 0) 30%, rgb(255, 197, 8) 30%);
+}
+/*Ver mitad*/
+#character.look-at-input.look-mitad .head-character{
+    background: linear-gradient(90deg, var(--body-c-700) 30%, var(--body-c-600) 30%);
+}
+#character.look-at-input.look-mitad .groud-eye.left{
+    left: 0px;
+    top: 35px;
+}
+#character.look-at-input.look-mitad .groud-eye.right{
+    right: 0px;
+    top: 35px;
+}
+#character.look-at-input.look-mitad .eye-character.left{
+    left: 15px;
+    top: 15px;
+}
+#character.look-at-input.look-mitad .eye-character.right{
+    top: 16px;
+    right: 16px;
+}
+#character.look-at-input.look-mitad  .my-beak{
+    right: 0px;
+    top: 75px;
+    border-top-left-radius: 20%;
+    border-top-right-radius: 20%;
+    background: linear-gradient(90deg, rgb(219, 168, 0) 55%, rgb(255, 197, 8) 30%);
+}
+/* Ala para cubrir */
+#character.cover-look .head-character{
+    top: 40px
+}
+#character.cover-look .my-beak{
+    top: 72px
+}
+#character.cover-look .wing{
+    transform: translate(0px, 0px) skew(0deg, -10deg) rotate(90deg); 
+}
+/* ver password */
+#character.cover-look.view-pass .wing{
+    transform: translate(0px, 15px) skew(0deg, -10deg) rotate(90deg);
+}
