@@ -1,0 +1,18 @@
+:root{
+    --body-c-500: #ff1f1f;
+    --body-c-600: #ff0000;
+    --body-c-700: #db0000;
+    --body-c-800: #c20000;
+
+    --wing-yellow: rgb(255, 197, 5);
+    --wing-blue: #048ff9;
+}
+.wing{
+    background: linear-gradient(to bottom,
+      var(--body-c-500),
+      var(--body-c-500) 50%,
+      var(--wing-yellow) 55%,
+      var(--wing-yellow) 70%,
+      var(--wing-blue) 80%
+    );
+}

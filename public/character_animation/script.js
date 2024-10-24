@@ -76,3 +76,55 @@ function checkTextLength() {
 
 // Escuchar el evento 'input' para verificar cada vez que el usuario escriba
 emailInput.addEventListener('input', checkTextLength);
+
+//detectar autocompletado
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('animationstart', function(event) {
+        if (event.animationName === 'autofill-detected') {
+            console.log(`${input.placeholder} fue autocompletado.`);
+            const thought = document.getElementById('thought');
+            // Cambia la opacidad a 1 instantáneamente
+            thought.style.opacity = '1'; 
+            // Después de 1 segundo, vuelve a cambiar la opacidad a 0
+            setTimeout(() => {
+                thought.style.opacity = '0';
+            }, 1000);
+        }
+    });
+});
+
+// pruebasa
+const container = document.querySelector('.character');
+const point = document.querySelector('.head');
+const beak = document.querySelector('.my-beak');
+
+document.addEventListener('mousemove', (event) => {
+    // Obtener la posición del mouse dentro del contenedor
+    const rect = container.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+    // const mouseX = event.pageY + "px";
+    // const mouseY = event.pageX + "px";
+
+    // console.log(mouseX, mouseY);
+
+    // Obtener el centro del contenedor
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+
+    // Calcular la diferencia entre la posición del mouse y el centro del contenedor
+    const deltaX = mouseX - centerX;
+    const deltaY = mouseY - centerY;
+
+    // Calcular la dirección (ángulo) hacia el mouse usando arctangente
+    const angle = Math.atan2(deltaY, deltaX);
+
+    // Mover el punto en la dirección del mouse, multiplicado por un factor de distancia
+    const distance = 7; // Puedes ajustar esta distancia para ver cuánto se moverá el punto
+    const moveX = Math.cos(angle) * distance;
+    const moveY = Math.sin(angle) * distance;
+
+    // Actualizar la posición del punto
+    point.style.transform = `translate(${moveX}px, ${moveY - 2}px)`;
+    // beak.style.transform = `translate(${moveX - 2}px, ${moveY - 2}px)`
+});

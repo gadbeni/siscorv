@@ -49,6 +49,23 @@
     border-radius: 50%;
     background-color: rgb(53, 157, 74);
 }
+.thought{
+    width: 150px;
+    position: absolute;
+    right: -200px;
+    left: 0;
+    top: 0;
+    margin: 0 auto;
+    z-index: 10;
+    opacity: 0;
+}
+.thought img{
+    width: 100px;
+}
+.head{
+    position: relative;
+    z-index: 5;
+}
 .head-character{
     width: 80px;
     height: 80px;
@@ -296,4 +313,18 @@
 /* ver password */
 #character.cover-look.view-pass .wing{
     transform: translate(0px, 15px) skew(0deg, -10deg) rotate(90deg);
+}
+
+/*autocompete detection*/
+input:-webkit-autofill {
+    animation: autofill-detected 0.5s forwards;
+}
+
+@keyframes autofill-detected {
+    from {
+        background-color: yellow;
+    }
+    to {
+        background-color: inherit;
+    }
 }

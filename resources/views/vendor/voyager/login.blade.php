@@ -2,27 +2,36 @@
 
 @section("pre_css")
     <link rel="stylesheet" href={{ asset('/character_animation/style.css') }}>
+    @if(!$errors->isEmpty())
+        <link rel="stylesheet" href={{ asset('/character_animation/style-color.css') }}>
+    @endif
 @endsection
 
 @section('content')
     <div class="box-character">
+        <div class="thought" id="thought">
+            <img src={{asset('/character_animation/pensamiento250.png')}} alt="Pensamiento">
+        </div>
         <div class="round-character">
             <div class="character" id="character">
-                <div class="head-character">
-                    <div class="groud-eye left">
-                        <div class="eye-character left">
+                <div class="head">
 
+                    <div class="head-character">
+                        <div class="groud-eye left">
+                            <div class="eye-character left">
+    
+                            </div>
                         </div>
-                    </div>
-                    <div class="groud-eye right">
-                        <div class="eye-character right">
-
+                        <div class="groud-eye right">
+                            <div class="eye-character right">
+    
+                            </div>
                         </div>
+    
                     </div>
-
-                </div>
-                <div class="my-beak">
-
+                    <div class="my-beak">
+    
+                    </div>
                 </div>
                 <div class="head-col-character">
                     <div class="body-col"></div>
