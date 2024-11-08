@@ -144,8 +144,8 @@
                     <table class="alltables text-center">
                         <tbody>
                             @if (setting('nci.activate_logo'))
-                                <tr>
-                                    <td><img src="{{ Voyager::image( Voyager::setting('nci.imagen'),asset('images/bicentenariobo.png')) }}" width="100px" alt="logo adicional"></td>
+                                <tr style="display: block; height: 90px">
+                                    <td><img src="{{ Voyager::image( Voyager::setting('nci.imagen'),asset('images/bicentenariobo.png')) }}" width="90px" alt="logo adicional"></td>
                                     
                                     <td>
                                         <table class="alltables">
@@ -171,7 +171,7 @@
                                             </tr>
                                         </table>
                                     </td>
-                                    <td><img src="{{ asset('images/lg.png') }}" width="100px"></td>
+                                    <td><img src="{{ asset('images/lg.png') }}" width="90px"></td>
                                 </tr>
                             @else
                                 <tr>
