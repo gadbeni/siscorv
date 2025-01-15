@@ -66,6 +66,25 @@
             </div>
         </div>
     </div>
+    <!-- Modal comunicate -->
+    @if (setting('admin.comunicate'))
+        <div id="comunicadoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="comunicadoModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title" id="comunicadoModalLabel">Comunicado</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="{{ Voyager::image( Voyager::setting('admin.comunicate')) }}" alt="Comunicado" class="img-responsive center-block">
+                </div>
+                </div>
+            </div>
+        </div>
+    @endif
+    
  @endsection
 
  @section('css')
@@ -81,4 +100,12 @@
             border: 1px solid rgb(228, 228, 228);
         }
     </style>
+@endsection
+@section('javascript')
+    <script>
+        $(document).ready(function() {
+        // Mostrar el modal automáticamente al cargar la página
+        $('#comunicadoModal').modal('show');
+        });
+    </script>
 @endsection

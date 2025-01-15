@@ -272,6 +272,17 @@ class SettingsTableSeeder extends Seeder
                 'type' => 'image',
                 'value' => '',
             ),
+            23 => 
+            array (
+                'details' => NULL,
+                'display_name' => 'Comunicado',
+                'group' => 'Admin',
+                'id' => 29,
+                'key' => 'admin.comunicate',
+                'order' => 17,
+                'type' => 'image',
+                'value' => '',
+            ),
         ));
         
         
