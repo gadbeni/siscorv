@@ -120,9 +120,12 @@ class CreateCertificate extends Component
             $customer = Persona::where('ci', $this->ci)->first();
             if ($customer) {
                 $persona_id = $customer->id;
-                $paterno = $customer->ap_paterno ? $customer->ap_paterno[0] : '';
-                $materno = $customer->ap_materno ? $customer->ap_materno[0] : '';
-                $cod = $customer->nombre[0] . '' . $paterno . '' . $materno;
+                // solucion nombres o apellidos vacios
+                $paterno = !empty($customer->ap_paterno) ? $customer->ap_paterno[0] : '';
+                $materno = !empty($customer->ap_materno) ? $customer->ap_materno[0] : '';
+                $nombre = !empty($customer->nombre) ? $customer->nombre[0] : '';
+
+                $cod = $nombre . $paterno . $materno;
                 //$cod = $customer->nombre[0].''.$customer->ap_paterno[0].''.$customer->ap_materno[0];
             }
             if ($this->funcionarioId === 0) {
@@ -137,7 +140,13 @@ class CreateCertificate extends Component
                 $persona->tipo = 'funcionario';
                 $persona->save();
                 $persona_id = $persona->id;
-                $cod = $persona->nombre[0] . '' . $persona->ap_paterno[0] . '' . $persona->ap_materno[0];
+
+                // solucion nombres o apellidos vacios
+                $nombre = !empty($persona->nombre) ? $persona->nombre[0] : '';
+                $paterno = !empty($persona->ap_paterno) ? $persona->ap_paterno[0] : '';
+                $materno = !empty($persona->ap_materno) ? $persona->ap_materno[0] : '';
+
+                $cod = $nombre . $paterno . $materno;
             }
         }
 
