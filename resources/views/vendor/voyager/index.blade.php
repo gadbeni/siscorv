@@ -13,20 +13,12 @@
                             <div class="col-md-12">
                                 <h3>{{ Str::upper('Hola, '.Auth::user()->name) }}</h3>
                             </div>
-                            @php
-                                $funcionario = App\Models\Persona::where('user_id', Auth::user()->id)->first();
-                                $derivaciones = App\Models\Derivation::where('people_id_para', $funcionario ? $funcionario->people_id : null)
-                                                ->whereHas('entrada', function($q){
-                                                    $q->whereNotIn('estado_id', [4, 6]);
-                                                })
-                                                ->get();
-                            @endphp
                             <div class="col-md-4">
                                 <div class="panel panel-bordered panel-option" style="border-left: 5px solid #52BE80">
                                     <div class="panel-body" style="height: 100px;padding: 15px 20px">
                                         <div class="col-md-9">
                                             <h5>Derivaciones</h5>
-                                            <h2>{{ $derivaciones->count() }}</h2>
+                                            <h2>{{ $stats->total }}</h2>
                                         </div>
                                         <div class="col-md-3 text-right">
                                             <i class="icon voyager-mail" style="color: #52BE80"></i>
@@ -39,7 +31,7 @@
                                     <div class="panel-body" style="height: 100px;padding: 15px 20px">
                                         <div class="col-md-9">
                                             <h5>Pendientes</h5>
-                                            <h2>{{ $derivaciones->where('visto', NULL)->where('ok', 'NO')->count() }}</h2>
+                                            <h2>{{ $stats->pendientes }}</h2>
                                         </div>
                                         <div class="col-md-3 text-right">
                                             <i class="icon voyager-bell" style="color: #3498DB"></i>
@@ -52,7 +44,7 @@
                                     <div class="panel-body" style="height: 100px;padding: 15px 20px">
                                         <div class="col-md-9">
                                             <h5>Urgentes</h5>
-                                            <h2>{{ $derivaciones->where('visto', NULL)->where('ok', 'NO')->where('entrada.urgent', 1)->count() }}</h2>
+                                            <h2>{{ $stats->urgentes }}</h2>
                                         </div>
                                         <div class="col-md-3 text-right">
                                             <i class="icon voyager-warning" style="color: #f01a1a"></i>

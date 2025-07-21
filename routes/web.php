@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // Cotrollers
+use App\Http\Controllers\BaseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EntradasController;
 use App\Http\Controllers\UsersController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\MensajesController;
 use App\Http\Controllers\DirectorioTelefonicoController;
 
+
 use App\Models\Derivation;
 
 /*
@@ -39,6 +41,7 @@ use App\Models\Derivation;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
 Route::get('login', function () {
     return redirect('admin/login');
 })->name('login');
@@ -47,16 +50,18 @@ Route::get('login', function () {
 Route::get('/', [HomeController::class, 'index']);
 Route::post('/search', [HomeController::class, 'search'])->name('home.search');
 Route::get('/buscartramite', [HomeController::class, 'searchtramite']);
-Route::get('/maintenance', [MaintenanceController::class , 'maintenance'])->name('maintenance');
+Route::get('/maintenance', [MaintenanceController::class, 'maintenance'])->name('maintenance');
 
-Route::get('/prueba', function()
-{
+Route::get('/prueba', function () {
     return view('prueba');
 });
 
 Route::group(['prefix' => 'admin'], function () {
-    
+
     Voyager::routes();
+
+    Route::get('/', [BaseController::class, 'admin'])->name('voyager.dashboard');
+    // Route::get('', ['uses' => 'BaseController@admin', 'as' => 'admin']);
 
     // entidades
     Route::get('entities', [EntidadController::class, 'index'])->name('voyager.entities.index');
@@ -76,10 +81,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('entradas/store/vias', [EntradasController::class, 'store_vias'])->name('store.vias');
     Route::post('entradas/nulledvia', [EntradasController::class, 'anulacion_via'])->name('via.nulled');
     Route::post('entradas/read/nci/file', [EntradasController::class, 'entradaFile'])->name('entradas-file-nci.store');
-    Route::post('entradas/{id?}/date/update', [FileController::class, 'UpdateDateEntrada'])->name('entradas-date.update');//Para cambio d fecha del documemto y agrgera oc respaldo
-    
+    Route::post('entradas/{id?}/date/update', [FileController::class, 'UpdateDateEntrada'])->name('entradas-date.update'); //Para cambio d fecha del documemto y agrgera oc respaldo
+
     // Mensajes WhatsApp
-    Route::get('entradas/{entrada}/mensajes', [MensajesController::class,'showMensajes'])->name('entradas.mensajes');
+    Route::get('entradas/{entrada}/mensajes', [MensajesController::class, 'showMensajes'])->name('entradas.mensajes');
     Route::post('send-whatsapp', [EntradasController::class, 'send_message'])->name('send.whatsapp');
 
 
@@ -92,9 +97,9 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('bandeja/{id}/archivar', [EntradasController::class, 'derivacion_archivar'])->name('bandeja.archivar');
 
     Route::get('treejs/{id?}', [EntradasController::class, 'treeAjax'])->name('tree-ajax');
-    
+
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
-    Route::put('update-user/{user}' ,[UsersController::class ,'update_user'])->name('update.users');
+    Route::put('update-user/{user}', [UsersController::class, 'update_user'])->name('update.users');
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
     Route::get('searchad/', [UsersController::class, 'getFuncionarioDireccionUnidad'])->name('user.getFuncionarioAll');
 
@@ -110,8 +115,8 @@ Route::group(['prefix' => 'admin'], function () {
     //para la bandeja de entrada
     Route::get('report/bandeja', [ReportController::class, 'view_report_bandeja'])->name('view.report.bandeja');
     Route::post('report/print/bandeja', [ReportController::class, 'printf_report_bandeja'])->name('print.report.bandeja');
-    
-    
+
+
 
     //personas externas 
     Route::resource('people_exts', PeopleExtController::class);
@@ -169,51 +174,51 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::middleware(['auth'])->group(function () {
         //rutas para la obtencion de people para crear un tramite
-        Route::get('/mamore/getpeople/',[AjaxController::class, 'getPeoples'])->name('mamore.getpeople');
-        Route::get('/mamore/getpeoplederivacion/',[AjaxController::class, 'getPeoplesDerivacion'])->name('mamore.getpeoplederivacion');
+        Route::get('/mamore/getpeople/', [AjaxController::class, 'getPeoples'])->name('mamore.getpeople');
+        Route::get('/mamore/getpeoplederivacion/', [AjaxController::class, 'getPeoplesDerivacion'])->name('mamore.getpeoplederivacion');
 
 
 
         //rutas para los certificados
         Route::get('certificates', CertificateController::class)->name('list.certificates');
         Route::get('certificates/create', CreateCertificate::class)->name('certificate.create');
-        Route::get('/certificados/getpersonas',[AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
-        Route::get('/certificados/getfuncionarios/',[AjaxController::class, 'getFuncionarios'])->name('certificados.getFuncionario');// anular ruta
-        Route::get('/certificados/getfuncionariosderivacion/',[AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion'); //anular
+        Route::get('/certificados/getpersonas', [AjaxController::class, 'getPersonas'])->name('certificados.getPersonas');
+        Route::get('/certificados/getfuncionarios/', [AjaxController::class, 'getFuncionarios'])->name('certificados.getFuncionario'); // anular ruta
+        Route::get('/certificados/getfuncionariosderivacion/', [AjaxController::class, 'getFuncionariosDerivacion'])->name('certificados.getFuncionariosDerivacion'); //anular
 
-        Route::get('/certificados/{id}/show', [AjaxController::class,'imprimir'])->name('certificates.imprimir');
+        Route::get('/certificados/{id}/show', [AjaxController::class, 'imprimir'])->name('certificates.imprimir');
 
         //rutas para el modulo de personerias juridicas
-        Route::resource('reservas',ReservasController::class);
-        Route::post('anulareserva/{id}',[ReservasController::class,'nulled'])->name('reservas.nulled');
+        Route::resource('reservas', ReservasController::class);
+        Route::post('anulareserva/{id}', [ReservasController::class, 'nulled'])->name('reservas.nulled');
         Route::get('reservas/ajax/list', [ReservasController::class, 'list']);
 
-        Route::resource('personerias',PersoneriasController::class);
+        Route::resource('personerias', PersoneriasController::class);
         Route::get('personerias/ajax/list', [PersoneriasController::class, 'list']);
 
         //ruta para la busqueda de tramites externo e internos juntos
-        Route::get('tramites',[TramiteController::class,'index'])->name('tramites_index');
-        Route::get('get-tramites',[TramiteController::class,'documentosjson'])->name('tramites_json');
+        Route::get('tramites', [TramiteController::class, 'index'])->name('tramites_index');
+        Route::get('get-tramites', [TramiteController::class, 'documentosjson'])->name('tramites_json');
 
         //ruta para mostrar los tramites pronto a expiracion
-        Route::get('getdocumexpired',[HomeController::class,'documents_expired'])->name('documents_expired');
+        Route::get('getdocumexpired', [HomeController::class, 'documents_expired'])->name('documents_expired');
 
 
 
 
 
         //peticiones ajax
-        Route::get('cite/{id?}/{cite?}',[AjaxController::class,'getCite'])->name('cite.get');
+        Route::get('cite/{id?}/{cite?}', [AjaxController::class, 'getCite'])->name('cite.get');
     });
 });
 
 //ruta para la consulta de busqueda de disponibilidad de nombres de personerias disponible para el front-end+
-Route::get('consultas/{search?}', [AjaxController::class,'consultareservas']);
+Route::get('consultas/{search?}', [AjaxController::class, 'consultareservas']);
 //importar datos antiguos
-Route::get('/import', [ImportController::class,'import']);
+Route::get('/import', [ImportController::class, 'import']);
 // Clear cache
 
-Route::get('/admin/clear-cache', function() {
+Route::get('/admin/clear-cache', function () {
     Artisan::call('optimize:clear');
     return redirect('/admin/profile')->with(['message' => 'Cache eliminada', 'alert-type' => 'success']);
 })->name('clear.cache');
