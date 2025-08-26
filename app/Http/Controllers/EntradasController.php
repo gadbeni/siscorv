@@ -186,17 +186,25 @@ class EntradasController extends Controller
             }
             
             $file = $request->file('archivos');
+            $storage = new StorageController();
             if ($file) {
                 for ($i=0; $i < count($file); $i++) { 
+
+
                     $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/".date('F').date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
+
+
+                    // dump($nombre_origen);
+
+                    // return 1;
+                    // $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
+                    // $dir = "entradas/".date('F').date('Y');
+                    // Storage::makeDirectory($dir);
+                    // Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
                     Archivo::create([
                         'nombre_origen' => $nombre_origen,
                         'entrada_id' => $data->id,
-                        'ruta' => $dir.'/'.$newFileName,
+                        'ruta' => $storage->store_file($file[$i], 'entradas'),
                         'user_id' => Auth::user()->id
                     ]);
                 }
@@ -206,6 +214,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             //  dd($th);
+             return 0;
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
@@ -404,14 +413,11 @@ class EntradasController extends Controller
             $file = $request->file('file');
             if ($file) {
                 $nombre_origen = $file->getClientOriginalName();
-                $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
-                $dir = "entradas/".date('F').date('Y');
-                Storage::makeDirectory($dir);
-                Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file));
+                $storage = new StorageController();
                 Archivo::create([
                     'nombre_origen' => $nombre_origen,
                     'entrada_id' => $request->id,
-                    'ruta' => $dir.'/'.$newFileName,
+                    'ruta' => $storage->store_file($file, 'entradas'),
                     'user_id' => Auth::user()->id
                 ]);
             }

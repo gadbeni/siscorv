@@ -9,7 +9,9 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" name="id" value="{{ isset($id) ? $id : 0 }}">
-                    <input type="file" name="file" id="" accept="application/pdf">
+                    {{-- <input type="file" name="file" id="" accept="application/pdf"> --}}
+                    <input type="file" name="file" class="form-control imageLength" 
+                        accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

@@ -185,7 +185,9 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Archivos</label>
-                                        <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                        {{-- <input type="file" name="archivos[]" multiple class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf"> --}}
+                                        <input type="file" name="archivos[]" multiple class="form-control imageLength" 
+                                            accept="image/jpeg,image/jpg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                                     </div>
                                     <div id="div-personeria">
                                         <label class="control-label">Personería jurídica</label> <br>
@@ -313,6 +315,7 @@
     @stop
 
     @section('javascript')
+        <script src="{{ asset('js/file-validation.js') }}"></script>
         <script>
             var entrada_id = "{{ $entrada->id }}";
             var id_funcionario = "{{ $funcionario ? $funcionario->id_funcionario : '' }}";
@@ -564,34 +567,6 @@
         
             document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById("formulario").addEventListener('submit', validarFormulario); 
-            });
-
-            // Para validar los archivos Extenciones y Tamaño
-            $(document).on('change','.imageLength',function(){
-                var fileName = this.files[0].name;
-                var fileSize = this.files[0].size;
-                
-                    // recuperamos la extensión del archivo
-                    var ext = fileName.split('.').pop();
-                    
-                    // Convertimos en minúscula porque 
-                    // la extensión del archivo puede estar en mayúscula
-                    ext = ext.toLowerCase();
-                    // console.log(ext);
-                    switch (ext) {
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'png': 
-                        case 'pdf': break;
-                        default:
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'El archivo no tiene la extensión adecuada!'
-                            })
-                            this.value = ''; // reset del valor
-                            this.files[0].name = '';
-                    }
             });
 
             function check(e) {   
