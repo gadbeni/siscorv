@@ -17,40 +17,46 @@ use App\Models\Derivation;
 
 class ReportController extends Controller
 {
-    public function rde_index(){
+    public function rde_index()
+    {
         $categoria = Category::where('deleted_at', null)->get();
         $entidad = Entity::where('deleted_at', null)->get();
         return view('report.rde.browse', compact('categoria', 'entidad'));
     }
 
-    public function rde_list(Request $request){
+    public function rde_list(Request $request)
+    {
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $query_filtro = 'e.tipo = "E"';        
+        $query_filtro = 'e.tipo = "E"';
+        $start = $request->start ?? date('Y-m-d', strtotime('-30 days'));
+        $finish = $request->finish ?? date('Y-m-d');
         $data = DB::table('entradas as e')
-                    ->join('sysadmin.people as p', 'p.id', 'e.people_id_para')
-                    ->join('entities as t', 't.id', 'e.entity_id')
-                    ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia', 'p.first_name', 'p.last_name', 'e.job_para')
-                    ->whereRaw($query_filtro)
-                    ->whereRaw($request->category_id ? 'e.category_id = '.$request->category_id : 1)
-                    ->whereRaw($request->category_id ? 'e.entity_id = '.$request->origen : 1)
-                    ->whereDate('e.fecha_registro', '>=', date('Y-m-d', strtotime($request->start)))
-                    ->whereDate('e.fecha_registro', '<=', date('Y-m-d', strtotime($request->finish)))
-                    ->where('e.deleted_at', null)
-                    ->orderBy('e.id','ASC')
-                    ->get();
+            ->leftJoin('sysadmin.people as p', 'p.id', 'e.people_id_para')
+            ->leftJoin('entities as t', 't.id', 'e.entity_id')
+            ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia', 'p.first_name', 'p.last_name', 'e.job_para')
+            ->whereRaw($query_filtro)
+            ->whereRaw($request->category_id ? 'e.category_id = ' . $request->category_id : 1)
+            ->whereRaw($request->category_id ? 'e.entity_id = ' . $request->origen : 1)
+            ->whereDate('e.fecha_registro', '>=', date('Y-m-d', strtotime($start)))
+            ->whereDate('e.fecha_registro', '<=', date('Y-m-d', strtotime($finish)))
+            ->where('e.deleted_at', null)
+            ->orderBy('e.id', 'ASC')
+            ->get();
 
-        if($request->print){
+        if ($request->print) {
             return view('report.rde.print', compact('data'));
-        }else{
+        } else {
             return view('report.rde.list', compact('data'));
         }
     }
 
-    public function rde_documents_index(){
+    public function rde_documents_index()
+    {
         return view('report.rde.browse-document');
     }
 
-    public function rde_documents_list(Request $request){
+    public function rde_documents_list(Request $request)
+    {
         $people = persona::where('user_id', Auth::user()->id)->first();
         $data = DB::table('entradas as e')
             ->join('entities as en', 'e.entity_id', 'en.id')
@@ -63,61 +69,72 @@ class ReportController extends Controller
             ->whereDate('e.created_at', '<=', date('Y-m-d', strtotime($request->finish)))
             ->groupBy('e.cite')
             ->get();
-        
-        if($request->print){
+
+        if ($request->print) {
             return view('report.rde.print-documents', compact('data'));
-        }else{            
+        } else {
             return view('report.rde.list-documents', compact('data'));
         }
     }
 
-    public function view_report_ingreso(){
+    public function view_report_ingreso()
+    {
         $people = Person::where('deleted_at', null)->get();
-        return view('report.salida.report' , compact('people'));
+        return view('report.salida.report', compact('people'));
     }
-    
-    public function printf_report_ingreso(Request $request){
+
+    public function printf_report_ingreso(Request $request)
+    {
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
-                        ->where('people_id_de',$request->people)
-                        ->select([
-                            'id','tipo','gestion','estado_id','cite', 'detalles', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para'
-                        ])
-                        ->where('deleted_at', NULL)->orderBy('id', 'ASC')->get();
-        
+            ->where('people_id_de', $request->people)
+            ->select([
+                'id',
+                'tipo',
+                'gestion',
+                'estado_id',
+                'cite',
+                'detalles',
+                'hr',
+                'remitente',
+                'referencia',
+                'entity_id',
+                'created_at',
+                'people_id_para'
+            ])
+            ->where('deleted_at', NULL)->orderBy('id', 'ASC')->get();
+
         $people = Person::where('id', $request->people)->first();
-        if($request->print){
+        if ($request->print) {
             $start = $request->start;
             $finish = $request->finish;
             return view('report.salida.print', compact('data', 'finish', 'start', 'people'));
-
-        }else{
+        } else {
             return view('report.salida.list', compact('data'));
-
         }
     }
 
-    public function view_report_bandeja(){
+    public function view_report_bandeja()
+    {
         $people = Person::where('deleted_at', null)->get();
-        return view('report.bandeja.report' , compact('people'));
+        return view('report.bandeja.report', compact('people'));
     }
-    
-    public function printf_report_bandeja(Request $request){
+
+    public function printf_report_bandeja(Request $request)
+    {
         $data = Derivation::where('transferred', 0)->where('people_id_para', $request->people)
-                                        ->whereHas('entrada', function($q){
-                                            $q->whereNotIn('estado_id', [4, 6]);
-                                        })
-                                        ->whereDate('created_at', '>=', $request->start)
-                                        ->whereDate('created_at', '<=', $request->finish)
-                                        ->orderBy('id', 'DESC')->get();
+            ->whereHas('entrada', function ($q) {
+                $q->whereNotIn('estado_id', [4, 6]);
+            })
+            ->whereDate('created_at', '>=', $request->start)
+            ->whereDate('created_at', '<=', $request->finish)
+            ->orderBy('id', 'DESC')->get();
         $people = Person::where('id', $request->people)->first();
-        if($request->print){
+        if ($request->print) {
             $start = $request->start;
             $finish = $request->finish;
             return view('report.bandeja.print', compact('data', 'finish', 'start', 'people'));
-
-        }else{
+        } else {
             return view('report.bandeja.list', compact('data'));
-
         }
     }
 }
