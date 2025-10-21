@@ -119,7 +119,7 @@
                                     <select name="person_id" class="form-control select2" required>
                                         <option value="">Seleccione una opcion</option>
                                         @foreach($people as $data)
-                                            <option value="{{$data->id}}">{{$data->first_name}} {{$data->last_name}}</option>
+                                            <option value="{{$data->id}}">{{$data->first_name}} {{$data->paternal_surname}} {{$data->maternal_surname}}</option>
                                         @endforeach
                                     </select>          
                                 </div>
