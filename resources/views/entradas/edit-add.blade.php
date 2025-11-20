@@ -513,6 +513,8 @@
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
+                    paste_as_text: true,
+                    plugins: 'paste',
                 }
 
                 edit = "{{ $entrada->id }}";
