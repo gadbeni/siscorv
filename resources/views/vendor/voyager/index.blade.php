@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="page-content browse container-fluid">
-        @include('voyager::alerts')
         <div class="row">
             <div class="col-md-12 div-phone">
                 <div class="panel panel-bordered">

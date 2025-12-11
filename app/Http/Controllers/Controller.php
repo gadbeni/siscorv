@@ -140,4 +140,11 @@ class Controller extends BaseController
             ->first();
         return $funcionario;
     }
+
+    public function getFile($path){
+        if (!file_exists(storage_path("app/public/{$path}"))) {
+            abort(404, 'Archivo no encontrado');
+        }
+        return response()->file(storage_path("app/public/{$path}"));
+    }
 }
