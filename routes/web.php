@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // Cotrollers
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EntradasController;
@@ -216,8 +217,10 @@ Route::group(['prefix' => 'admin'], function () {
 Route::get('consultas/{search?}', [AjaxController::class, 'consultareservas']);
 //importar datos antiguos
 Route::get('/import', [ImportController::class, 'import']);
-// Clear cache
 
+Route::get('storage/{path}', [Controller::class, 'getFile'])->where('path', '.*')->middleware('auth');
+
+// Clear cache
 Route::get('/admin/clear-cache', function () {
     Artisan::call('optimize:clear');
     return redirect('/admin/profile')->with(['message' => 'Cache eliminada', 'alert-type' => 'success']);
