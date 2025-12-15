@@ -59,17 +59,33 @@ class EntradasController extends Controller
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $query_filtro = 'people_id_de = '.($funcionario ? $funcionario->people_id : 0);
-        if (auth()->user()->isAdmin()) {
-            $query_filtro = 1;
-        }
+
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
-                        ->whereRaw($query_filtro)
                         ->select([
                             'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para', 'personeria'
                         ])
-                        ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
-                        ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
+                        ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
+                            $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
+                        })
+                        ->when($search, function ($query) use ($search) {
+                            $query->where(function($q) use ($search) {
+                                $q->where('hr', 'like', "%{$search}%")
+                                  ->orWhere('cite', 'like', "%{$search}%")
+                                  ->orWhere('remitente', 'like', "%{$search}%")
+                                  ->orWhere('referencia', 'like', "%{$search}%");
+                            });
+                        })
+                        ->whereNull('deleted_at')
+                        ->orderBy('id', 'DESC')->paginate($paginate);
+
+        // $data = Entrada::when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
+        //                     $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
+        //                 })
+        //     ->paginate(10);
+
+        // dump($data);
+        // return 1;
+
         return view('entradas.list', compact('data'));
     }
 

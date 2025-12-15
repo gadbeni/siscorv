@@ -119,7 +119,7 @@
 
     @push('javascript')
         <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-        <script src="{{ asset('vendor/loading_overlay/loadingoverlay.min.js') }}"></script>
+        {{-- <script src="{{ asset('vendor/loading_overlay/loadingoverlay.min.js') }}"></script> --}}
 
         <script>
             var destinatario_id;
@@ -139,18 +139,19 @@
             });
 
             function list(page = 1){
-                $("#div-results").LoadingOverlay("show");
+                $('#div-results').loading({message: 'Cargando...'});
                 let url = '{{ url("admin/entradas/ajax/list") }}';
                 let search = $('#input-search').val() ? $('#input-search').val() : '';
                 $.ajax({
                     url: `${url}?search=${search}&paginate=${countPage}&page=${page}`,
                     type: 'get',
-                    success: function(response){
-                        $('#div-results').html(response);
-                        $("#div-results").LoadingOverlay("hide");
+                    success: function(result){
+                        $("#div-results").html(result);
+                        $('#div-results').loading('toggle');
                     }
                 });
             }
+
 
             // function derivacionItem(id,destinoid=0){
             //     $('#form-derivacion input[name="id"]').val(id);
