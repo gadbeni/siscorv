@@ -14,8 +14,14 @@
 composer install
 cp .env.example .env
 php artisan template:install
-chmod -R 777 storage bootstrap/cache
-npm i
+sudo chmod -R 775 storage bootstrap/cache
+sudo chown -R www-data storage bootstrap/cache
+```
+
+## Despleigue con docker
+```
+docker build -t siscor .
+docker run -e DB_DATABASE=siscor -e DB_HOST=host.docker.internal -p 8000:8000 -t siscor
 ```
 
 Nota: Para iniciar el servidor de socket.io debes ejecutar el comando `node server`.
