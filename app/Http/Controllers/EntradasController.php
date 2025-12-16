@@ -7,34 +7,20 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FileController;
-use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 use Storage;
 
 // Models
 use App\Models\Via;
-use App\Models\Person;
 use App\Models\Archivo;
 use App\Models\Entrada;
 use App\Models\Persona;
-use App\Models\Category;
-use App\Models\PeopleExt;
 use App\Models\Derivation;
 use App\Models\MensajeEnviado;
 use App\Models\PjNameReservation;
 use App\Models\PjNameFile;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-
-use Barryvdh\DomPDF\Facade\Pdf;
-use function PHPSTORM_META\map;
-use PhpParser\Node\Stmt\Return_;
-
-use Prophecy\Promise\ReturnPromise;
-use Database\Seeders\PersonasTableSeeder;
-use function PHPUnit\Framework\returnSelf;
-use phpDocumentor\Reflection\Types\Nullable;
-use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class EntradasController extends Controller
 {
@@ -58,15 +44,15 @@ class EntradasController extends Controller
     public function list(){
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
-        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+        // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
 
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
                         ->select([
                             'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para', 'personeria'
                         ])
-                        ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
-                            $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
-                        })
+                        // ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
+                        //     $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
+                        // })
                         ->when($search, function ($query) use ($search) {
                             $query->where(function($q) use ($search) {
                                 $q->where('hr', 'like', "%{$search}%")
@@ -78,15 +64,9 @@ class EntradasController extends Controller
                         ->whereNull('deleted_at')
                         ->orderBy('id', 'DESC')->paginate($paginate);
 
-        // $data = Entrada::when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
-        //                     $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
-        //                 })
-        //     ->paginate(10);
+        dump($data);
 
-        // dump($data);
-        // return 1;
-
-        return view('entradas.list', compact('data'));
+        // return view('entradas.list', compact('data'));
     }
 
     /**
