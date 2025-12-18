@@ -7,34 +7,20 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FileController;
-use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
 use Storage;
 
 // Models
 use App\Models\Via;
-use App\Models\Person;
 use App\Models\Archivo;
 use App\Models\Entrada;
 use App\Models\Persona;
-use App\Models\Category;
-use App\Models\PeopleExt;
 use App\Models\Derivation;
 use App\Models\MensajeEnviado;
 use App\Models\PjNameReservation;
 use App\Models\PjNameFile;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-
-use Barryvdh\DomPDF\Facade\Pdf;
-use function PHPSTORM_META\map;
-use PhpParser\Node\Stmt\Return_;
-
-use Prophecy\Promise\ReturnPromise;
-use Database\Seeders\PersonasTableSeeder;
-use function PHPUnit\Framework\returnSelf;
-use phpDocumentor\Reflection\Types\Nullable;
-use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class EntradasController extends Controller
 {
@@ -58,26 +44,32 @@ class EntradasController extends Controller
     public function list(){
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
-        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
-        $query_filtro = 'people_id_de = '.($funcionario ? $funcionario->people_id : 0);
-        if (auth()->user()->isAdmin()) {
-            $query_filtro = 1;
-        }
+        // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
-                        ->whereRaw($query_filtro)
                         ->select([
                             'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para', 'personeria'
                         ])
-                        ->whereRaw($search ? "(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')" : 1)
-                        ->where('deleted_at', NULL)->orderBy('id', 'DESC')->paginate($paginate);
+                        // ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
+                        //     $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
+                        // })
+                        ->when($search, function ($query) use ($search) {
+                            $query->where(function($q) use ($search) {
+                                $q->where('hr', 'like', "%{$search}%")
+                                  ->orWhere('cite', 'like', "%{$search}%")
+                                  ->orWhere('remitente', 'like', "%{$search}%")
+                                  ->orWhere('referencia', 'like', "%{$search}%");
+                            });
+                        })
+                        ->whereNull('deleted_at')
+                        ->orderBy('id', 'DESC')->paginate($paginate);
+
+        // dump($data);
+
         return view('entradas.list', compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create(){
         $entrada = new Entrada;
         $funcionario = null;
@@ -186,17 +178,25 @@ class EntradasController extends Controller
             }
             
             $file = $request->file('archivos');
+            $storage = new StorageController();
             if ($file) {
                 for ($i=0; $i < count($file); $i++) { 
+
+
                     $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/".date('F').date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
+
+
+                    // dump($nombre_origen);
+
+                    // return 1;
+                    // $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
+                    // $dir = "entradas/".date('F').date('Y');
+                    // Storage::makeDirectory($dir);
+                    // Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
                     Archivo::create([
                         'nombre_origen' => $nombre_origen,
                         'entrada_id' => $data->id,
-                        'ruta' => $dir.'/'.$newFileName,
+                        'ruta' => $storage->store_file($file[$i], 'entradas'),
                         'user_id' => Auth::user()->id
                     ]);
                 }
@@ -206,6 +206,7 @@ class EntradasController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             //  dd($th);
+             return 0;
             return redirect()->route('entradas.index')->with(['message' => 'Ocurrió un error', 'alert-type' => 'error']);
         }
     }
@@ -404,14 +405,11 @@ class EntradasController extends Controller
             $file = $request->file('file');
             if ($file) {
                 $nombre_origen = $file->getClientOriginalName();
-                $newFileName = Str::random(20).'.'.$file->getClientOriginalExtension();
-                $dir = "entradas/".date('F').date('Y');
-                Storage::makeDirectory($dir);
-                Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file));
+                $storage = new StorageController();
                 Archivo::create([
                     'nombre_origen' => $nombre_origen,
                     'entrada_id' => $request->id,
-                    'ruta' => $dir.'/'.$newFileName,
+                    'ruta' => $storage->store_file($file, 'entradas'),
                     'user_id' => Auth::user()->id
                 ]);
             }

@@ -114,7 +114,7 @@
                                             <a href="#" data-toggle="modal" data-target="#modal-upload" class="btn btn-success" style="margin: 15px;">
                                                 <span class="voyager-plus"></span>&nbsp;
                                                 Agregar nuevo
-                                            </a>
+                                            </a>                                            
                                             @endif
                                         </div>
                                     </div>
@@ -141,7 +141,7 @@
                                                     <td>{{ $item->user->name ?? 'RDE' }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td class="no-sort no-click bread-actions text-right">
-                                                        <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank"> <i class="voyager-eye"></i> Ver</a>
+                                                        <a href="{{ url($item->ruta) }}" class="btn btn-warning" target="_blank"> <i class="voyager-eye"></i> Ver</a>
                                                     </td>
                                                 </tr>
                                                 @php
@@ -245,6 +245,7 @@
 
         @include('partials.modal-dropzone', ['title' => 'Agregar archivo', 'id' => $data->id, 'action' => url('admin/entradas/store/file')])
 
+
         {{-- rechazar modal --}}
         <form class="form-submit" action="{{ route('bandeja.archivar', ['id' => $data->id]) }}" method="post">
             <div class="modal modal-success fade" tabindex="-1" id="modal-archivar" role="dialog">
@@ -346,6 +347,7 @@
     @endsection
         
     @section('javascript')
+        <script src="{{ asset('js/file-validation.js') }}"></script>
         <script>
             var destinatario_id = 0;
             var intern_externo = 1;

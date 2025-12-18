@@ -73,4 +73,14 @@ class Entrada extends Model
     {
         return $this->morphMany(Derivation::class, 'parent');
     }
+
+    // public function direccionRemitente()
+    // {
+    //     return $this->belongsTo(\App\Models\Direccion::class, 'direccion_id_remitente');
+    // }
+
+    // public function unidadRemitente()
+    // {
+    //     return $this->belongsTo(\App\Models\Unidad::class, 'unidad_id_remitente');
+    // }
 }

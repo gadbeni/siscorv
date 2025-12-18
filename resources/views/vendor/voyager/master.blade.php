@@ -190,6 +190,10 @@
     </script>
     @include('voyager::media.manager')
 
+    {{-- Loading --}}
+    <script src="{{ asset('vendor/loading/loading.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('vendor/loading/loading.css') }}">
+
     {{-- Socket.io --}}
     <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
     <script>
