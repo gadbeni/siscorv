@@ -35,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         }
         
         Paginator::useBootstrap();
+        
         Voyager::addAction(\App\Actions\EnlaceAddFile::class);
 
 
