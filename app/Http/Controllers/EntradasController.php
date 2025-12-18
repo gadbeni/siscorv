@@ -64,16 +64,12 @@ class EntradasController extends Controller
                         ->whereNull('deleted_at')
                         ->orderBy('id', 'DESC')->paginate($paginate);
 
-        dump($data);
+        // dump($data);
 
-        // return view('entradas.list', compact('data'));
+        return view('entradas.list', compact('data'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create(){
         $entrada = new Entrada;
         $funcionario = null;
