@@ -53,7 +53,9 @@
                                     <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>
                                 </div>
                             </div>
-                            <div class="row" id="div-results" style="min-height: 120px"></div>
+                            <div class="row" id="div-results" style="min-height: 120px">
+                                {!! $initial_list !!}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -125,8 +127,10 @@
             var destinatario_id;
             var intern_externo = 1;
             var countPage = 10;
-            $(document).ready(function() {
-                list();
+            
+            jQuery(function($) {
+                // list(); // Eliminamos la carga inicial por AJAX ya que ahora viene del servidor
+                // Pagination and search listeners
                 $('#input-search').on('keyup', function(e){
                     if(e.keyCode == 13) {
                         list();
@@ -136,44 +140,42 @@
                     countPage = $(this).val();
                     list();
                 });
+
+                // Delegation for pagination links
+                $(document).on('click', '.page-link', function(e){
+                    e.preventDefault();
+                    let link = $(this).attr('href');
+                    if(link){
+                        let page_id = link.split('=')[1];
+                        list(page_id);
+                    }
+                });
             });
 
             function list(page = 1){
-                $('#div-results').loading({message: 'Cargando...'});
+                jQuery('#div-results').loading({message: 'Cargando...'});
                 let url = '{{ url("admin/entradas/ajax/list") }}';
-                let search = $('#input-search').val() ? $('#input-search').val() : '';
-                $.ajax({
+                let search = jQuery('#input-search').val() ? jQuery('#input-search').val() : '';
+                jQuery.ajax({
                     url: `${url}?search=${search}&paginate=${countPage}&page=${page}`,
                     type: 'get',
                     success: function(result){
-                        $("#div-results").html(result);
-                        $('#div-results').loading('toggle');
+                        jQuery("#div-results").html(result);
+                        jQuery('#div-results').loading('toggle');
+                    },
+                    error: function(){
+                        jQuery('#div-results').loading('toggle');
                     }
                 });
             }
 
-
-            // function derivacionItem(id,destinoid=0){
-            //     $('#form-derivacion input[name="id"]').val(id);
-            //     destinatario_id = destinoid;
-            //     // alert(destinatario_id);
-            // }
-
             function deleteItem(url){
-                $('#delete_form').attr('action', url);
+                jQuery('#delete_form').attr('action', url);
             }
 
             function dateItem(url){
-                // alert(1)
-                $('#update_entrada_date').attr('action', url);
+                jQuery('#update_entrada_date').attr('action', url);
             }
-
-            $(function() {
-                let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
-                @if (session('alert-type'))
-                socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
-                @endif
-            });
         </script>
     @endpush
     

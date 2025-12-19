@@ -39,10 +39,24 @@ class HomeController extends Controller
     }
 
     public function search(Request $request){
-        $data = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])
-                    ->whereRaw('(cite = "'.$request->search.'" or CONCAT(tipo,"-",gestion,"-",id) = "'.strtoupper($request->search).'" )')
-                    ->where('deleted_at', NULL)->first();
-        // dd($data);
+        $search = $request->search;
+        $query = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])
+                    ->where('deleted_at', NULL);
+
+        if (strpos($search, '-') !== false) {
+            $parts = explode('-', $search);
+            if (count($parts) == 3) {
+                $query->where('tipo', $parts[0])
+                      ->where('gestion', $parts[1])
+                      ->where('id', $parts[2]);
+            } else {
+                $query->where('cite', $search);
+            }
+        } else {
+            $query->where('cite', $search);
+        }
+
+        $data = $query->first();
         return view('search', compact('data'));
     }
 
