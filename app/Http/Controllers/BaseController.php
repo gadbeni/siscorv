@@ -24,31 +24,35 @@ class BaseController extends Controller
             ];
             return Voyager::view('voyager::index', compact('stats'));
         }
-        $baseQuery = Derivation::where('people_id_para', $funcionarioId)
-            ->whereHas('entrada', function ($q) {
-                $q->whereNotIn('estado_id', [4, 6]);
-            });
 
-        $totalDerivaciones = (clone $baseQuery)->count();
+        // Professional Optimization: Cache dashboard stats for 5 minutes
+        $stats = \Illuminate\Support\Facades\Cache::remember('dash_stats_'.Auth::user()->id, 300, function() use ($funcionarioId) {
+            $baseQuery = Derivation::where('people_id_para', $funcionarioId)
+                ->whereHas('entrada', function ($q) {
+                    $q->whereNotIn('estado_id', [4, 6]);
+                });
 
-        $pendientes = (clone $baseQuery)->where('visto', NULL)
-            ->where('ok', 'NO')
-            ->count();
+            $totalDerivaciones = (clone $baseQuery)->count();
 
-        $urgentes = (clone $baseQuery)
-            ->where('visto', NULL)
-            ->where('ok', 'NO')
-            ->whereHas('entrada', function ($q) {
-                $q->where('urgent', 1);
-            })
-            ->count();
+            $pendientes = (clone $baseQuery)->where('visto', NULL)
+                ->where('ok', 'NO')
+                ->count();
 
-        // $derivaciones->where('visto', NULL)->where('ok', 'NO')->where('entrada.urgent', 1)->count();
-        $stats = (object) [
-            'total' => $totalDerivaciones,
-            'pendientes' =>  $pendientes,
-            'urgentes' => $urgentes
-        ];
+            $urgentes = (clone $baseQuery)
+                ->where('visto', NULL)
+                ->where('ok', 'NO')
+                ->whereHas('entrada', function ($q) {
+                    $q->where('urgent', 1);
+                })
+                ->count();
+
+            return (object) [
+                'total' => $totalDerivaciones,
+                'pendientes' =>  $pendientes,
+                'urgentes' => $urgentes
+            ];
+        });
+
         return Voyager::view('voyager::index', compact('stats'));
     }
 }

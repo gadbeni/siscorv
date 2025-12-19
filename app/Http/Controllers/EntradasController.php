@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FileController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Storage;
 
 // Models
@@ -34,25 +35,101 @@ class EntradasController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(){
+        $start = microtime(true);
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin')) {
             Auth::logout();
             return redirect()->route('maintenance');
         }
-        return view('entradas.browse');
+
+        // Pre-cargar la primera página para evitar el "spinner" inicial
+        $paginate = 10;
+        
+        // Usamos simplePaginate para evitar el COUNT(*) que es lento en tablas grandes
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
+                        ->withCount(['derivaciones' => function($q){
+                            $q->whereNull('deleted_at');
+                        }])
+                        ->select([
+                            'id','tipo','gestion','estado_id','cite', 'hr', 'remitente', 'referencia', 'entity_id', 'created_at', 'people_id_para', 'personeria', 'direccion_id_remitente', 'unidad_id_remitente'
+                        ])
+                        ->whereNull('deleted_at')
+                        ->orderBy('id', 'DESC')->simplePaginate($paginate);
+        
+        $t_query = microtime(true) - $start;
+
+        $direccion_ids = $data->pluck('direccion_id_remitente')->filter()->unique()->toArray();
+        $unidad_ids = $data->pluck('unidad_id_remitente')->filter()->unique()->toArray();
+        $people_ids = $data->pluck('people_id_para')->filter()->unique()->toArray();
+
+        $direcciones_map = [];
+        $unidades_map = [];
+        $people_map = [];
+        
+        // Cachear resultados de consultas masivas por 1 hora
+        if (!empty($direccion_ids)) {
+            $cache_key = 'dir_bulk_'.md5(implode(',', $direccion_ids));
+            $direcciones_map = Cache::remember($cache_key, 3600, function() use ($direccion_ids) {
+                $items = DB::connection('mamore')->table('direcciones')->whereIn('id', $direccion_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $dir) { $map[$dir->id] = $dir->nombre ?? $dir->NOMBRE ?? ''; }
+                return $map;
+            });
+        }
+        
+        if (!empty($unidad_ids)) {
+            $cache_key = 'uni_bulk_'.md5(implode(',', $unidad_ids));
+            $unidades_map = Cache::remember($cache_key, 3600, function() use ($unidad_ids) {
+                $items = DB::connection('mamore')->table('unidades')->whereIn('id', $unidad_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $uni) { $map[$uni->id] = $uni->nombre ?? $uni->Nombre ?? ''; }
+                return $map;
+            });
+        }
+
+        if (!empty($people_ids)) {
+            $cache_key = 'people_bulk_'.md5(implode(',', $people_ids));
+            $people_map = Cache::remember($cache_key, 3600, function() use ($people_ids) {
+                $items = DB::connection('mamore')->table('people')->whereIn('id', $people_ids)->select('id', 'first_name', 'last_name')->get();
+                $map = [];
+                foreach ($items as $p) { $map[$p->id] = $p->first_name.' '.$p->last_name; }
+                return $map;
+            });
+        }
+
+        foreach ($data as $item) {
+            $item->direccion_nombre = $direcciones_map[$item->direccion_id_remitente] ?? '';
+            $item->unidad_nombre = $unidades_map[$item->unidad_id_remitente] ?? '';
+            $item->person_full_name = $people_map[$item->people_id_para] ?? '';
+        }
+
+        $t_external = microtime(true) - $start - $t_query;
+
+        // Renderizar la vista inicial de la tabla
+        $initial_list = view('entradas.list', compact('data'))->render();
+        
+        $t_total = microtime(true) - $start;
+        $log_msg = "[" . date('Y-m-d H:i:s') . "] Entradas Index (Simple): Query: ".round($t_query, 4)."s, External: ".round($t_external, 4)."s, Total: ".round($t_total, 4)."s\n";
+        file_put_contents(storage_path('logs/profiling.log'), $log_msg, FILE_APPEND);
+
+        return view('entradas.browse', compact('initial_list'));
     }
 
     public function list(){
+        // Desactivar debugbar para esta petición si existe para máxima velocidad
+        if (class_exists('\Barryvdh\Debugbar\Facades\Debugbar')) {
+            \Barryvdh\Debugbar\Facades\Debugbar::disable();
+        }
+
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
-        // $funcionario = Persona::where('user_id', Auth::user()->id)->first();
 
         $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
+                        ->withCount(['derivaciones' => function($q){
+                            $q->whereNull('deleted_at');
+                        }])
                         ->select([
-                            'id','tipo','gestion','estado_id','cite', 'hr','remitente','referencia','entity_id','created_at', 'people_id_para', 'personeria'
+                            'id','tipo','gestion','estado_id','cite', 'hr', 'remitente', 'referencia', 'entity_id', 'created_at', 'people_id_para', 'personeria', 'direccion_id_remitente', 'unidad_id_remitente'
                         ])
-                        // ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
-                        //     $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
-                        // })
                         ->when($search, function ($query) use ($search) {
                             $query->where(function($q) use ($search) {
                                 $q->where('hr', 'like', "%{$search}%")
@@ -62,9 +139,52 @@ class EntradasController extends Controller
                             });
                         })
                         ->whereNull('deleted_at')
-                        ->orderBy('id', 'DESC')->paginate($paginate);
+                        ->orderBy('id', 'DESC')->simplePaginate($paginate);
 
-        // dump($data);
+        // Fetch Direcciones, Unidades and People in bulk
+        $direccion_ids = $data->pluck('direccion_id_remitente')->filter()->unique()->toArray();
+        $unidad_ids = $data->pluck('unidad_id_remitente')->filter()->unique()->toArray();
+        $people_ids = $data->pluck('people_id_para')->filter()->unique()->toArray();
+
+        $direcciones_map = [];
+        $unidades_map = [];
+        $people_map = [];
+
+        if (!empty($direccion_ids)) {
+            $cache_key = 'dir_bulk_'.md5(implode(',', $direccion_ids));
+            $direcciones_map = Cache::remember($cache_key, 3600, function() use ($direccion_ids) {
+                $items = DB::connection('mamore')->table('direcciones')->whereIn('id', $direccion_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $dir) { $map[$dir->id] = $dir->nombre ?? $dir->NOMBRE ?? ''; }
+                return $map;
+            });
+        }
+
+        if (!empty($unidad_ids)) {
+            $cache_key = 'uni_bulk_'.md5(implode(',', $unidad_ids));
+            $unidades_map = Cache::remember($cache_key, 3600, function() use ($unidad_ids) {
+                $items = DB::connection('mamore')->table('unidades')->whereIn('id', $unidad_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $uni) { $map[$uni->id] = $uni->nombre ?? $uni->Nombre ?? ''; }
+                return $map;
+            });
+        }
+
+        if (!empty($people_ids)) {
+            $cache_key = 'people_bulk_'.md5(implode(',', $people_ids));
+            $people_map = Cache::remember($cache_key, 3600, function() use ($people_ids) {
+                $items = DB::connection('mamore')->table('people')->whereIn('id', $people_ids)->select('id', 'first_name', 'last_name')->get();
+                $map = [];
+                foreach ($items as $p) { $map[$p->id] = $p->first_name.' '.$p->last_name; }
+                return $map;
+            });
+        }
+
+        foreach ($data as $item) {
+            $item->direccion_nombre = $direcciones_map[$item->direccion_id_remitente] ?? '';
+            $item->unidad_nombre = $unidades_map[$item->unidad_id_remitente] ?? '';
+            $item->person_full_name = $people_map[$item->people_id_para] ?? '';
+        }
 
         return view('entradas.list', compact('data'));
     }
@@ -81,7 +201,29 @@ class EntradasController extends Controller
                 $funcionario = $this->getPeople($user_auth->people_id);
             }
         }
-        return view('entradas.edit-add', compact('entrada', 'funcionario'));
+
+        // Pre-cargar datos para evitar loops en la vista
+        $categories = \App\Models\Category::with(['organization' => function($q){
+            $q->where('tipo','tptramites');
+        }])->get();
+        $entities = \App\Models\Entity::where('estado', 'activo')->whereNull('deleted_at')->get();
+
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'categories', 'entities'));
+    }
+
+    public function edit(Entrada $entrada){
+        $funcionario = null;
+        if($entrada->people_id_para){
+            $funcionario = $this->getPeople($entrada->people_id_para);
+        }
+
+        // Pre-cargar datos para evitar loops en la vista
+        $categories = \App\Models\Category::with(['organization' => function($q){
+            $q->where('tipo','tptramites');
+        }])->get();
+        $entities = \App\Models\Entity::where('estado', 'activo')->whereNull('deleted_at')->get();
+
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'categories', 'entities'));
     }
 
     /**
@@ -205,20 +347,22 @@ class EntradasController extends Controller
 
     public function show($id){
         $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
-                    $q->where('deleted_at', NULL);
-                }, 'archivos' => function($q){
-                    $q->where('deleted_at', NULL);
-                },'vias'])->where('id', $id)
-                ->where('deleted_at', NULL)->first();
+                    $q->whereNull('deleted_at');
+                }, 'vias'])->where('id', $id)
+                ->whereNull('deleted_at')->first();
                 
+        if (!$data) {
+            return redirect()->route('entradas.index')->with(['message' => 'Trámite no encontrado', 'alert-type' => 'error']);
+        }
+
         if ($data->user_id){
             $user_entrada = User::where('id', $data->user_id)->first();
         }else{
             $people_entrada = Persona::where('people_id', $data->people_id_de)->orderBy('created_at','DESC')->first();
-            $user_entrada = User::where('id', $people_entrada->user_id)->first();
+            $user_entrada = $people_entrada ? User::where('id', $people_entrada->user_id)->first() : null;
         }
         
-        $nci = Archivo::where('entrada_id', $id)->where('deleted_at', null)->get();
+        $nci = $data->archivos->where('nci', 1);
         return view('entradas.read', compact('data', 'nci','user_entrada'));
     }
 
@@ -253,15 +397,6 @@ class EntradasController extends Controller
         }
     }
   
-    public function edit(Entrada $entrada){
-        $user_auth = Persona::where('user_id', Auth::user()->id)->first();
-        if($user_auth->people_id == null){
-            $funcionario = $this->getFuncionario($user_auth->funcionario_id);
-        }else{
-            $funcionario = $this->getPeople($user_auth->people_id);
-        }
-        return view('entradas.edit-add', compact('entrada','funcionario'));
-    }
 
     public function update(Request $request, Entrada $entrada){
         DB::beginTransaction();
@@ -416,7 +551,7 @@ class EntradasController extends Controller
 
     // Derivaciones
     public function derivacion_index(){
-
+        $start = microtime(true);
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin')){
             Auth::logout();
             return redirect()->route('maintenance');
@@ -431,76 +566,87 @@ class EntradasController extends Controller
                 return redirect('admin')->with(['message' => 'Falta tu código de funcionario contáctate con la Unidad de Sistemas para solucionarlo por favor', 'alert-type' => 'error']);
             }
         }
-        return view('bandeja.browse', compact('funcionario_id'));
+
+        // Pre-cargar la primera página de pendientes para evitar el "spinner" inicial
+        $paginate = 50;
+        $derivaciones = Derivation::with(['entrada' => function($q){
+                                $q->select('id', 'tipo', 'gestion', 'cite', 'remitente', 'referencia', 'urgent', 'created_at', 'estado_id');
+                            }])
+                            ->where('transferred', 0)
+                            ->where('people_id_para', $funcionario_id)
+                            ->whereHas('entrada', function($q){
+                                $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
+                            })->where('ok', 'NO')
+                            ->orderBy('id', 'DESC')->simplePaginate($paginate);
+        
+        $t_query = microtime(true) - $start;
+
+        $initial_list = view('bandeja.pendientes', compact('derivaciones'))->render();
+        
+        $t_total = microtime(true) - $start;
+        $log_msg = "[" . date('Y-m-d H:i:s') . "] Bandeja Index: Query: ".round($t_query, 4)."s, Total: ".round($t_total, 4)."s\n";
+        file_put_contents(storage_path('logs/profiling.log'), $log_msg, FILE_APPEND);
+
+        return view('bandeja.browse', compact('funcionario_id', 'initial_list'));
     }
 
     public function derivacion_list($funcionario_id, $type){
+        if (class_exists('\Barryvdh\Debugbar\Facades\Debugbar')) {
+            \Barryvdh\Debugbar\Facades\Debugbar::disable();
+        }
+
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
+        
+        $query = Derivation::with(['entrada' => function($q){
+                                $q->select('id', 'tipo', 'gestion', 'cite', 'remitente', 'referencia', 'urgent', 'created_at', 'estado_id');
+                            }])
+                            ->where('transferred', 0)
+                            ->where('people_id_para', $funcionario_id);
+
         switch ($type) {
             case 'pendientes':
-                $derivaciones = Derivation::whereHas('entrada', function($q){
+                $query->whereHas('entrada', function($q){
                                         $q->where('personeria', 0)->where('urgent', 0)->whereNotIn('estado_id', [4, 6]);
-                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                    ->where('ok', 'NO')
-                                    ->where(function($query) use ($search){
-                                        if($search){
-                                            $query->OrwhereHas('entrada', function($query) use($search){
-                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                            })
-                                            ->OrWhereRaw("id = '$search'");
-                                        }
-                                    })
-                                    ->orderBy('id', 'DESC')->paginate($paginate);
-                return view('bandeja.pendientes', compact('derivaciones'));
+                                    })->where('ok', 'NO');
                 break;
             case 'derivados':
-                $derivaciones = Derivation::whereHas('entrada', function($q){
+                $query->whereHas('entrada', function($q){
                                         $q->where('personeria', 0)->whereNotIn('estado_id', [4, 6]);
-                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                    ->where('ok', 'SI')
-                                    ->where(function($query) use ($search){
-                                        if($search){
-                                            $query->OrwhereHas('entrada', function($query) use($search){
-                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                            })
-                                            ->OrWhereRaw("id = '$search'");
-                                        }
-                                    })
-                                    ->orderBy('id', 'DESC')->paginate($paginate);
-                return view('bandeja.pendientes', compact('derivaciones'));
+                                    })->where('ok', 'SI');
                 break;
             case 'urgentes':
-                $derivaciones = Derivation::whereHas('entrada', function($q){
+                $query->whereHas('entrada', function($q){
                                         $q->where('personeria', 0)->where('urgent', 1)->whereNotIn('estado_id', [4, 6]);
-                                    })->where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                    ->where('ok', 'NO')
-                                    ->where(function($query) use ($search){
-                                        if($search){
-                                            $query->OrwhereHas('entrada', function($query) use($search){
-                                                $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                            })
-                                            ->OrWhereRaw("id = '$search'");
-                                        }
-                                    })
-                                    ->orderBy('id', 'DESC')->paginate($paginate);
-                return view('bandeja.urgentes', compact('derivaciones'));
+                                    })->where('ok', 'NO');
                 break;
             case 'archivados':
-                    $derivaciones = Derivation::where('transferred', 0)->where('people_id_para', $funcionario_id)
-                                        ->where('ok', 'ARCHIVADO')
-                                        ->where(function($query) use ($search){
-                                            if($search){
-                                                $query->OrwhereHas('entrada', function($query) use($search){
-                                                    $query->whereRaw("(hr like '%$search%' or cite like '%$search%' or remitente like '%$search%' or referencia like '%$search%')");
-                                                })
-                                                ->OrWhereRaw("id = '$search'");
-                                            }
-                                        })
-                                        ->orderBy('id', 'DESC')->paginate($paginate);
-                    return view('bandeja.archivados', compact('derivaciones'));
-                    break;
+                $query->where('ok', 'ARCHIVADO');
+                break;
         }
+
+        if($search){
+            $query->where(function($q) use ($search){
+                $q->OrwhereHas('entrada', function($q) use($search){
+                    $q->where('hr', 'like', "%$search%")
+                      ->orWhere('cite', 'like', "%$search%")
+                      ->orWhere('remitente', 'like', "%$search%")
+                      ->orWhere('referencia', 'like', "%$search%");
+                })
+                ->OrWhere('id', $search);
+            });
+        }
+
+        $derivaciones = $query->orderBy('id', 'DESC')->simplePaginate($paginate);
+
+        $views = [
+            'pendientes' => 'bandeja.pendientes',
+            'derivados' => 'bandeja.pendientes',
+            'urgentes' => 'bandeja.urgentes',
+            'archivados' => 'bandeja.archivados'
+        ];
+
+        return view($views[$type], compact('derivaciones'));
     }
 
     public function store_derivacion(Request $request){
@@ -573,10 +719,10 @@ class EntradasController extends Controller
             $derivacion->visto = Carbon::now();
             $derivacion->save();              
             $data = Entrada::with(['entity', 'estado', 'archivos.user', 'derivaciones' => function($q){
-                                $q->where('deleted_at',null);
-                            }])
+                                $q->whereNull('deleted_at');
+                            }, 'person', 'vias'])
                             ->where('id', $derivacion->entrada_id)
-                            ->where('deleted_at', NULL)
+                            ->whereNull('deleted_at')
                             ->first();
             $ok = date("d-m-Y", strtotime($data->created_at));
             
@@ -586,10 +732,10 @@ class EntradasController extends Controller
                 $direccion = $this->getIdDireccionInfo($data->direccion_id_remitente);
                 $unidad = $this->getIdUnidadInfo($data->unidad_id_remitente);
                 if($direccion){
-                    $origen = $direccion->nombre;
+                    $origen = $direccion->nombre ?? $direccion->NOMBRE ?? '';
                 }
                 if ($unidad) {
-                    $origen = $unidad->nombre;
+                    $origen = $unidad->nombre ?? $unidad->Nombre ?? '';
                 }
             }
             return view('bandeja.read', compact('data', 'origen','derivacion', 'ok'));
@@ -598,7 +744,7 @@ class EntradasController extends Controller
         }
     }
 
-    public function treeAjax($id)
+    public function treeAjax($id = null)
     {
         return DB::table('entradas as e')
                         ->join('derivations as d', 'd.entrada_id', 'e.id')
