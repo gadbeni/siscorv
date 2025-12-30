@@ -56,8 +56,8 @@
                                             @foreach ($data as $item)
                                                 <tr>
                                                     <td>{{$item->id}}</td>
-                                                    <td>{{$item->person->ci}}</td>
-                                                    <td>{{$item->person->first_name}} {{$item->person->last_name}}</td>
+                                                    <td>{{ optional($item->person)->ci }}</td>
+                                                    <td>{{ optional($item->person)->first_name }} {{ optional($item->person)->last_name }}</td>
                                                     <td>{{$item->cargo}}</td>
                                                     {{-- <td>{{$item->observacion}}</td> --}}
                                                     <td>
@@ -85,7 +85,7 @@
                                                             </a>
                                                         @endif
 
-                                                        
+
                                                     </th>
                                                 </tr>
                                             @endforeach
@@ -101,7 +101,7 @@
         <div class="modal fade" role="dialog" id="modalRegistrar">
             <div class="modal-dialog">
                 <div class="modal-content">
-                
+
                     <!-- Modal Header -->
                     <div class="modal-header btn-success">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -121,9 +121,9 @@
                                         @foreach($people as $data)
                                             <option value="{{$data->id}}">{{$data->first_name}} {{$data->paternal_surname}} {{$data->maternal_surname}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -136,9 +136,9 @@
                                         @foreach($direcciones as $data)
                                             <option value="{{$data->id}}">{{$data->nombre}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -151,9 +151,9 @@
                                         @foreach($unidades as $data)
                                             <option value="{{$data->id}}">{{$data->nombre}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -161,7 +161,7 @@
                                 <span class="input-group-text"><b>Cargo:</b></span>
                                 </div>
                                 <input type="text" class="form-control" id="cargo" name="cargo" required>
-                            </div>                      
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -169,12 +169,12 @@
                                 <span class="input-group-text"><b>Observación:</b></span>
                                 </div>
                                 <textarea name="observacion" id="observacion" class="form-control" rows="3"></textarea>
-                            </div>             
-                        </div>    
-                        
-                        
+                            </div>
+                        </div>
+
+
                     </div>
-                    
+
                     <!-- Modal footer -->
                     <div class="modal-footer justify-content-between">
                         <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
@@ -183,8 +183,8 @@
                             Registrar
                         </button>
                     </div>
-                    {!! Form::close()!!} 
-                    
+                    {!! Form::close()!!}
+
                 </div>
             </div>
         </div>
@@ -193,13 +193,13 @@
         <div class="modal fade" role="dialog" id="modalEditar">
             <div class="modal-dialog">
                 <div class="modal-content">
-                
+
                     <!-- Modal Header -->
                     <div class="modal-header btn-primary">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title"><i class="voyager-edit"></i> Editar Persona</h4>                        
+                        <h4 class="modal-title"><i class="voyager-edit"></i> Editar Persona</h4>
                     </div>
-                    {!! Form::open(['route' => 'people_exts.update','class' => 'was-validated'])!!}
+                    {!! Form::open(['route' => ['people_exts.update', 0], 'method' => 'PUT', 'class' => 'was-validated'])!!}
                     <!-- Modal body -->
                     <div class="modal-body">
                         <input type="text" id="id" name="id">
@@ -214,9 +214,9 @@
                                         @foreach($people as $data)
                                             <option value="{{$data->id}}">{{$data->first_name}} {{$data->last_name}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -229,9 +229,9 @@
                                         @foreach($direcciones as $data)
                                             <option value="{{$data->id}}">{{$data->nombre}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-12">
@@ -244,9 +244,9 @@
                                         @foreach($unidades as $data)
                                             <option value="{{$data->id}}">{{$data->nombre}}</option>
                                         @endforeach
-                                    </select>          
+                                    </select>
                                 </div>
-                            </div> 
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -254,7 +254,7 @@
                                 <span class="input-group-text"><b>Cargo:</b></span>
                                 </div>
                                 <input type="text" class="form-control" id="cargo" name="cargo" required>
-                            </div>                      
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-12">
@@ -262,12 +262,12 @@
                                 <span class="input-group-text"><b>Observación:</b></span>
                                 </div>
                                 <textarea name="observacion" id="observacion" class="form-control" rows="3"></textarea>
-                            </div>             
-                        </div>    
-                        
-                        
+                            </div>
+                        </div>
+
+
                     </div>
-                    
+
                     <!-- Modal footer -->
                     <div class="modal-footer justify-content-between">
                         <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
@@ -276,8 +276,8 @@
                             Editar
                         </button>
                     </div>
-                    {!! Form::close()!!} 
-                    
+                    {!! Form::close()!!}
+
                 </div>
             </div>
         </div>
@@ -286,7 +286,7 @@
         <div class="modal fade" role="dialog" id="modalBaja">
             <div class="modal-dialog">
                 <div class="modal-content">
-                
+
                     <!-- Modal Header -->
                     <div class="modal-header btn-warning">
                         <h4 class="modal-title"><i class="voyager-edit"></i> Dar de Baja</h4>
@@ -300,11 +300,11 @@
                             <i class="voyager-warning" style="color: orange; font-size: 5em;"></i>
                             <br>
                             <p><b>Dar de Baja....!</b></p>
-                        </div>                      
-                        
-                        
+                        </div>
+
+
                     </div>
-                    
+
                     <!-- Modal footer -->
                     <div class="modal-footer justify-content-between">
                         <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
@@ -313,8 +313,8 @@
                             Baja
                         </button>
                     </div>
-                    {!! Form::close()!!} 
-                    
+                    {!! Form::close()!!}
+
                 </div>
             </div>
         </div>
@@ -322,7 +322,7 @@
         <div class="modal fade" role="dialog" id="modalActivo">
             <div class="modal-dialog">
                 <div class="modal-content">
-                
+
                     <!-- Modal Header -->
                     <div class="modal-header btn-success">
                         <h4 class="modal-title"><i class="voyager-check"></i> Habilitar Persona</h4>
@@ -336,11 +336,11 @@
                             <i class="voyager-check" style="color: rgb(31, 142, 0); font-size: 5em;"></i>
                             <br>
                             <p><b>Habilitar Persona....!</b></p>
-                        </div>                      
-                        
-                        
+                        </div>
+
+
                     </div>
-                    
+
                     <!-- Modal footer -->
                     <div class="modal-footer justify-content-between">
                         <button type="button text-left" class="btn btn-danger" data-dismiss="modal" data-toggle="tooltip" title="Volver">Cancelar
@@ -349,8 +349,8 @@
                             Habilitar
                         </button>
                     </div>
-                    {!! Form::close()!!} 
-                    
+                    {!! Form::close()!!}
+
                 </div>
             </div>
         </div>
@@ -369,17 +369,17 @@
                         <div class="text-center" style="text-transform:uppercase">
                             <i class="voyager-trash" style="color: red; font-size: 5em;"></i>
                             <br>
-                            
+
                             <p><b>Desea eliminar el siguiente registro?</b></p>
                         </div>
-                    </div>                
+                    </div>
                     <div class="modal-footer">
-                        
+
                             <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, eliminar">
-                        
+
                         <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
                     </div>
-                    {!! Form::close()!!} 
+                    {!! Form::close()!!}
                 </div>
             </div>
         </div>
@@ -427,52 +427,55 @@
 
             $('#modalBaja').on('show.bs.modal', function (event) {
                 // alert('hola');
-                var button = $(event.relatedTarget) 
+                var button = $(event.relatedTarget)
 
                 var id = button.data('id')
 
                 var modal = $(this)
                 modal.find('.modal-body #id').val(id)
-                
+
             });
             $('#modalEditar').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget) 
+                var button = $(event.relatedTarget)
 
                 var item = button.data('item')
                 // alert(item)
 
                 var modal = $(this)
+                var form = modal.find('form')
+                var action = form.attr('action')
+                form.attr('action', action.replace('/0', '/' + item.id))
                 modal.find('.modal-body #id').val(item.id)
-                modal.find('.modal-body #person_id').val(item.person_id).trigger('change')   
-                modal.find('.modal-body #direccion_id').val(item.direccion_id).trigger('change')   
-                modal.find('.modal-body #unidad_id').val(item.unidad_id).trigger('change')   
+                modal.find('.modal-body #person_id').val(item.person_id).trigger('change')
+                modal.find('.modal-body #direccion_id').val(item.direccion_id).trigger('change')
+                modal.find('.modal-body #unidad_id').val(item.unidad_id).trigger('change')
                 modal.find('.modal-body #observacion').val(item.observacion)
                 modal.find('.modal-body #cargo').val(item.cargo)
-                
+
             });
             $('#modalActivo').on('show.bs.modal', function (event) {
                 // alert('hola');
-                var button = $(event.relatedTarget) 
+                var button = $(event.relatedTarget)
 
                 var id = button.data('id')
 
                 var modal = $(this)
                 modal.find('.modal-body #id').val(id)
-                
+
             });
 
             $('#modalDelete').on('show.bs.modal', function (event) {
                 // alert('hola');
-                var button = $(event.relatedTarget) 
+                var button = $(event.relatedTarget)
 
                 var id = button.data('id')
                 // alert(34)
 
                 var modal = $(this)
                 modal.find('.modal-body #id').val(id)
-                
+
             });
-           
+
 
         </script>
     @stop
