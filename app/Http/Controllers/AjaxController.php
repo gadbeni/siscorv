@@ -72,7 +72,8 @@ class AjaxController extends Controller
                     $q->where('p.ci', 'like', "%{$search}%")
                       ->orWhere('p.first_name', 'like', "%{$search}%")
                       ->orWhere('p.paternal_surname', 'like', "%{$search}%")
-                      ->orWhere('p.maternal_surname', 'like', "%{$search}%");
+                      ->orWhere('p.maternal_surname', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, '')) like ?", ["%{$search}%"]);
                 })
                 ->limit(5)
                 ->get();
@@ -92,7 +93,8 @@ class AjaxController extends Controller
                     $q->where('m.ci', 'like', "%{$search}%")
                       ->orWhere('m.first_name', 'like', "%{$search}%")
                       ->orWhere('m.paternal_surname', 'like', "%{$search}%")
-                      ->orWhere('m.maternal_surname', 'like', "%{$search}%");
+                      ->orWhere('m.maternal_surname', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(COALESCE(m.first_name, ''), ' ', COALESCE(m.paternal_surname, ''), ' ', COALESCE(m.maternal_surname, '')) like ?", ["%{$search}%"]);
                 })
                 ->limit(5)
                 ->get();
@@ -156,7 +158,8 @@ class AjaxController extends Controller
                     ->where(function($q) use ($search) {
                         $q->where('p.ci', 'like', "%{$search}%")
                           ->orWhere('p.first_name', 'like', "%{$search}%")
-                          ->orWhere('p.last_name', 'like', "%{$search}%");
+                          ->orWhere('p.last_name', 'like', "%{$search}%")
+                          ->orWhereRaw("CONCAT(p.first_name, ' ', p.last_name) like ?", ["%{$search}%"]);
                     })
                     ->groupBy('text')
                     ->limit(10)
@@ -176,7 +179,8 @@ class AjaxController extends Controller
                     ->where(function($q) use ($search) {
                         $q->where('m.ci', 'like', "%{$search}%")
                           ->orWhere('m.first_name', 'like', "%{$search}%")
-                          ->orWhere('m.last_name', 'like', "%{$search}%");
+                          ->orWhere('m.last_name', 'like', "%{$search}%")
+                          ->orWhereRaw("CONCAT(m.first_name, ' ', m.last_name) like ?", ["%{$search}%"]);
                     })
                     ->get();
             }
@@ -243,7 +247,7 @@ class AjaxController extends Controller
 
 
 
-    // para saber si el cite ya se encuentra registrado 
+    // para saber si el cite ya se encuentra registrado
     public function getCite($id = 1, $cite = null)
     {
         if (!$cite) {
