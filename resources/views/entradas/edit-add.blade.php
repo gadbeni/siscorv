@@ -511,8 +511,14 @@
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
-                    paste_as_text: true,
-                    plugins: 'paste',
+                    setup: function (editor) {
+                        editor.on('paste', function (e) {
+                            e.preventDefault();
+                            var text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                            editor.insertContent(text);
+                            console.log('Pegado con éxito: Formato eliminado mediante script propio.');
+                        });
+                    }
                 }
 
                 edit = "{{ $entrada->id }}";
