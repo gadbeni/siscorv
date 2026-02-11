@@ -51,10 +51,11 @@
         width: 100px !important
     }
 </style>
-<script src="{{ asset('js/jquery-3.4.1.min.js')}}" ></script>
+
+@push('javascript')
 <script>
-    $(document).ready(function () {
-        ruta = "{{ route('mamore.getpeoplederivacion') }}";
+    jQuery(document).ready(function ($) {
+        let ruta = "{{ route('mamore.getpeoplederivacion') }}";
         $("#select-destinatario").select2({
             maximumSelectionLength: 20,
             ajax: { 
@@ -76,8 +77,7 @@
                         results: response
                     };
                 }
-            },
-            //allowClear: true
+            }
         });
         $('#toggleswitch').on('change', function() {
             if (this.checked) {
@@ -88,3 +88,4 @@
         });
     });
 </script>
+@endpush

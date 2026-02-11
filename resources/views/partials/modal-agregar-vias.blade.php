@@ -39,12 +39,11 @@
     </div>
 </form>
 
-<script src="{{ asset('js/jquery-3.4.1.min.js')}}" ></script>
-
+@push('javascript')
 <script>
-    $(document).ready(function () {
-        ruta = "{{ route('mamore.getpeople') }}";
-        intern_externo=1;
+    jQuery(document).ready(function ($) {
+        let ruta = "{{ route('mamore.getpeople') }}";
+        let intern_externo_via = 1;
         $("#select-funcionario_id_destinov").select2({
             ajax: { 
                 allowClear: true,
@@ -55,7 +54,7 @@
                 data: function (params) {
                     return {
                         search: params.term, // search term
-                        externo: intern_externo
+                        externo: intern_externo_via
                     };
                 },
                 processResults: function (response) {
@@ -67,11 +66,11 @@
         });
         $('#toggleswitchv').on('change', function() {
             if (this.checked) {
-                intern_externo = 1;
+                intern_externo_via = 1;
             } else {
-                intern_externo = 0;
+                intern_externo_via = 0;
             }
         });
     });
-    
 </script>
+@endpush

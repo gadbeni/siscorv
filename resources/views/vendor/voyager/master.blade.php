@@ -84,6 +84,16 @@
     @yield('head')
     
     @livewireStyles
+    <style>
+        #voyager-loader {
+            display: none !important;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.body.classList.add('loaded');
+        });
+    </script>
 </head>
 
 <body class="voyager @if(isset($dataType) && isset($dataType->slug)){{ $dataType->slug }}@endif">
@@ -149,12 +159,11 @@
     @include('voyager::partials.app-footer')
 
     <!-- Javascript Libs -->
-
-
     <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
 
+
     {{-- Para sweetalert --}}
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @if (setting('configuracion.navidad'))
         {{-- <link href="{{asset('navidad/css/style.css')}}" rel="stylesheet" type="text/css" /> --}}
@@ -162,7 +171,7 @@
         {{-- <script src="{{asset('navidad/js/snowfall.jquery.js')}}"></script> --}}
         <script type="text/javascript" src="{{asset('navidad/snow.js')}}"></script>
         <script type="text/javascript">
-            $(function() {
+            jQuery(function($) {
                 $(document).snow({ SnowImage: "{{ asset('navidad/image/icon.png') }}" });
             });
         </script>
@@ -190,41 +199,74 @@
     </script>
     @include('voyager::media.manager')
 
+    {{-- Loading --}}
+    <script src="{{ asset('vendor/loading/loading.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('vendor/loading/loading.css') }}">
+
     {{-- Socket.io --}}
-    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
     <script>
         const IP_ADDRESS = "{{ env('SOCKET_URL', '127.0.0.1') }}";
         const SOCKET_PORT = "{{ env('SOCKET_PORT', '3000') }}";
 
-        $(function() {
-            // Pedir autorización para mostrar notificaciones
-            Notification.requestPermission();
+        jQuery(function($) {
+            // Only ask if we haven't asked before
+            if (typeof Notification !== 'undefined' && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
 
-            let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
-            socket.on('sendNotificationToClient', (id) => {
-                let user_id = "{{ Auth::user()->id }}";
-                if(user_id == id){
-                    if(Notification.permission=='granted'){
-                        let notificacion = new Notification('Nueva derivación',{
-                            body: 'Tienes un trámite nuevo',
-                            icon: '{{ url("images/icon.png") }}'
-                        });
+            if (typeof io !== 'undefined') {
+                try {
+                    let socket = io(IP_ADDRESS + ':' + SOCKET_PORT, {
+                        reconnection: false,
+                        timeout: 1000,
+                        transports: ['polling', 'websocket'],
+                        autoConnect: true
+                    });
 
-                        notificacion.onclick = function(event) {
-                            event.preventDefault(); // Previene al buscador de mover el foco a la pestaña del Notification
-                            window.location = "{{ route('bandeja.index') }}";
+                    // Emit notification if requested by session
+                    @if (session('alert-type'))
+                        socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
+                    @endif
+
+                    // Global notification handler
+                    socket.on('sendNotificationToClient', (id) => {
+                        let user_id = "{{ Auth::user()->id }}";
+                        if(user_id == id){
+                            if (typeof bandejaNewAlert !== 'undefined') {
+                                bandejaNewAlert();
+                            }
+
+                            if(typeof Notification !== 'undefined' && Notification.permission=='granted'){
+                                let notificacion = new Notification('Nueva derivación',{
+                                    body: 'Tienes un trámite nuevo',
+                                    icon: '{{ url("images/icon.png") }}'
+                                });
+
+                                notificacion.onclick = function(event) {
+                                    event.preventDefault();
+                                    window.location = "{{ route('bandeja.index') }}";
+                                }
+                            }
+
+                            let badge = $('#badge-notification .badge');
+                            if(badge.length === 0){
+                                let url = "{{ route('bandeja.index') }}";
+                                $('#badge-notification').html(`<a href="${url}"> <span class="voyager-bell text-danger" style="font-size: 25px"></span> <span class="badge" style="margin-left: -10px">1</span> </a>`);
+                            }else{
+                                let cont = badge.text();
+                                badge.text(parseFloat(cont || 0) + 1);
+                            }
                         }
-                    }
+                    });
 
-                    let cont = $('#badge-notification .badge').text();
-                    if(!cont){
-                        let url = "{{ route('bandeja.index') }}";
-                        $('#badge-notification').html(`<a href="${url}"> <span class="voyager-bell text-danger" style="font-size: 25px"></span> <span class="badge" style="margin-left: -10px">1</span> </a>`);
-                    }else{
-                        $('#badge-notification .badge').text(parseFloat(cont)+1);
-                    }
+                    socket.on('connect_error', () => { 
+                        socket.close();
+                        console.log('Notification server not found. System working in offline mode.');
+                    });
+                } catch (e) {
                 }
-            });
+            }
         });
     </script>
 
@@ -236,7 +278,7 @@
     @livewireScripts
 
     <script>
-        $(document).ready(function(){
+        jQuery(document).ready(function($){
             $('[data-toggle="tooltip"]').tooltip();
             $('.form-submit').submit(function(e){
                 $('.form-submit .btn-submit').attr('disabled', 'disabled');

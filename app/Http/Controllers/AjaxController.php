@@ -55,12 +55,11 @@ class AjaxController extends Controller
         $funcionarios = [];
 
         if ($int_ext == 1) {
-
             $funcionarios = DB::connection('mamore')->table('people as p')
                 ->join('contracts as c', 'c.person_id', 'p.id')
                 ->where('c.status', 'firmado')
-                ->where('c.deleted_at', null)
-                ->where('p.deleted_at', null)
+                ->whereNull('c.deleted_at')
+                ->whereNull('p.deleted_at')
                 ->select([
                     'p.id',
                     DB::raw("upper(CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, ''))) as text"),
@@ -69,14 +68,19 @@ class AjaxController extends Controller
                     'p.maternal_surname',
                     'p.ci',
                 ])
-                ->whereRaw('(p.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, ''))") . ' like "%' . $search . '%")')
-                ->groupBy('text')
+                ->where(function($q) use ($search) {
+                    $q->where('p.ci', 'like', "%{$search}%")
+                      ->orWhere('p.first_name', 'like', "%{$search}%")
+                      ->orWhere('p.paternal_surname', 'like', "%{$search}%")
+                      ->orWhere('p.maternal_surname', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, '')) like ?", ["%{$search}%"]);
+                })
                 ->limit(5)
                 ->get();
         } else {
-            // $funcionarios = DB::table('siscor2021.people_exts as s')
-            $funcionarios = DB::table('siscor_v2.people_exts as s')
-                ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+            $db_mamore = config('database.connections.mamore.database');
+            $funcionarios = DB::table('people_exts as s')
+                ->join($db_mamore.'.people as m', 'm.id', '=', 's.person_id')
                 ->select(
                     'm.id',
                     DB::raw("upper(CONCAT(COALESCE(m.first_name, ''), ' ', COALESCE(m.paternal_surname, ''), ' ', COALESCE(m.maternal_surname, ''))) as text"),
@@ -85,7 +89,13 @@ class AjaxController extends Controller
                     'm.maternal_surname',
                     'm.ci',
                 )
-                ->whereRaw('(m.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(COALESCE(m.first_name, ''), ' ', COALESCE(m.paternal_surname, ''), ' ', COALESCE(m.maternal_surname, ''))") . ' like "%' . $search . '%")')
+                ->where(function($q) use ($search) {
+                    $q->where('m.ci', 'like', "%{$search}%")
+                      ->orWhere('m.first_name', 'like', "%{$search}%")
+                      ->orWhere('m.paternal_surname', 'like', "%{$search}%")
+                      ->orWhere('m.maternal_surname', 'like', "%{$search}%")
+                      ->orWhereRaw("CONCAT(COALESCE(m.first_name, ''), ' ', COALESCE(m.paternal_surname, ''), ' ', COALESCE(m.maternal_surname, '')) like ?", ["%{$search}%"]);
+                })
                 ->limit(5)
                 ->get();
         }
@@ -102,6 +112,7 @@ class AjaxController extends Controller
         $type = $request->type;
         $int_ext = $request->externo; //para saber si buscara funcionario interno u externo
         $funcionarios = [];
+        $db_mamore = config('database.connections.mamore.database');
         if (!$search && $type > 0) {
             $funcionarios = DB::connection('mamore')->table('people as p')
                 ->join('contracts as c', 'c.person_id', 'p.id')
@@ -116,13 +127,10 @@ class AjaxController extends Controller
                     'last_name',
                     'p.ci',
                 )
-                // ->whereRaw('(p.ci like "%' .$search . '%" or '.DB::raw("CONCAT(p.first_name, ' ', p.last_name)").' like "%' .$search . '%")')
-                // ->groupBy('text')
                 ->get();
             if (count($funcionarios) == 0) {
-                // $funcionarios = DB::table('siscor2021.people_exts as s')
-                $funcionarios = DB::table('siscor_v2.people_exts as s')
-                    ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                $funcionarios = DB::table('people_exts as s')
+                    ->join($db_mamore.'.people as m', 'm.id', '=', 's.person_id')
                     ->select(
                         'm.id',
                         DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
@@ -131,8 +139,6 @@ class AjaxController extends Controller
                         'm.ci',
                     )
                     ->where('s.person_id', $type)
-                    // ->whereRaw('(m.ci like "%' .$search . '%" or '.DB::raw("CONCAT(m.first_name, ' ', m.last_name)").' like "%' .$search . '%")')
-                    // ->groupBy('text')
                     ->get();
             }
         } else {
@@ -140,9 +146,8 @@ class AjaxController extends Controller
                 $funcionarios = DB::connection('mamore')->table('people as p')
                     ->join('contracts as c', 'c.person_id', 'p.id')
                     ->where('c.status', 'firmado')
-                    ->where('c.deleted_at', null)
-                    ->where('p.deleted_at', null)
-                    // ->where('p.id',$type)
+                    ->whereNull('c.deleted_at')
+                    ->whereNull('p.deleted_at')
                     ->select(
                         'p.id',
                         DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
@@ -150,16 +155,20 @@ class AjaxController extends Controller
                         'last_name',
                         'p.ci',
                     )
-                    ->whereRaw('(p.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(p.first_name, ' ', p.last_name)") . ' like "%' . $search . '%")')
+                    ->where(function($q) use ($search) {
+                        $q->where('p.ci', 'like', "%{$search}%")
+                          ->orWhere('p.first_name', 'like', "%{$search}%")
+                          ->orWhere('p.last_name', 'like', "%{$search}%")
+                          ->orWhereRaw("CONCAT(p.first_name, ' ', p.last_name) like ?", ["%{$search}%"]);
+                    })
                     ->groupBy('text')
                     ->limit(10)
                     ->get();
             } else {
-                // $funcionarios = DB::table('siscor2021.people_exts as s')
-                $funcionarios = DB::table('siscor_v2.people_exts as s')
-                    ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                $funcionarios = DB::table('people_exts as s')
+                    ->join($db_mamore.'.people as m', 'm.id', '=', 's.person_id')
                     ->where('s.status', 1)
-                    ->where('s.deleted_at', null)
+                    ->whereNull('s.deleted_at')
                     ->select(
                         'm.id',
                         DB::raw("CONCAT(m.first_name, ' ', m.last_name) as text"),
@@ -167,8 +176,12 @@ class AjaxController extends Controller
                         'm.last_name',
                         'm.ci',
                     )
-                    ->whereRaw('(m.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(m.first_name, ' ', m.last_name)") . ' like "%' . $search . '%")')
-                    // ->groupBy('text')
+                    ->where(function($q) use ($search) {
+                        $q->where('m.ci', 'like', "%{$search}%")
+                          ->orWhere('m.first_name', 'like', "%{$search}%")
+                          ->orWhere('m.last_name', 'like', "%{$search}%")
+                          ->orWhereRaw("CONCAT(m.first_name, ' ', m.last_name) like ?", ["%{$search}%"]);
+                    })
                     ->get();
             }
         }
@@ -204,21 +217,9 @@ class AjaxController extends Controller
     public function consultareservas(Request $request)
     {
         $search = $request->search;
-        $data = [];
+        $data = collect();
         $msg = '';
         $cont = 0;
-
-        $data = OldData::select('razon_social', 'provincia', 'municipio', 'localidad')->get();
-
-        $datas = DB::connection('sidepej')->table('reservacoormunicipals as r')
-            ->join('provincias as p', 'r.provincia_id', 'p.id')
-            ->join('municipios as m', 'r.municipio_id', 'm.id')
-            ->select('r.nombre as razon_social', 'p.nombre as provincia', 'm.municipio as municipio', 'r.localidad')->get();
-
-
-
-
-
         if ($search) {
             $data = OldData::where('razon_social', 'like', '%' . $search . '%')
                 ->select('razon_social', 'provincia', 'municipio', 'localidad')->get();
@@ -229,12 +230,8 @@ class AjaxController extends Controller
                 ->where('r.nombre', 'like', '%' . $search . '%')
                 ->select('r.nombre as razon_social', 'p.nombre as provincia', 'm.municipio as municipio', 'r.localidad')->get();
 
-            $j = count($data);
-
-            $i = 0;
-            while ($i < count($datas)) {
-                $data->push($datas[$i]);
-                $i++;
+            foreach ($datas as $item) {
+                $data->push($item);
             }
 
             $msg = $data->count() ? 'El nombre existe en la sgte lista:' : 'El nombre no existe puede proceder a realizar su tramite';
@@ -250,9 +247,12 @@ class AjaxController extends Controller
 
 
 
-    // para saber si el cite ya se encuentra registrado 
-    public function getCite($id, $cite)
+    // para saber si el cite ya se encuentra registrado
+    public function getCite($id = 1, $cite = null)
     {
+        if (!$cite) {
+            return 0;
+        }
         $aux = '';
         $i = 0;
         $cite = strtoupper($cite);

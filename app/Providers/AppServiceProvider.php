@@ -34,7 +34,8 @@ class AppServiceProvider extends ServiceProvider
             $this->app['request']->server->set('HTTPS', true);
         }
         
-        Voyager::addAction(\App\Actions\EnlaceAddFile::class);
         Paginator::useBootstrap();
+        
+        Voyager::addAction(\App\Actions\EnlaceAddFile::class);
     }
 }
