@@ -41,9 +41,7 @@
                                     <label class="radio-inline"><input type="radio" class="radio-type" name="optradio" value="archivados">Archivados</label>
                                 </div>
                             </div>
-                            <div class="row" id="div-results" style="min-height: 200px">
-                                {!! $initial_list !!}
-                            </div>
+                            <div class="row" id="div-results" style="min-height: 200px"></div>
                         </div>
                     </div>
                 </div>
@@ -64,13 +62,17 @@
     @endsection
 
     @section('javascript')
+        <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
         <script src="{{ asset('vendor/loading_overlay/loadingoverlay.min.js') }}"></script>
         <script>
             var countPage = 50;
-            jQuery(function($) {
+            $(document).ready(function(){
+                list();
+
                 $('.radio-type').click(function(){
                     list();
                 });
+
                 $('#input-search').on('keyup', function(e){
                     if(e.keyCode == 13) {
                         list();
@@ -81,36 +83,36 @@
                     list();
                 });
 
-                // Delegation for pagination links
-                $(document).on('click', '.page-link', function(e){
-                    e.preventDefault();
-                    let link = $(this).attr('href');
-                    if(link){
-                        let page_id = link.split('=')[1];
-                        list(page_id);
-                    }
-                });
+                try {
+                     // Socket.io
+                    let socket = io(IP_ADDRESS + ':' + SOCKET_PORT);
+                    socket.on('sendNotificationToClient', (id) => {
+                        let user_id = "{{ Auth::user()->id }}";
+                        if(user_id == id){
+                            $('#alert-new').fadeIn();
+                        }
+                    });
+                } catch (error) {
+                    
+                }
+
+                @if (session('alert-type'))
+                socket.emit('sendNotificationToServer', "{{ session('funcionario_id') }}");
+                @endif
             });
 
-            // Hook for master socket listener
-            function bandejaNewAlert() {
-                jQuery('#alert-new').fadeIn();
-            }
-
             function list(page = 1){
-                jQuery("#div-results").LoadingOverlay("show");
-                let type = jQuery(".radio-type:checked").val();
+                $('#div-results').empty();
+                $("#div-results").LoadingOverlay("show");
+                let type = $(".radio-type:checked").val();
                 let url = '{{ url("admin/bandeja/list/".($funcionario_id ?? 0)) }}';
-                let search = jQuery('#input-search').val() ? jQuery('#input-search').val() : '';
-                jQuery.ajax({
+                let search = $('#input-search').val() ? $('#input-search').val() : '';
+                $.ajax({
                     url: `${url}/${type}?search=${search}&paginate=${countPage}&page=${page}`,
                     type: 'get',
                     success: function(response){
-                        jQuery('#div-results').html(response);
-                        jQuery("#div-results").LoadingOverlay("hide");
-                    },
-                    error: function(){
-                        jQuery("#div-results").LoadingOverlay("hide");
+                        $('#div-results').html(response);
+                        $("#div-results").LoadingOverlay("hide");
                     }
                 });
             }

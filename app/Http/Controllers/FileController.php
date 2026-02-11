@@ -25,7 +25,7 @@ class FileController extends Controller
         return $dir.'/'.$newFileName;
     }
 
-    public function UpdateDateEntrada(Request $request, $id = null)
+    public function UpdateDateEntrada(Request $request, $id)
     {
         // return $request;
         DB::beginTransaction();

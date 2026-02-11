@@ -37,7 +37,7 @@
 <div class="col-md-12">
     <div class="col-md-4" style="overflow-x:auto">
         @if(count($derivaciones)>0)
-            <p class="text-muted">Mostrando del {{$derivaciones->firstItem()}} al {{$derivaciones->lastItem()}} registros.</p>
+            <p class="text-muted">Mostrando del {{$derivaciones->firstItem()}} al {{$derivaciones->lastItem()}} de {{$derivaciones->total()}} registros.</p>
         @endif
     </div>
     <div class="col-md-8" style="overflow-x:auto">
@@ -47,3 +47,13 @@
     </div>
 </div>
 
+<script>
+    $('.page-link').click(function(e){
+        e.preventDefault();
+        let link = $(this).attr('href');
+        if(link){
+            page = link.split('=')[1];
+            list(page);
+        }
+    });
+</script>

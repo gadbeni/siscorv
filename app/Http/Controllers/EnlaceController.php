@@ -15,7 +15,7 @@ use Illuminate\Support\Carbon;
 
 class EnlaceController extends Controller
 {
-    public function indexFile($enlace = null)
+    public function indexFile($enlace)
     {
         $enlace_id=$enlace;
         $enlace = EnlaceFile::where('enlace_id', $enlace)->where('status',1)->where('deleted_at')->get();

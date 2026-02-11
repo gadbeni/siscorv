@@ -30,9 +30,8 @@ class ReportController extends Controller
         $query_filtro = 'e.tipo = "E"';
         $start = $request->start ?? date('Y-m-d', strtotime('-30 days'));
         $finish = $request->finish ?? date('Y-m-d');
-        $db_mamore = config('database.connections.mamore.database');
         $data = DB::table('entradas as e')
-            ->leftJoin($db_mamore.'.people as p', 'p.id', 'e.people_id_para')
+            ->leftJoin('sysadmin.people as p', 'p.id', 'e.people_id_para')
             ->leftJoin('entities as t', 't.id', 'e.entity_id')
             ->select('e.id', 'e.cite', 't.nombre as entidad', 'e.fecha_registro', 'e.remitente', 'e.referencia', 'p.first_name', 'p.last_name', 'e.job_para')
             ->whereRaw($query_filtro)
@@ -122,10 +121,7 @@ class ReportController extends Controller
 
     public function printf_report_bandeja(Request $request)
     {
-        $data = Derivation::with(['entrada' => function($q){
-                $q->withTrashed()->with(['entity', 'estado']);
-            }])
-            ->where('transferred', 0)->where('people_id_para', $request->people)
+        $data = Derivation::where('transferred', 0)->where('people_id_para', $request->people)
             ->whereHas('entrada', function ($q) {
                 $q->whereNotIn('estado_id', [4, 6]);
             })
