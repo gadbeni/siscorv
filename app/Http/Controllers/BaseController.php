@@ -25,33 +25,16 @@ class BaseController extends Controller
             return Voyager::view('voyager::index', compact('stats'));
         }
 
-        // Professional Optimization: Cache dashboard stats for 5 minutes
-        $stats = \Illuminate\Support\Facades\Cache::remember('dash_stats_'.Auth::user()->id, 300, function() use ($funcionarioId) {
-            $baseQuery = Derivation::where('people_id_para', $funcionarioId)
-                ->whereHas('entrada', function ($q) {
-                    $q->whereNotIn('estado_id', [4, 6]);
-                });
-
-            $totalDerivaciones = (clone $baseQuery)->count();
-
-            $pendientes = (clone $baseQuery)->where('visto', NULL)
-                ->where('ok', 'NO')
-                ->count();
-
-            $urgentes = (clone $baseQuery)
-                ->where('visto', NULL)
-                ->where('ok', 'NO')
-                ->whereHas('entrada', function ($q) {
-                    $q->where('urgent', 1);
-                })
-                ->count();
-
-            return (object) [
-                'total' => $totalDerivaciones,
-                'pendientes' =>  $pendientes,
-                'urgentes' => $urgentes
-            ];
-        });
+        $stats = Derivation::join('entradas', 'derivations.entrada_id', '=', 'entradas.id')
+            ->where('derivations.people_id_para', $funcionarioId) // Especificamos la tabla aquí
+            ->whereNotIn('entradas.estado_id', [4, 6])
+            ->whereNull('derivations.deleted_at') // Importante para no contar datos borrados
+            ->selectRaw("
+                    COUNT(*) as total,
+                    COUNT(CASE WHEN derivations.visto IS NULL AND derivations.ok = 'NO' THEN 1 END) as pendientes,
+                    COUNT(CASE WHEN derivations.visto IS NULL AND derivations.ok = 'NO' AND entradas.urgent = 1 THEN 1 END) as urgentes
+            ")
+            ->first();
 
         return Voyager::view('voyager::index', compact('stats'));
     }
