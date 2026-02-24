@@ -16,12 +16,14 @@ class UsersController extends Controller
         if ($type == 1) {
             $personas = DB::connection('mamore')->table('people as p')
                 ->join('contracts as c', 'c.person_id', 'p.id')
-                ->select('p.id', 'p.first_name as nombre', DB::raw("CONCAT(p.paternal_surname, ' ', p.maternal_surname) as apellido"), 'p.ci', DB::raw("CONCAT(p.first_name, ' ', p.paternal_surname, ' ', p.maternal_surname) as nombre_completo"))
+                ->select('p.id', 'p.first_name as nombre', DB::raw("CONCAT_WS(' ', p.paternal_surname, p.maternal_surname) as apellido"), 'p.ci', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre_completo"))
                 ->where('c.status', 'firmado')
                 ->where('p.deleted_at', null)
                 ->where('c.deleted_at', null)
-                // ->where('p.ci', 'like', '%' .$search . '%')
-                ->whereRaw('(p.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(p.first_name, ' ', p.paternal_surname, ' ', p.maternal_surname)") . 'like "%' . $search . '%")')
+                ->where(function ($query) use ($search) {
+                    $query->where('p.ci', 'like', '%' . $search . '%')
+                        ->orWhereRaw('CONCAT_WS(" ", p.first_name, p.paternal_surname, p.maternal_surname) like ?', ['%' . $search . '%']);
+                })
                 ->get();
             $response = array();
             foreach ($personas as $persona) {
@@ -42,12 +44,15 @@ class UsersController extends Controller
                 ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
                 ->select(
                     'm.id',
-                    DB::raw("CONCAT(m.first_name, ' ', m.paternal_surname, ' ', m.maternal_surname) as text"),
+                    DB::raw("CONCAT_WS(' ', m.first_name, m.paternal_surname, m.maternal_surname) as text"),
                     'm.first_name as nombre',
-                    DB::raw("CONCAT(m.paternal_surname, ' ', m.maternal_surname) as apellido"),
+                    DB::raw("CONCAT_WS(' ', m.paternal_surname, m.maternal_surname) as apellido"),
                     'm.ci',
                 )
-                ->whereRaw('(m.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(m.first_name, ' ', m.paternal_surname, ' ', m.maternal_surname)") . ' like "%' . $search . '%")')
+                ->where(function ($query) use ($search) {
+                    $query->where('m.ci', 'like', '%' . $search . '%')
+                        ->orWhereRaw('CONCAT_WS(" ", m.first_name, m.paternal_surname, m.maternal_surname) like ?', ['%' . $search . '%']);
+                })
                 // ->groupBy('text')
                 ->get();
 
@@ -78,12 +83,14 @@ class UsersController extends Controller
                 ->leftJoin('jobs as j', 'j.id', 'c.job_id')
                 // ->join('direcciones as da', 'da.id', 'c.direccion_administrativa_id')
                 // ->join('unidades as u', 'u.id', 'c.unidad_administrativa_id')
-                ->select('p.id', 'p.first_name as nombre', 'p.last_name as apellido', 'p.ci', DB::raw("CONCAT(p.first_name, ' ', p.last_name) as nombre_completo"), 'c.direccion_administrativa_id as direccion_id', 'c.unidad_administrativa_id as unidad_id', 'c.cargo_id as cargo_id', 'j.name as cargo')
+                ->select('p.id', 'p.first_name as nombre', DB::raw("CONCAT_WS(' ', p.paternal_surname, p.maternal_surname) as apellido"), 'p.ci', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre_completo"), 'c.direccion_administrativa_id as direccion_id', 'c.unidad_administrativa_id as unidad_id', 'c.cargo_id as cargo_id', 'j.name as cargo')
                 ->where('c.status', 'firmado')
                 ->where('p.deleted_at', null)
                 ->where('c.deleted_at', null)
-                // ->where('p.ci', 'like', '%' .$search . '%')
-                ->whereRaw('(p.ci like "%' . $search . '%" or ' . DB::raw("CONCAT(p.first_name, ' ', p.last_name)") . 'like "%' . $search . '%")')
+                ->where(function ($query) use ($search) {
+                    $query->where('p.ci', 'like', '%' . $search . '%')
+                        ->orWhereRaw('CONCAT_WS(" ", p.first_name, p.paternal_surname, p.maternal_surname) like ?', ['%' . $search . '%']);
+                })
                 ->get();
 
             $cargoIds = $personas->pluck('cargo_id')->filter()->unique();

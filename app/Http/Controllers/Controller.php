@@ -75,7 +75,7 @@ class Controller extends BaseController
             ->where('c.deleted_at', null)
             ->where('p.id', $id)
             ->where('p.deleted_at', null)
-            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, '')) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
             ->first();
 
         if ($funcionario && $funcionario->cargo_id != NULL) {
@@ -112,7 +112,7 @@ class Controller extends BaseController
             ->where('c.deleted_at', null)
             ->where('p.id', $id)
             ->where('p.deleted_at', null)
-            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, '')) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
             ->first();
 
         if ($funcionario && $funcionario->cargo_id != NULL) {
@@ -136,12 +136,13 @@ class Controller extends BaseController
         $funcionario = DB::connection('mamore')->table('people as p')
             ->where('p.id', $id)
             ->where('p.deleted_at', null)
-            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', DB::raw("CONCAT(COALESCE(p.first_name, ''), ' ', COALESCE(p.paternal_surname, ''), ' ', COALESCE(p.maternal_surname, '')) as nombre"))
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"))
             ->first();
         return $funcionario;
     }
 
-    public function getFile($path){
+    public function getFile($path)
+    {
         if (!file_exists(storage_path("app/public/{$path}"))) {
             abort(404, 'Archivo no encontrado');
         }
