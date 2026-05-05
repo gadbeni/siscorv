@@ -122,9 +122,10 @@ class AjaxController extends Controller
                 ->where('p.id', $type)
                 ->select(
                     'p.id',
-                    DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
+                    DB::raw("upper(CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname)) as text"),
                     'p.first_name',
-                    'last_name',
+                    'p.paternal_surname',
+                    'p.maternal_surname',
                     'p.ci',
                 )
                 ->get();
@@ -150,16 +151,18 @@ class AjaxController extends Controller
                     ->whereNull('p.deleted_at')
                     ->select(
                         'p.id',
-                        DB::raw("upper(CONCAT(p.first_name, ' ', p.last_name)) as text"),
+                        DB::raw("upper(CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname)) as text"),
                         'p.first_name',
-                        'last_name',
+                        'p.paternal_surname',
+                        'p.maternal_surname',
                         'p.ci',
                     )
                     ->where(function ($q) use ($search) {
                         $q->where('p.ci', 'like', "%{$search}%")
                             ->orWhere('p.first_name', 'like', "%{$search}%")
-                            ->orWhere('p.last_name', 'like', "%{$search}%")
-                            ->orWhereRaw("CONCAT(p.first_name, ' ', p.last_name) like ?", ["%{$search}%"]);
+                            ->orWhere('p.paternal_surname', 'like', "%{$search}%")
+                            ->orWhere('p.maternal_surname', 'like', "%{$search}%")
+                            ->orWhereRaw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) like ?", ["%{$search}%"]);
                     })
                     ->groupBy('text')
                     ->limit(10)
