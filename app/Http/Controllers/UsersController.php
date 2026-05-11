@@ -40,7 +40,7 @@ class UsersController extends Controller
                 );
             }
         } else {
-            $personas = DB::table('siscor_v2.people_exts as s')
+            $personas = DB::table('siscor.people_exts as s')
                 ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
                 ->select(
                     'm.id',

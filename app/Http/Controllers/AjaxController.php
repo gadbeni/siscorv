@@ -78,23 +78,27 @@ class AjaxController extends Controller
                 ->limit(5)
                 ->get();
         } else {
-            $db_mamore = config('database.connections.mamore.database');
-            $funcionarios = DB::table('people_exts as s')
-                ->join($db_mamore . '.people as m', 'm.id', '=', 's.person_id')
+            
+            // $db_mamore = config('database.connections.mamore.database');
+            // $funcionarios = DB::table('people_exts as s')
+            //     ->join($db_mamore . '.people as m', 'm.id', '=', 's.person_id')
+
+            $funcionarios = DB::table('siscor.people_exts as s')
+                ->join('sysadmin.people as p', 'p.id', '=', 's.person_id')
                 ->select(
-                    'm.id',
-                    DB::raw("upper(CONCAT_WS(' ', m.first_name, m.paternal_surname, m.maternal_surname)) as text"),
-                    'm.first_name',
-                    'm.paternal_surname',
-                    'm.maternal_surname',
-                    'm.ci',
+                    'p.id',
+                    DB::raw("upper(CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname)) as text"),
+                    'p.first_name',
+                    'p.paternal_surname',
+                    'p.maternal_surname',
+                    'p.ci',
                 )
                 ->where(function ($q) use ($search) {
-                    $q->where('m.ci', 'like', "%{$search}%")
-                        ->orWhere('m.first_name', 'like', "%{$search}%")
-                        ->orWhere('m.paternal_surname', 'like', "%{$search}%")
-                        ->orWhere('m.maternal_surname', 'like', "%{$search}%")
-                        ->orWhereRaw("CONCAT_WS(' ', m.first_name, m.paternal_surname, m.maternal_surname) like ?", ["%{$search}%"]);
+                    $q->where('p.ci', 'like', "%{$search}%")
+                        ->orWhere('p.first_name', 'like', "%{$search}%")
+                        ->orWhere('p.paternal_surname', 'like', "%{$search}%")
+                        ->orWhere('p.maternal_surname', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) like ?", ["%{$search}%"]);
                 })
                 ->limit(5)
                 ->get();
@@ -170,23 +174,23 @@ class AjaxController extends Controller
                     ->get();
             } else {
                 $funcionarios = DB::table('siscor.people_exts as s')
-                    ->join('sysadmin.people as m', 'm.id', '=', 's.person_id')
+                    ->join('sysadmin.people as p', 'p.id', '=', 's.person_id')
                     ->where('s.status', 1)
                     ->whereNull('s.deleted_at')
                     ->select(
-                        'm.id',
-                        DB::raw("upper(CONCAT_WS(' ', m.first_name, m.paternal_surname, m.maternal_surname)) as text"),
-                        'm.first_name',
-                        'm.paternal_surname',
-                        'm.maternal_surname',
-                        'm.ci',
+                        'p.id',
+                        DB::raw("upper(CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname)) as text"),
+                        'p.first_name',
+                        'p.paternal_surname',
+                        'p.maternal_surname',
+                        'p.ci',
                     )
                     ->where(function ($q) use ($search) {
-                        $q->where('m.ci', 'like', "%{$search}%")
-                            ->orWhere('m.first_name', 'like', "%{$search}%")
-                            ->orWhere('m.paternal_surname', 'like', "%{$search}%")
-                            ->orWhere('m.maternal_surname', 'like', "%{$search}%")
-                            ->orWhereRaw("CONCAT_WS(' ', m.first_name, m.paternal_surname, m.maternal_surname) like ?", ["%{$search}%"]);
+                        $q->where('p.ci', 'like', "%{$search}%")
+                            ->orWhere('p.first_name', 'like', "%{$search}%")
+                            ->orWhere('p.paternal_surname', 'like', "%{$search}%")
+                            ->orWhere('p.maternal_surname', 'like', "%{$search}%")
+                            ->orWhereRaw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) like ?", ["%{$search}%"]);
                     })
                     ->get();
             }
