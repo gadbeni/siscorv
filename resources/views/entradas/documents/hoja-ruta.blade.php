@@ -21,7 +21,7 @@
             
         @else
             <td width="150px">
-                <img src="{{ asset('images/lg.png') }}" width="110px" height="55px" alt="logo">
+                <img src="{{ asset('images/lg.png') }}" width="120px" height="65px" alt="logo">
             </td>
         
             <td align="right">

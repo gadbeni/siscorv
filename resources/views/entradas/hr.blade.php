@@ -175,7 +175,7 @@
                                 </tr>
                             @else
                                 <tr>
-                                    <td><img src="{{ asset('images/lg.png') }}" width="110px" height="55px"></td>
+                                    <td><img src="{{ asset('images/lg.png') }}" width="120px" height="65px"></td>
                                     <td>
                                         <table class="alltables">
                                             <tr>
