@@ -16,12 +16,12 @@
             </td>
             
             <td width="150px">
-                <img src="{{ asset('images/lg.png') }}" width="110px" alt="logo">
+                <img src="{{ asset('images/lg.png') }}" width="100px" alt="logo">
             </td>
             
         @else
             <td width="150px">
-                <img src="{{ asset('images/lg.png') }}" width="100px" height="55px" alt="logo">
+                <img src="{{ asset('images/lg.png') }}" width="110px" height="55px" alt="logo">
             </td>
         
             <td align="right">
