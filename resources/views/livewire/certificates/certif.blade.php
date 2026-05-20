@@ -85,7 +85,7 @@
                             <table class="alltables">
                                 <tr>
                                     <td colspan="3" class="text-center">
-                                        <img src="{{ asset('images/logo2021.png') }}" width="150px">
+                                        <img src="{{ asset('images/logo2026.png') }}" width="150px">
                                     </td>
                                 </tr>
                                 <tr>
