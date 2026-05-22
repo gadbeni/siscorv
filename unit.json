@@ -23,7 +23,12 @@
         "laravel": {
             "type": "php",
             "root": "/var/www/siscor/public/",
-            "script": "index.php"
+            "script": "index.php",
+            "processes": {
+                "max": 10,
+                "spare": 2,
+                "idle_timeout": 20
+            }
         }
     }
 }
