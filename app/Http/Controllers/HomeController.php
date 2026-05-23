@@ -45,7 +45,7 @@ class HomeController extends Controller
     public function search(Request $request)
     {
         $search = $request->search;
-        $query = Entrada::with(['entity', 'estado', 'archivos', 'derivaciones'])
+        $query = Entrada::with(['entity:id,nombre', 'estado:id,nombre', 'archivos:id,nombre_origen,ruta,entrada_id', 'derivaciones:id,entrada_id'])
             ->where('deleted_at', NULL);
 
         if (strpos($search, '-') !== false) {
@@ -68,7 +68,7 @@ class HomeController extends Controller
     public function searchtramite(Request $request)
     {
         // dd(request('search'));
-        $data = Entrada::with(['entity', 'estado', 'derivaciones'])
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre', 'derivaciones:id,entrada_id'])
             ->where('cite', request('search'))
             ->where('deleted_at', NULL)
             ->first();
@@ -92,7 +92,7 @@ class HomeController extends Controller
     {
         $now = Carbon::now()->format('Y-m-d');
         $old = Carbon::now()->addDays(3)->format('Y-m-d');
-        $data = Entrada::with(['entity'])
+        $data = Entrada::with(['entity:id,nombre'])
             ->select('id', 'cite', 'tipo', 'gestion', 'remitente', 'deadline', 'created_at', 'entity_id')
             ->whereBetween('deadline', [$now, $old])
             ->get();

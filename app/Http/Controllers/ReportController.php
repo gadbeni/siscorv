@@ -121,7 +121,8 @@ class ReportController extends Controller
 
     public function printf_report_bandeja(Request $request)
     {
-        $data = Derivation::where('transferred', 0)->where('people_id_para', $request->people)
+        $data = Derivation::with(['entrada:id,tipo,gestion,cite,remitente,estado_id'])
+            ->where('transferred', 0)->where('people_id_para', $request->people)
             ->whereHas('entrada', function ($q) {
                 $q->whereNotIn('estado_id', [4, 6]);
             })
