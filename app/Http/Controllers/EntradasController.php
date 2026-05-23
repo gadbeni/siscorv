@@ -212,7 +212,14 @@ class EntradasController extends Controller
                 $funcionario = $this->getPeople($user_auth->people_id);
             }
         }
-        return view('entradas.edit-add', compact('entrada', 'funcionario'));
+
+        // Pre-cargar datos para evitar loops en la vista
+        $categories = \App\Models\Category::with(['organization' => function($q){
+            $q->where('tipo','tptramites');
+        }])->get();
+        $entities = \App\Models\Entity::where('estado', 'activo')->whereNull('deleted_at')->get();
+
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'categories', 'entities'));
     }
 
     /**
@@ -245,6 +252,12 @@ class EntradasController extends Controller
                         return redirect()->route('entradas.index')->with(['message' => 'El remitente no tienes contrato vigente', 'alert-type' => 'error']);
                     }
 
+                    // Obtener información del funcionario destino una sola vez antes del create
+                    $funcionario_destino = $this->getPeople($request->funcionario_id_destino);
+                    if (!$funcionario_destino) {
+                        return redirect()->route('entradas.index')->with(['message' => 'El destinatario no tiene contrato vigente', 'alert-type' => 'error']);
+                    }
+
                     $data = Entrada::create([
                         'gestion' => date('Y'),
                         'tipo' => $request->tipo,
@@ -261,7 +274,7 @@ class EntradasController extends Controller
                         'direccion_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_direccion : null,
                         'unidad_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_unidad : null,
                         'people_id_para' => $request->funcionario_id_destino,
-                        'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
+                        'job_para' => $funcionario_destino->cargo,
                         'registrado_por' => Auth::user()->email,
                         'registrado_por_id_direccion' => $funcionario_remitente->id_direccion,
                         'registrado_por_id_unidad' => $funcionario_remitente->id_unidad,
@@ -310,19 +323,19 @@ class EntradasController extends Controller
             }
 
             $file = $request->file('archivos');
+            $storage = new StorageController();
             if ($file) {
                 for ($i = 0; $i < count($file); $i++) {
                     $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
-                    Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $data->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id
-                    ]);
+                    $ruta = $storage->store_file($file[$i], 'entradas');
+                    if ($ruta) {
+                        Archivo::create([
+                            'nombre_origen' => $nombre_origen,
+                            'entrada_id' => $data->id,
+                            'ruta' => $ruta,
+                            'user_id' => Auth::user()->id
+                        ]);
+                    }
                 }
             }
             DB::commit();
@@ -361,20 +374,20 @@ class EntradasController extends Controller
         DB::beginTransaction();
         try {
             $file = $request->file('archivos');
+            $storage = new StorageController();
             if ($file) {
                 for ($i = 0; $i < count($file); $i++) {
                     $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
-                    Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $request->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id,
-                        'nci' => 1
-                    ]);
+                    $ruta = $storage->store_file($file[$i], 'entradas');
+                    if ($ruta) {
+                        Archivo::create([
+                            'nombre_origen' => $nombre_origen,
+                            'entrada_id' => $request->id,
+                            'ruta' => $ruta,
+                            'user_id' => Auth::user()->id,
+                            'nci' => 1
+                        ]);
+                    }
                 }
             }
             DB::commit();
@@ -393,7 +406,14 @@ class EntradasController extends Controller
         } else {
             $funcionario = $this->getPeople($user_auth->people_id);
         }
-        return view('entradas.edit-add', compact('entrada', 'funcionario'));
+
+        // Pre-cargar datos para evitar loops en la vista
+        $categories = \App\Models\Category::with(['organization' => function($q){
+            $q->where('tipo','tptramites');
+        }])->get();
+        $entities = \App\Models\Entity::where('estado', 'activo')->whereNull('deleted_at')->get();
+
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'categories', 'entities'));
     }
 
     public function update(Request $request, Entrada $entrada)
@@ -418,6 +438,9 @@ class EntradasController extends Controller
 
             $date = Carbon::now();
 
+            // Obtener información del funcionario destino una sola vez antes del update
+            $funcionario_destino = $this->getPeople($request->funcionario_id_destino);
+
             $entrada->update([
                 'tipo' => $tipo_entrada,
                 'remitente' => $tipo_entrada == 'E' ? $request->remitente : $request->remitent_interno,
@@ -434,7 +457,7 @@ class EntradasController extends Controller
                 'direccion_id_remitente' => $direccion_id_remitente,
                 // 'funcionario_id_destino' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
                 'people_id_para' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
-                'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
+                'job_para' => $funcionario_destino ? $funcionario_destino->cargo : $entrada->job_para,
                 'entity_id' => $request->entity_id,
                 'actualizado_por' => auth()->user()->email,
                 'category_id' => $request->category_id,
@@ -442,19 +465,19 @@ class EntradasController extends Controller
             ]);
 
             $file = $request->file('archivos');
+            $storage = new StorageController();
             if ($file) {
                 for ($i = 0; $i < count($file); $i++) {
                     $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
-                    Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $entrada->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id
-                    ]);
+                    $ruta = $storage->store_file($file[$i], 'entradas');
+                    if ($ruta) {
+                        Archivo::create([
+                            'nombre_origen' => $nombre_origen,
+                            'entrada_id' => $entrada->id,
+                            'ruta' => $ruta,
+                            'user_id' => Auth::user()->id
+                        ]);
+                    }
                 }
             }
 

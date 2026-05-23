@@ -98,11 +98,9 @@
                                         <label class="control-label">Tipo Trámite</label>
                                         <select name="category_id" class="form-control select2" id="select-category" required>
                                             <option value="" selected>Seleccione el tipo</option>
-                                            @foreach (\App\Models\Category::with(['organization' => function($q){
-                                                $q->where('tipo','tptramites');
-                                            }])->get() as $item)
-                                            <option {{(int)old('category_id') === $item->id ||$entrada->category_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->organization->count() > 0) ? substr($item->organization->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option> 
-                                            @endforeach                                        
+                                            @foreach ($categories as $item)
+                                            <option {{(int)old('category_id') === $item->id ||$entrada->category_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ ($item->organization->count() > 0) ? substr($item->organization->nombre,0,4).' -' : '' }} {{ $item->nombre }}</option>
+                                            @endforeach
                                         </select>
                                     </div>
                                     @if (auth()->user()->hasRole(['ventanilla']))
@@ -162,8 +160,8 @@
                                         <label class="control-label">Origen</label>
                                         <select name="entity_id" class="form-control select2">
                                             <option value="">Selecciona el origen</option>
-                                            @foreach (\App\Models\Entity::where('estado', 'activo')->where('deleted_at', NULL)->get() as $item)
-                                            <option {{(int)old('entity_id') === $item->id ||$entrada->entity_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->sigla ? $item->sigla.' -' : '' }} {{ $item->nombre }}</option> 
+                                            @foreach ($entities as $item)
+                                            <option {{(int)old('entity_id') === $item->id ||$entrada->entity_id === $item->id ? 'selected' : ''}} value="{{ $item->id }}">{{ $item->sigla ? $item->sigla.' -' : '' }} {{ $item->nombre }}</option>
                                             @endforeach
                                         </select>
                                     </div>
