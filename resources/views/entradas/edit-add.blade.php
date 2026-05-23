@@ -14,6 +14,8 @@
     }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Plugin lineheight para TinyMCE -->
+    <script src="https://cdn.jsdelivr.net/npm/tinymce-line-height-plugin@1.0.0/plugin.min.js"></script>
 @stop
 
 @section('page_title', 'Añadir Ingreso')
@@ -511,6 +513,9 @@
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
+                    plugins: window.voyagerTinyMCE.getConfig().plugins + ' lineheight',
+                    toolbar: window.voyagerTinyMCE.getConfig().toolbar.replace('align', 'align alignjustify') + ' | lineheight',
+                    lineheight_formats: '1 1.15 1.5 2 2.5 3',
                     setup: function (editor) {
                         editor.on('paste', function (e) {
                             e.preventDefault();
