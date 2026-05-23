@@ -53,7 +53,9 @@
                                     <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>
                                 </div>
                             </div>
-                            <div class="row" id="div-results" style="min-height: 120px"></div>
+                            <div class="row" id="div-results" style="min-height: 120px">
+                                {!! $initial_list ?? '' !!}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -126,7 +128,7 @@
             var intern_externo = 1;
             var countPage = 10;
             $(document).ready(function() {
-                list();
+                // El listado inicial ya viene prerenderizado desde el servidor
                 $('#input-search').on('keyup', function(e){
                     if(e.keyCode == 13) {
                         list();
@@ -135,6 +137,20 @@
                 $('#select-paginate').change(function(){
                     countPage = $(this).val();
                     list();
+                });
+
+                $(document).on('click', '.page-link', function(e){
+                    e.preventDefault();
+                    let link = $(this).attr('href');
+                    if (!link) {
+                        return;
+                    }
+                    let page = 1;
+                    let match = link.match(/page=(\d+)/);
+                    if (match) {
+                        page = match[1];
+                    }
+                    list(page);
                 });
             });
 
@@ -176,7 +192,7 @@
             });
         </script>
     @endpush
-    
+
 @else
     @section('content')
         @include('errors.403')

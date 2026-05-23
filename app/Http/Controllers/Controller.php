@@ -19,6 +19,9 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
+    protected static $direccionesCache = [];
+    protected static $unidadesCache = [];
+
 
     public function getIdDireccionPeople($people_id)
     {
@@ -45,8 +48,16 @@ class Controller extends BaseController
 
     static function getIdDireccionInfo($direccion_id)
     {
+        if (!$direccion_id) {
+            return null;
+        }
+        if (array_key_exists($direccion_id, self::$direccionesCache)) {
+            return self::$direccionesCache[$direccion_id];
+        }
         try {
-            return DB::connection('mamore')->table('direcciones')->where('id', $direccion_id)->select('*')->first();
+            $direccion = DB::connection('mamore')->table('direcciones')->where('id', $direccion_id)->select('*')->first();
+            self::$direccionesCache[$direccion_id] = $direccion;
+            return $direccion;
         } catch (\Throwable $th) {
             return null;
         }
@@ -54,9 +65,16 @@ class Controller extends BaseController
 
     static function getIdUnidadInfo($unidad_id)
     {
+        if (!$unidad_id) {
+            return null;
+        }
+        if (array_key_exists($unidad_id, self::$unidadesCache)) {
+            return self::$unidadesCache[$unidad_id];
+        }
         try {
-            return DB::connection('mamore')->table('unidades')->where('id', $unidad_id)
-                ->first();
+            $unidad = DB::connection('mamore')->table('unidades')->where('id', $unidad_id)->first();
+            self::$unidadesCache[$unidad_id] = $unidad;
+            return $unidad;
         } catch (\Throwable $th) {
             return null;
         }

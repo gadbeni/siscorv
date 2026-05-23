@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\FileController;
 use Carbon\Carbon;
 use Storage;
@@ -35,33 +36,100 @@ class EntradasController extends Controller
      */
     public function index()
     {
+        $start = microtime(true);
         if (env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin')) {
             Auth::logout();
             return redirect()->route('maintenance');
         }
-        return view('entradas.browse');
+
+        $paginate = 10;
+        $funcionario = Persona::where('user_id', Auth::user()->id)->first();
+
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre', 'person:id,first_name,last_name'])
+            ->withCount(['derivaciones' => function ($q) {
+                $q->whereNull('deleted_at');
+            }])
+            ->select([
+                'id', 'tipo', 'gestion', 'estado_id', 'cite', 'hr', 'remitente', 'referencia', 'entity_id', 'created_at', 'people_id_para', 'personeria', 'direccion_id_remitente', 'unidad_id_remitente'
+            ])
+            ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
+                $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
+            })
+            ->whereNull('deleted_at')
+            ->orderBy('id', 'DESC')
+            ->paginate($paginate);
+
+        $direccion_ids = $data->pluck('direccion_id_remitente')->filter()->unique()->toArray();
+        $unidad_ids = $data->pluck('unidad_id_remitente')->filter()->unique()->toArray();
+        $people_ids = $data->pluck('people_id_para')->filter()->unique()->toArray();
+
+        $direcciones_map = [];
+        $unidades_map = [];
+        $people_map = [];
+
+        if (!empty($direccion_ids)) {
+            $cache_key = 'dir_bulk_'.md5(implode(',', $direccion_ids));
+            $direcciones_map = Cache::remember($cache_key, 3600, function () use ($direccion_ids) {
+                $items = DB::connection('mamore')->table('direcciones')->whereIn('id', $direccion_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $dir) {
+                    $map[$dir->id] = $dir->nombre ?? $dir->NOMBRE ?? '';
+                }
+                return $map;
+            });
+        }
+
+        if (!empty($unidad_ids)) {
+            $cache_key = 'uni_bulk_'.md5(implode(',', $unidad_ids));
+            $unidades_map = Cache::remember($cache_key, 3600, function () use ($unidad_ids) {
+                $items = DB::connection('mamore')->table('unidades')->whereIn('id', $unidad_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $uni) {
+                    $map[$uni->id] = $uni->nombre ?? $uni->Nombre ?? '';
+                }
+                return $map;
+            });
+        }
+
+        if (!empty($people_ids)) {
+            $cache_key = 'people_bulk_'.md5(implode(',', $people_ids));
+            $people_map = Cache::remember($cache_key, 3600, function () use ($people_ids) {
+                $items = DB::connection('mamore')->table('people')->whereIn('id', $people_ids)->select('id', 'first_name', 'last_name')->get();
+                $map = [];
+                foreach ($items as $p) {
+                    $map[$p->id] = $p->first_name.' '.$p->last_name;
+                }
+                return $map;
+            });
+        }
+
+        foreach ($data as $item) {
+            $item->direccion_nombre = $direcciones_map[$item->direccion_id_remitente] ?? '';
+            $item->unidad_nombre = $unidades_map[$item->unidad_id_remitente] ?? '';
+            $item->person_full_name = $people_map[$item->people_id_para] ?? '';
+        }
+
+        $initial_list = view('entradas.list', compact('data'))->render();
+
+        return view('entradas.browse', compact('initial_list'));
     }
 
     public function list()
     {
+        if (class_exists('\Barryvdh\Debugbar\Facades\Debugbar')) {
+            \Barryvdh\Debugbar\Facades\Debugbar::disable();
+        }
+
         $paginate = request('paginate') ?? 10;
         $search = request('search') ?? null;
         $funcionario = Persona::where('user_id', Auth::user()->id)->first();
 
-        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre'])
+        $data = Entrada::with(['entity:id,nombre', 'estado:id,nombre', 'person:id,first_name,last_name'])
+            ->withCount(['derivaciones' => function ($q) {
+                $q->whereNull('deleted_at');
+            }])
             ->select([
-                'id',
-                'tipo',
-                'gestion',
-                'estado_id',
-                'cite',
-                'hr',
-                'remitente',
-                'referencia',
-                'entity_id',
-                'created_at',
-                'people_id_para',
-                'personeria'
+                'id', 'tipo', 'gestion', 'estado_id', 'cite', 'hr', 'remitente', 'referencia', 'entity_id', 'created_at', 'people_id_para', 'personeria', 'direccion_id_remitente', 'unidad_id_remitente'
             ])
             ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
                 $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
@@ -75,9 +143,58 @@ class EntradasController extends Controller
                 });
             })
             ->whereNull('deleted_at')
-            ->orderBy('id', 'DESC')->paginate($paginate);
+            ->orderBy('id', 'DESC')
+            ->paginate($paginate);
 
-        // dump($data);
+        $direccion_ids = $data->pluck('direccion_id_remitente')->filter()->unique()->toArray();
+        $unidad_ids = $data->pluck('unidad_id_remitente')->filter()->unique()->toArray();
+        $people_ids = $data->pluck('people_id_para')->filter()->unique()->toArray();
+
+        $direcciones_map = [];
+        $unidades_map = [];
+        $people_map = [];
+
+        if (!empty($direccion_ids)) {
+            $cache_key = 'dir_bulk_'.md5(implode(',', $direccion_ids));
+            $direcciones_map = Cache::remember($cache_key, 3600, function () use ($direccion_ids) {
+                $items = DB::connection('mamore')->table('direcciones')->whereIn('id', $direccion_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $dir) {
+                    $map[$dir->id] = $dir->nombre ?? $dir->NOMBRE ?? '';
+                }
+                return $map;
+            });
+        }
+
+        if (!empty($unidad_ids)) {
+            $cache_key = 'uni_bulk_'.md5(implode(',', $unidad_ids));
+            $unidades_map = Cache::remember($cache_key, 3600, function () use ($unidad_ids) {
+                $items = DB::connection('mamore')->table('unidades')->whereIn('id', $unidad_ids)->select('id', 'nombre')->get();
+                $map = [];
+                foreach ($items as $uni) {
+                    $map[$uni->id] = $uni->nombre ?? $uni->Nombre ?? '';
+                }
+                return $map;
+            });
+        }
+
+        if (!empty($people_ids)) {
+            $cache_key = 'people_bulk_'.md5(implode(',', $people_ids));
+            $people_map = Cache::remember($cache_key, 3600, function () use ($people_ids) {
+                $items = DB::connection('mamore')->table('people')->whereIn('id', $people_ids)->select('id', 'first_name', 'last_name')->get();
+                $map = [];
+                foreach ($items as $p) {
+                    $map[$p->id] = $p->first_name.' '.$p->last_name;
+                }
+                return $map;
+            });
+        }
+
+        foreach ($data as $item) {
+            $item->direccion_nombre = $direcciones_map[$item->direccion_id_remitente] ?? '';
+            $item->unidad_nombre = $unidades_map[$item->unidad_id_remitente] ?? '';
+            $item->person_full_name = $people_map[$item->people_id_para] ?? '';
+        }
 
         return view('entradas.list', compact('data'));
     }
