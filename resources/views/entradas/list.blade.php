@@ -53,7 +53,7 @@
                         @endif
                     </td>
                     <td>{{ $item->remitente }}</td>
-                    <td>{{ $item->person ? $item->person->first_name.' '.$item->person->last_name : '' }}</td>
+                    <td>{{ $item->person ? $item->person->first_name.' '.$item->person->paternal_surname.' '.$item->person->maternal_surname : '' }}</td>
                     <td>{{ $item->referencia }}</td>
                     <td>{{ $item->estado->nombre }}</td>
                     <td class="no-sort no-click bread-actions text-right">
