@@ -192,7 +192,7 @@
                                                     <td>{{ $item->user->name ?? 'RDE' }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td class="no-sort no-click bread-actions text-right">
-                                                        <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank">
+                                                        <a href="{{ str_starts_with($item->ruta, 'http') ? $item->ruta : url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank">
                                                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">ver</span>
                                                         </a>
                                                         <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file">

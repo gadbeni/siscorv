@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Enlace;
 use App\Models\EnlaceFile;
-use Illuminate\Support\Str;
-use Storage;
+use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
-// use Illuminate\Support\Facades\Storage;
 
 
 class EnlaceController extends Controller
@@ -27,16 +25,12 @@ class EnlaceController extends Controller
         try {
             $file = $request->file('archivos');
             if ($file) {
-                for ($i=0; $i < count($file); $i++) { 
-                    $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20).'.'.$file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/".date('F').date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir.'/'.$newFileName, file_get_contents($file[$i]));
+                $storage = new StorageController();
+                for ($i = 0; $i < count($file); $i++) {
                     EnlaceFile::create([
-                        'nombre_origen' => $nombre_origen,
-                        'enlace_id' => $request->enlace_id,
-                        'ruta' => $dir.'/'.$newFileName,
+                        'nombre_origen'   => $file[$i]->getClientOriginalName(),
+                        'enlace_id'       => $request->enlace_id,
+                        'ruta'            => $storage->file($file[$i], 'entradas'),
                         'registerUser_id' => Auth::user()->id
                     ]);
                 }

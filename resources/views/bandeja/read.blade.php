@@ -141,7 +141,7 @@
                                                     <td>{{ $item->user->name ?? 'RDE' }}</td>
                                                     <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                     <td class="no-sort no-click bread-actions text-right">
-                                                        <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank"> <i class="voyager-eye"></i> Ver</a>
+                                                        <a href="{{ str_starts_with($item->ruta, 'http') ? $item->ruta : url('storage/'.$item->ruta) }}" class="btn btn-warning" target="_blank"> <i class="voyager-eye"></i> Ver</a>
                                                     </td>
                                                 </tr>
                                                 @php

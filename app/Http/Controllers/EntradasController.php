@@ -3,12 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\FileController;
+use App\Http\Controllers\StorageController;
 use Carbon\Carbon;
-use Storage;
 
 // Models
 use App\Models\Via;
@@ -156,7 +154,7 @@ class EntradasController extends Controller
                     ]);
 
                     if ($request->pj) {
-                        $objFile = new FileController();
+                        $objFile = new StorageController();
                         $reservation = PjNameReservation::create([
                             'entrada_id' => $data->id,
                             'applicant' => $request->nameSolicitante,
@@ -171,20 +169,20 @@ class EntradasController extends Controller
 
                         $file = $request->file('solicitud_p');
                         if ($file) {
-                            $fileP->update(['solicitud' => $objFile->file($file, 'sidepej/solicitud')]);
+                            $fileP->update(['solicitud' => $objFile->file($file, 'sidepej/solicitud', 'sidepej')]);
                         }
 
                         $file = $request->file('carnet_p');
                         if ($file) {
-                            $fileP->update(['carnet' => $objFile->file($file, 'sidepej/carnet')]);
+                            $fileP->update(['carnet' => $objFile->file($file, 'sidepej/carnet', 'sidepej')]);
                         }
                         $file = $request->file('deposito_p');
                         if ($file) {
-                            $fileP->update(['deposito' => $objFile->file($file, 'sidepej/deposito')]);
+                            $fileP->update(['deposito' => $objFile->file($file, 'sidepej/deposito', 'sidepej')]);
                         }
                         $file = $request->file('poder_p');
                         if ($file) {
-                            $fileP->update(['poder' => $objFile->file($file, 'sidepej/poder')]);
+                            $fileP->update(['poder' => $objFile->file($file, 'sidepej/poder', 'sidepej')]);
                         }
                     }
                 }
@@ -194,17 +192,13 @@ class EntradasController extends Controller
 
             $file = $request->file('archivos');
             if ($file) {
+                $storage = new StorageController();
                 for ($i = 0; $i < count($file); $i++) {
-                    $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
                     Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $data->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id
+                        'nombre_origen' => $file[$i]->getClientOriginalName(),
+                        'entrada_id'    => $data->id,
+                        'ruta'          => $storage->file($file[$i], 'entradas'),
+                        'user_id'       => Auth::user()->id
                     ]);
                 }
             }
@@ -245,18 +239,14 @@ class EntradasController extends Controller
         try {
             $file = $request->file('archivos');
             if ($file) {
+                $storage = new StorageController();
                 for ($i = 0; $i < count($file); $i++) {
-                    $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
                     Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $request->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id,
-                        'nci' => 1
+                        'nombre_origen' => $file[$i]->getClientOriginalName(),
+                        'entrada_id'    => $request->id,
+                        'ruta'          => $storage->file($file[$i], 'entradas'),
+                        'user_id'       => Auth::user()->id,
+                        'nci'           => 1
                     ]);
                 }
             }
@@ -326,17 +316,13 @@ class EntradasController extends Controller
 
             $file = $request->file('archivos');
             if ($file) {
+                $storage = new StorageController();
                 for ($i = 0; $i < count($file); $i++) {
-                    $nombre_origen = $file[$i]->getClientOriginalName();
-                    $newFileName = Str::random(20) . '.' . $file[$i]->getClientOriginalExtension();
-                    $dir = "entradas/" . date('F') . date('Y');
-                    Storage::makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file[$i]));
                     Archivo::create([
-                        'nombre_origen' => $nombre_origen,
-                        'entrada_id' => $entrada->id,
-                        'ruta' => $dir . '/' . $newFileName,
-                        'user_id' => Auth::user()->id
+                        'nombre_origen' => $file[$i]->getClientOriginalName(),
+                        'entrada_id'    => $entrada->id,
+                        'ruta'          => $storage->file($file[$i], 'entradas'),
+                        'user_id'       => Auth::user()->id
                     ]);
                 }
             }
@@ -415,16 +401,12 @@ class EntradasController extends Controller
         try {
             $file = $request->file('file');
             if ($file) {
-                $nombre_origen = $file->getClientOriginalName();
-                $newFileName = Str::random(20) . '.' . $file->getClientOriginalExtension();
-                $dir = "entradas/" . date('F') . date('Y');
-                Storage::makeDirectory($dir);
-                Storage::disk('public')->put($dir . '/' . $newFileName, file_get_contents($file));
+                $storage = new StorageController();
                 Archivo::create([
-                    'nombre_origen' => $nombre_origen,
-                    'entrada_id' => $request->id,
-                    'ruta' => $dir . '/' . $newFileName,
-                    'user_id' => Auth::user()->id
+                    'nombre_origen' => $file->getClientOriginalName(),
+                    'entrada_id'    => $request->id,
+                    'ruta'          => $storage->file($file, 'entradas'),
+                    'user_id'       => Auth::user()->id
                 ]);
             }
             return redirect($_SERVER['HTTP_REFERER'])->with(['message' => 'Archivo agregado correctamente', 'alert-type' => 'success']);

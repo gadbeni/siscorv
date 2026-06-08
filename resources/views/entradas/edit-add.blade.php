@@ -513,6 +513,7 @@
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
+                    toolbar: 'bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link',
                     setup: function (editor) {
                         editor.on('paste', function (e) {
                             e.preventDefault();

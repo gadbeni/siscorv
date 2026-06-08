@@ -62,7 +62,7 @@
                                                         <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br><small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
                                                         <td>
                                                             @if(auth()->user()->hasPermission('read_enlacefile'))
-                                                                <a href="{{ url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
+                                                                <a href="{{ str_starts_with($item->ruta, 'http') ? $item->ruta : url('storage/'.$item->ruta) }}" class="btn btn-sm btn-info" target="_blank"> <i class="voyager-eye"></i> Ver</a>
                                                             @endif
                                                             @if(auth()->user()->hasPermission('delete_enlacefile'))                                                          
                                                                 <button type="button" data-toggle="modal" data-target="#delete-file-modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-delete-file"><span class="voyager-trash"></span></button>
