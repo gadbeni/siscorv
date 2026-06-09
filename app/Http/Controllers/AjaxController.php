@@ -13,39 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class AjaxController extends Controller
 {
-    public function getPersonas(Request $request)
-    {
-
-        $search = $request->search;
-
-        if ($search == '') {
-            $personas = Persona::orderby('nombre', 'asc')
-                ->select('id', 'nombre', 'ap_paterno', 'ap_materno', 'ci', 'full_name', 'alfanum', 'departamento_id')
-                //->where('func',false)
-                ->limit(5)->get();
-        } else {
-            $personas = Persona::orderby('nombre', 'asc')
-                ->select('id', 'nombre', 'ap_paterno', 'ap_materno', 'ci', 'full_name', 'alfanum', 'departamento_id')
-                //->where('func',false)
-                ->where('ci', 'like', '%' . $search . '%')
-                ->limit(5)->get();
-        }
-
-        $response = array();
-        foreach ($personas as $persona) {
-            $response[] = array(
-                "id" => $persona->id,
-                "text" => $persona->full_name,
-                "nombre" => $persona->nombre,
-                "ap_paterno" => $persona->ap_paterno,
-                "ap_materno" => $persona->ap_materno,
-                "ci" => $persona->ci,
-                "alfanum" => $persona->alfanum,
-                "departamento_id" => $persona->departamento_id
-            );
-        }
-        return response()->json($response);
-    }
 
     public function getPeoples(Request $request)
     {
@@ -104,8 +71,47 @@ class AjaxController extends Controller
                 ->get();
         }
         return response()->json($funcionarios);
-        // return response()->json($personas);
     }
+
+
+    // ###################################################################################################3
+
+
+    public function getPersonas(Request $request)
+    {
+
+        $search = $request->search;
+
+        if ($search == '') {
+            $personas = Persona::orderby('nombre', 'asc')
+                ->select('id', 'nombre', 'ap_paterno', 'ap_materno', 'ci', 'full_name', 'alfanum', 'departamento_id')
+                //->where('func',false)
+                ->limit(5)->get();
+        } else {
+            $personas = Persona::orderby('nombre', 'asc')
+                ->select('id', 'nombre', 'ap_paterno', 'ap_materno', 'ci', 'full_name', 'alfanum', 'departamento_id')
+                //->where('func',false)
+                ->where('ci', 'like', '%' . $search . '%')
+                ->limit(5)->get();
+        }
+
+        $response = array();
+        foreach ($personas as $persona) {
+            $response[] = array(
+                "id" => $persona->id,
+                "text" => $persona->full_name,
+                "nombre" => $persona->nombre,
+                "ap_paterno" => $persona->ap_paterno,
+                "ap_materno" => $persona->ap_materno,
+                "ci" => $persona->ci,
+                "alfanum" => $persona->alfanum,
+                "departamento_id" => $persona->departamento_id
+            );
+        }
+        return response()->json($response);
+    }
+
+    
 
 
     public function getPeoplesDerivacion(Request $request)

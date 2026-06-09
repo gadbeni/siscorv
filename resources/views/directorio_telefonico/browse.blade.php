@@ -5,19 +5,18 @@
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8" style="padding: 0px">
                 <h1 class="page-title">
                     <i class="voyager-telephone"></i>
                     Directorio Telefónico
                 </h1>
+            </div>
+            <div class="col-md-4 text-right" style="margin-top: 30px">
                 @if (auth()->user()->hasPermission('delete_directorio_telefonico'))
-                    <a href="{{route('directorio-telefonico.create')}}" class="btn btn-success btn-add-new">
+                    <a href="{{route('directorio-telefonico.create')}}" class="btn btn-success">
                         <i class="voyager-plus"></i> <span>Crear</span>
                     </a>
                 @endif
-            </div>
-            <div class="col-md-4">
-
             </div>
         </div>
     </div>
@@ -30,31 +29,32 @@
             <div class="col-md-12 div-phone">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-9" style="margin-bottom: 0px">
-                                <div class="dataTables_length" id="dataTable_length">
-                                    <label>Mostrar <select id="select-paginate" class="form-control input-sm">
+                        <div class="row" style="margin-bottom: 10px; align-items: center;">
+                            <div class="col-sm-3" style="margin-bottom: 0px">
+                                <label style="font-weight: normal;">Mostrar
+                                    <select id="select-paginate" class="form-control input-sm" style="display:inline-block;width:auto;">
                                         <option value="10">10</option>
                                         <option value="25">25</option>
                                         <option value="50">50</option>
                                         <option value="100">100</option>
-                                    </select> registros</label>
-                                </div>
+                                    </select> registros
+                                </label>
                             </div>
-                            <div class="col-sm-3" style="margin-bottom: 0px">
-                                <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda..."> <br>  
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6 col-md-3" style="margin-bottom: 10px">
-                                <div style="display: flex; gap: 10px; align-items: center;"> 
-                                    <label class="hidden-xs">Filtro: </label>
+                            <div class="col-sm-4" style="margin-bottom: 0px">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><b>Filtro:</b></span>
                                     <select id="select-grupo" name="directorioGrupo" class="form-control select2">
                                         <option value="">TODOS</option>
                                         @foreach ( $directorioGrupos as $item )
                                             <option value="{{$item->id}}">{{$item->nombre}}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-5" style="margin-bottom: 0px">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="voyager-search"></i></span>
+                                    <input type="text" id="input-search" class="form-control" placeholder="Buscar...">
                                 </div>
                             </div>
                         </div>
@@ -84,10 +84,10 @@
         var directorioGrupo = "";
         $(document).ready(function() {
             list();
-            $('#input-search').on('keyup', function(e){
-                if(e.keyCode == 13) {
-                    list();
-                }
+            var searchTimer;
+            $('#input-search').on('keyup', function(){
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(function(){ list(); }, 350);
             });
             $('#select-paginate').change(function(){
                 countPage = $(this).val();

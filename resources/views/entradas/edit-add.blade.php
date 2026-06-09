@@ -115,8 +115,8 @@
                                     @endif
                                     <div id="divcite" class="form-group tip col-md-6">
                                         <label class="control-label">Nro de cite</label>
-                                        <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022">
-                                        <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022">
+                                        <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022" value="{{ old('cite') ?? $entrada->cite }}">
+                                        <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022" value="{{ old('cite') ?? $entrada->cite }}">
                                         <span id="icon"  style="display: none; color:red">
                                             <b>El cite  ya se encuentra registrado</b>
                                         </span>
@@ -534,8 +534,9 @@
                         $('#input1').fadeIn('fast');
                         $('#input1').attr('required', 'required');
                         $('#input1').attr('name', 'cite');
-                        auxn =0;
-                        auxl=0;
+                        var citeVal = '{{ $entrada->cite }}';
+                        auxl = (citeVal.match(/[a-zA-Z]/g) || []).length;
+                        auxn = (citeVal.match(/[0-9]/g) || []).length;
                     }else{
                         $('#input1').fadeOut('fast');
                         $('#input1').removeAttr('required');
@@ -721,8 +722,9 @@
                     $('#input2').fadeOut('fast');
                     $('#input2').removeAttr('required');
                     $('#input2').removeAttr('name', 'cite');
-                    auxn =0;
-                    auxl=0;
+                    var currentCite = $('#input1').val();
+                    auxl = (currentCite.match(/[a-zA-Z]/g) || []).length;
+                    auxn = (currentCite.match(/[0-9]/g) || []).length;
 
                     $('#div-personeria').fadeOut('fast');
                     $('#namePersoneria').removeAttr('required');

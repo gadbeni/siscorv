@@ -13,19 +13,15 @@
 <div class="page-content browse container-fluid div-phone">
     <div class="container-fluid div-phone">
         <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-8" style="padding: 0px">
                 <h1 class="page-title">
                     <i class="voyager-basket"></i> Registros
                 </h1>
-                <a href="javascript:;"
-                    class="btn btn-success"
-                    wire:click="nuevo"
-                >
+            </div>
+            <div class="col-md-4 text-right" style="margin-top: 30px">
+                <a href="javascript:;" class="btn btn-success" wire:click="nuevo">
                     <i class="voyager-plus"></i> <span>Crear</span>
                 </a>
-            </div>
-            <div class="col-md-4">
-               
             </div>
         </div>
     </div>
@@ -33,20 +29,16 @@
         <div class="col-md-12">
             <div class="panel panel-bordered">
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-12">
-                            <div class="input-group mb-4" >
-                                <div class="input-group-prepend">
-                                    <span">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                </div>
+                    <div class="row" style="margin-bottom: 10px;">
+                        <div class="col-md-4 col-sm-12">
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="voyager-search"></i></span>
                                 <input type="text" wire:model="buscar" placeholder="Buscar..." class="form-control">
                             </div>
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table id="dataTable" class="table table-hover table-bordered" style="width:100%">
                             <thead>
                                 <tr>
                                     <th>CODIGO</th>

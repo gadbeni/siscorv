@@ -37,7 +37,7 @@
                     <div class="panel panel-bordered">
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <table style="width:100%" class="dataTable table table-bordered table-striped table-hover table-sm">
+                                <table id="dataTable" style="width:100%" class="dataTable table table-bordered table-striped table-hover table-sm">
                                     <thead>
                                         <tr>
                                             <th>Id&deg;</th>
@@ -54,7 +54,7 @@
                                                 <td>{{ $item->id }}</td>
                                                 <td>{{ optional($item->person)->first_name }} {{ optional($item->person)->paternal_surname }} {{ optional($item->person)->maternal_surname }}</td>
                                                 <td>{{ $item->cargo }}</td>
-                                                <td>{{ $item->observacion ?? '—' }}</td>
+                                                <td>{{ $item->observacion }}</td>
                                                 <td>
                                                     @if ($item->status == 0)
                                                         <label class="label label-danger">Inactivo</label>
@@ -194,7 +194,7 @@
         <script src="{{ url('js/main.js') }}"></script>
         <script>
             $(document).ready(() => {
-                $('.dataTable').DataTable({
+                var table = $('.dataTable').DataTable({
                     language: {
                         sProcessing: "Procesando...",
                         sLengthMenu: "Mostrar _MENU_ registros",
@@ -222,17 +222,33 @@
                         }
                     },
                     order: [[ 0, 'desc' ]],
+                    initComplete: function () {
+                        var api = this.api();
+                        var selectHtml = '<select id="filtroEstado" class="form-control input-sm" style="width:auto;display:inline-block;margin-left:8px;">' +
+                            '<option value="">Todo</option>' +
+                            '<option value="Activo" selected>Activo</option>' +
+                            '<option value="Inactivo">Inactivo</option>' +
+                            '</select>';
+                        $('.dataTables_filter label').append(selectHtml);
+
+                        api.column(4).search('^Activo$', true, false).draw();
+
+                        $('#filtroEstado').on('change', function () {
+                            var val = $(this).val();
+                            api.column(4).search(val ? '^' + val + '$' : '', true, false).draw();
+                        });
+                    },
                 });
-            });
 
-            $('#modalBaja').on('show.bs.modal', function (event) {
-                var id = $(event.relatedTarget).data('id');
-                $(this).find('#baja_id').val(id);
-            });
+                $('#modalBaja').on('show.bs.modal', function (event) {
+                    var id = $(event.relatedTarget).data('id');
+                    $(this).find('#baja_id').val(id);
+                });
 
-            $('#modalDelete').on('show.bs.modal', function (event) {
-                var id = $(event.relatedTarget).data('id');
-                $(this).find('#delete_id').val(id);
+                $('#modalDelete').on('show.bs.modal', function (event) {
+                    var id = $(event.relatedTarget).data('id');
+                    $(this).find('#delete_id').val(id);
+                });
             });
         </script>
     @stop

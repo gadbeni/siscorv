@@ -63,7 +63,6 @@
 
     @section('javascript')
         <script src="https://cdn.socket.io/4.1.2/socket.io.min.js" integrity="sha384-toS6mmwu70G0fw54EGlWWeA4z3dyJ+dlXBtSURSKN4vyRFOcxd3Bzjj/AoOwY+Rg" crossorigin="anonymous"></script>
-        <script src="{{ asset('vendor/loading_overlay/loadingoverlay.min.js') }}"></script>
         <script>
             var countPage = 50;
             $(document).ready(function(){
@@ -102,8 +101,7 @@
             });
 
             function list(page = 1){
-                $('#div-results').empty();
-                $("#div-results").LoadingOverlay("show");
+                $('#div-results').loading({message: 'Cargando...'});
                 let type = $(".radio-type:checked").val();
                 let url = '{{ url("admin/bandeja/list/".($funcionario_id ?? 0)) }}';
                 let search = $('#input-search').val() ? $('#input-search').val() : '';
@@ -112,7 +110,7 @@
                     type: 'get',
                     success: function(response){
                         $('#div-results').html(response);
-                        $("#div-results").LoadingOverlay("hide");
+                        $('#div-results').loading('toggle');
                     }
                 });
             }

@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="derivacionesTable table table-hover">
+    <table id="dataTable" class="table table-hover" style="width:100%">
         <thead>
             <tr>
                 <th>ID</th>
