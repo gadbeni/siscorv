@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Organization extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Organization extends Model implements Auditable
 {
-    use HasFactory;
+    use \OwenIt\Auditing\Auditable, HasFactory;
 
     protected $fillable = ['nombre','tipo'];
 

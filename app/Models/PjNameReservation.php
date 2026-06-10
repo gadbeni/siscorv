@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PjNameReservation extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class PjNameReservation extends Model implements Auditable
 {
-    use HasFactory, SoftDeletes;
+    use \OwenIt\Auditing\Auditable, HasFactory, SoftDeletes;
 
     protected $connection = 'sidepej_v2';
     protected $table = 'name_reservations';

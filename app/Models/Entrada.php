@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Carbon\Carbon;
 
-class Entrada extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Entrada extends Model implements Auditable
 {
-    use HasFactory, SoftDeletes;
+    use \OwenIt\Auditing\Auditable, HasFactory, SoftDeletes;
 
     protected $dates = ['deleted_at'];
     

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Persona extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Persona extends Model implements Auditable
 {
-    use HasFactory;
+    use \OwenIt\Auditing\Auditable, HasFactory;
 
     protected $fillable = [
         'nombre','ap_paterno','ap_materno','ci','tipo','oficina','estado','registrado_por',

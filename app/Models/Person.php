@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Person extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Person extends Model implements Auditable
 {
-    use HasFactory;
+    use \OwenIt\Auditing\Auditable, HasFactory;
 
     protected $connection = 'mamore';
     protected $table = 'people';

@@ -8,9 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class User extends \TCG\Voyager\Models\User
+use OwenIt\Auditing\Contracts\Auditable;
+
+class User extends \TCG\Voyager\Models\User implements Auditable
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use \OwenIt\Auditing\Auditable, HasFactory, Notifiable, SoftDeletes;
 
     protected $with = ['warehouses'];
     /**

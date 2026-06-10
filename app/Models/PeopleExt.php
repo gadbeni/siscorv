@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class PeopleExt extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class PeopleExt extends Model implements Auditable
 {
-    use HasFactory;
+    use \OwenIt\Auditing\Auditable, HasFactory;
 
     protected $fillable = ['person_id', 'direccion_id', 'unidad_id', 'cargo', 'observacion', 'status', 'deleted_at'];
 

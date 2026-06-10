@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Personeria extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Personeria extends Model implements Auditable
 {
-    use HasFactory;
+    use \OwenIt\Auditing\Auditable, HasFactory;
 
     protected $fillable = [
         'fecha_ingreso','hojaruta','representante','ci','costo_personeria','costo_valoragregado',

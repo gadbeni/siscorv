@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Reserva extends Model
+use OwenIt\Auditing\Contracts\Auditable;
+
+class Reserva extends Model implements Auditable
 {
-    use HasFactory,SoftDeletes;
+    use \OwenIt\Auditing\Auditable, HasFactory,SoftDeletes;
 
     protected $fillable = [
         'nombre_solicitante','nombre','localidad','numero_recibo','costo_reserva','fecha_inicio',
