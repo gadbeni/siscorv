@@ -313,8 +313,15 @@ class UsersController extends Controller
                 Persona::update($input);
             }
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollback();
+
+            report($e);
+
+            return redirect()->back()->withInput()->with([
+                'message' => "No se pudo actualizar el usuario.",
+                'alert-type' => 'error'
+            ]);
         }
 
 
