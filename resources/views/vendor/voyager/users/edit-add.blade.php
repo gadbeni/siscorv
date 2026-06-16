@@ -5,6 +5,22 @@
 @section('css')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/select2.min.css')}}">
+    <style>
+        .password-group {
+            display: flex;
+            align-items: stretch;
+        }
+        .password-group .form-control {
+            flex: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .password-group .btn {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            margin: 0;
+        }
+    </style>
 @stop
 
 @section('page_header')
@@ -53,30 +69,44 @@
                                     checked 
                                     >
                             </div>
+                            @php
+                                $personaUser = isset($dataTypeContent->id)
+                                    ? \App\Models\Persona::where('user_id', $dataTypeContent->id)->where('tipo', 'user')->first()
+                                    : null;
+                            @endphp
                             <div class="form-group">
                                 <label for="funcionario_id">Funcionario</label>
-                                <select 
-                                    name="people_id" 
+                                <select
+                                    name="people_id"
                                     id="getfuncionario"
-                                    class="form-control">
+                                    class="form-control"
+                                    @if(isset($dataTypeContent->id)) disabled @endif>
+                                    @if($personaUser && $personaUser->people_id)
+                                        <option value="{{ $personaUser->people_id }}" selected>{{ $personaUser->full_name }}</option>
+                                    @endif
                                 </select>
                             </div>
-                            <input type="hidden" id="nombre" name="first_name">
-                            <input type="hidden" id="apellido" name="last_name">
+                            <input type="hidden" id="nombre" name="first_name" value="{{ $personaUser->first_name ?? '' }}">
+                            <input type="hidden" id="apellido" name="last_name" value="{{ $personaUser->last_name ?? '' }}">
 
                             <!-- <input type="hidden" id="ap_paterno" name="ap_paterno">
                             <input type="hidden" id="ap_materno" name="ap_materno"> -->
-                            <input type="hidden" id="ci" name="ci">
+                            <input type="hidden" id="ci" name="ci" value="{{ $personaUser->ci ?? '' }}">
                             <!-- <input type="hidden" id="alfanum" name="alfanum">
                             <input type="hidden" name="departamento_id" id="departamento_id"> -->
                             <div class="form-group">
                                 <label for="email">{{ __('Usuario') }}</label>
-                                <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}" value="{{ old('email', $dataTypeContent->email ?? '') }}">
+                                <input type="text" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}" value="{{ old('email', $dataTypeContent->email ?? '') }}" @if(isset($dataTypeContent->id)) readonly @endif>
                             </div>
 
                             <div class="form-group">
                                 <label for="password">{{ __('voyager::generic.password') }}</label>
-                                <input type="password" class="form-control" id="password" name="password" value="" autocomplete="new-password">
+                                <div class="password-group">
+                                    <input type="password" class="form-control" id="password" name="password" value="" autocomplete="new-password">
+                                    <button class="btn btn-default" type="button" id="togglePassword" tabindex="-1" title="Mostrar/ocultar contraseña">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
                                 @if(isset($dataTypeContent->password))
                                     <small class="text-muted">{{ __('voyager::profile.password_hint') }}</small>
                                 @endif
@@ -86,6 +116,25 @@
                                 <label for="phone">Celular</label>
                                 <input type="phone" class="form-control" name="phone" value="{{ old('phone', $dataTypeContent->phone ?? '') }}">
                             </div>
+
+                            @unless(isset($dataTypeContent->id))
+                                <div class="form-group">
+                                    <label class="control-label">Estado</label>
+                                    <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Active o desactive el acceso del usuario al sistema."></span>
+                                    <input type="hidden" name="status" value="0">
+                                    <input
+                                        type="checkbox"
+                                        name="status"
+                                        id="statusswitch"
+                                        value="1"
+                                        data-toggle="toggle"
+                                        data-on="Activo"
+                                        data-off="Inactivo"
+                                        data-onstyle="success"
+                                        data-offstyle="danger"
+                                        checked>
+                                </div>
+                            @endunless
 
                             @can('editRoles', $dataTypeContent)
                                 <div class="form-group">
@@ -216,6 +265,20 @@
             },
             // templateResult: formatResultLandingPage,
             templateSelection: (opt) => opt.text
+        });
+
+        $('#togglePassword').on('click', function () {
+            var input = $('#password');
+            var icon = $(this).find('i');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                input.attr('type', 'password');
+                icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+            // mantener estilo solid en ambos estados
+            icon.addClass('fas');
         });
 
         $('#getfuncionario').on('select2:select', function (e) {

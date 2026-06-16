@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Voyager;
 
 use TCG\Voyager\Http\Controllers\VoyagerAuthController as BaseVoyagerAuthController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +15,27 @@ use Prophecy\Doubler\Generator\Node\ReturnTypeNode;
 
 class VoyagerAuthController extends BaseVoyagerAuthController
 {
+    /**
+     * Only active users (status = 1) can authenticate.
+     */
+    protected function credentials(Request $request)
+    {
+        return array_merge(
+            $request->only($this->username(), 'password'),
+            ['status' => 1]
+        );
+    }
+
+    /**
+     * Runs after a successful login. Reset the password-change suggestion
+     * flag so the modal shows once per login (session()->regenerate keeps
+     * old session data, which otherwise would suppress it forever).
+     */
+    protected function authenticated(Request $request, $user)
+    {
+        $request->session()->forget('pwd_suggest_shown');
+    }
+
     public function redirectTo(){
         // Si el sistema está en mantenimiento y el usuario no es admin
         if(env('APP_MAINTENANCE') && !auth()->user()->hasRole('admin'))

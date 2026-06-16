@@ -21,8 +21,8 @@
         <h4>{{ ucwords(Auth::user()->name) }}</h4>
         <div class="user-email text-muted">{{ ucwords(Auth::user()->email) }}</div>
         <p>{{ Auth::user()->bio }}</p>
-        {{-- @if ($route != '')
+        @if ($route != '')
             <a href="{{ $route }}" class="btn btn-primary">{{ __('voyager::profile.edit') }}</a>
-        @endif --}}
+        @endif
     </div>
 @stop

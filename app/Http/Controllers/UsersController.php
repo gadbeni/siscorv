@@ -229,6 +229,9 @@ class UsersController extends Controller
                 'avatar' => 'users/default.png',
                 'password' => bcrypt($request->password),
                 'phone' => $request->phone,
+                'status' => $request->input('status', 1),
+                'register_user_id' => $request->user()->id,
+                'must_change_password' => true,
             ]);
 
 
@@ -287,12 +290,16 @@ class UsersController extends Controller
                 'role_id' => $request->role_id,
                 'email' => $request->email,
                 'phone' => $request->phone,
+                'status' => $request->input('status', 1),
             ]);
             if ($request->warehouses[0]) {
                 $user->warehouses()->sync($request->warehouses);
             }
             if ($request->password != '') {
                 $user->password = bcrypt($request->password);
+                // Si el propio usuario cambia su contraseña, se apaga el aviso.
+                // Si la cambia un usuario ajeno, se vuelve a pedir el cambio.
+                $user->must_change_password = ($request->user()->id !== $user->id);
                 $user->save();
             }
             if ($request->avatar != '') {
@@ -316,6 +323,39 @@ class UsersController extends Controller
             ->route('voyager.users.index')
             ->with([
                 'message' => "El usuario, se actualizo con exito.",
+                'alert-type' => 'success'
+            ]);
+    }
+
+    public function ajax_list(Request $request)
+    {
+        $search = $request->search;
+        $paginate = $request->paginate ?: 10;
+
+        $data = User::with('role', 'registeredBy')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate($paginate);
+
+        return view('vendor.voyager.users.list', compact('data'));
+    }
+
+    public function toggle_status(User $user)
+    {
+        $user->status = !$user->status;
+        $user->save();
+
+        return redirect()
+            ->route('voyager.users.index')
+            ->with([
+                'message' => $user->status
+                    ? "El usuario fue activado."
+                    : "El usuario fue desactivado.",
                 'alert-type' => 'success'
             ]);
     }

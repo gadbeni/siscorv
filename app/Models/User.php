@@ -25,7 +25,10 @@ class User extends \TCG\Voyager\Models\User implements Auditable
         'email',
         'password',
         'phone',
-        'role_id'
+        'role_id',
+        'status',
+        'register_user_id',
+        'must_change_password',
     ];
 
     /**
@@ -45,10 +48,16 @@ class User extends \TCG\Voyager\Models\User implements Auditable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+        'must_change_password' => 'boolean',
     ];
 
     public function warehouses(){
         return $this->belongsToMany(Warehouse::class);
+    }
+
+    public function registeredBy(){
+        return $this->belongsTo(User::class, 'register_user_id');
     }
 
     public function isAdmin(){

@@ -101,6 +101,8 @@ Route::group(['prefix' => 'admin'], function () {
 
     Route::post('register-users', [UsersController::class, 'create_user'])->name('store.users');
     Route::put('update-user/{user}', [UsersController::class, 'update_user'])->name('update.users');
+    Route::get('users/ajax/list', [UsersController::class, 'ajax_list'])->name('users.ajax.list');
+    Route::get('users/{user}/toggle-status', [UsersController::class, 'toggle_status'])->name('users.toggle-status');
     Route::get('search', [UsersController::class, 'getFuncionariotocreate'])->name('user.getFuncionario');
     Route::get('searchad/', [UsersController::class, 'getFuncionarioDireccionUnidad'])->name('user.getFuncionarioAll');
 

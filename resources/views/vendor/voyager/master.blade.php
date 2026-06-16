@@ -146,6 +146,14 @@
             </div>
         </div>
     </div>
+
+    @auth
+        @if(auth()->user()->must_change_password && !session('pwd_suggest_shown'))
+            @include('partials.modal-change-password')
+            @php session(['pwd_suggest_shown' => true]); @endphp
+        @endif
+    @endauth
+
     @include('voyager::partials.app-footer')
 
     <!-- Javascript Libs -->
