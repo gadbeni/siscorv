@@ -83,8 +83,8 @@
                                 <div class="panel-heading" style="border-bottom:0;">
                                     <h3 class="panel-title">Remitente</h3>
                                 </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <p>{{ $data->remitente }}</p>
+                                <div class="panel-body" style="text-transform: uppercase; padding-top:0;">
+                                    <p>{{ $data->remitente }} - {{ $data->job_de }}</p>
                                 </div>
                                 <hr style="margin:0;">
                             </div>

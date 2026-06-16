@@ -312,9 +312,9 @@
                             <tr>
                                 <td style="width: 20%">{{($entrada->tipo == 'E') ? 'ORIGEN' : 'DE'}}</td>
                                 @if($entrada->tipo == 'I')
-                                    <td class="box-margin">{{ $entrada->remitente}}
+                                    <td class="box-margin" style="text-transform: uppercase;">{{ $entrada->remitente}} - {{$entrada->job_de}}
 
-                                        <select id="location-ids" style="text-transform: uppercase;">
+                                        {{-- <select id="location-ids" style="text-transform: uppercase;">
                                             <option value=""> - {{$entrada->job_de}}</option>
                                             @if(count($additional)>0)
                                                 @foreach($additional as $item)
@@ -322,7 +322,7 @@
                                                 @endforeach
                                             @endif
                                         </select>
-                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$entrada->job_de}}</span>
+                                        <span id="label-locations" style="text-transform: uppercase;"> - {{$entrada->job_de}}</span> --}}
                                 @else
                                     <td class="box-margin">{{ $entrada->entity->nombre}}
                           

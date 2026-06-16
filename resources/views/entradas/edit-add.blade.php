@@ -113,7 +113,7 @@
                                             </a>
                                         </div>
                                     @endif
-                                    <div id="divcite" class="form-group tip col-md-6">
+                                    <div id="divcite" class="form-group tip col-md-3">
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022" value="{{ old('cite') ?? $entrada->cite }}">
                                         <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022" value="{{ old('cite') ?? $entrada->cite }}">
@@ -121,7 +121,7 @@
                                             <b>El cite  ya se encuentra registrado</b>
                                         </span>
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-3">
                                         <label class="control-label">Fecha Registro <span class="voyager-info-circled" data-toggle="tooltip" data-placement="top" title="Si seleccionona una fecha anterior estara registrando un tramite con fecha atrasada"></span></label>
                                         @php 
                                         $dt = new DateTime();
@@ -134,18 +134,44 @@
                                         <label class="control-label">Remitente</label>
                                         <div id="div-remitente" style="{{ $entrada->tipo == null || $entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
                                             <select name="funcionario_id_remitente" class="form-control select2">
-                                                <option value="{{ $funcionario ? $funcionario->id_funcionario : NULL }}">{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo: 'Admin' }}</option>
+                                                {{-- <option value="{{ $funcionario ? $funcionario->id_funcionario : NULL }}">{{ $funcionario ? $funcionario->nombre.' '.$funcionario->cargo: 'Admin' }}</option> --}}
+                                                <option value="{{ $funcionario ? $funcionario->id_funcionario : NULL }}">{{ $funcionario ? $funcionario->nombre: 'Admin' }}</option>
                                             </select>
                                         </div>
                                         <input type="hidden" name="remitent_interno" value="{{ $funcionario ? $funcionario->nombre : null}}">
-                                        <input 
-                                            type="text" 
-                                            name="remitente" 
-                                            id="input-remitente" 
-                                            maxlength="150" 
-                                            style="{{ $entrada->tipo === 'E' ? 'display: block' : 'display: none' }}" 
+                                        <input
+                                            type="text"
+                                            name="remitente"
+                                            id="input-remitente"
+                                            maxlength="150"
+                                            style="{{ $entrada->tipo === 'E' ? 'display: block' : 'display: none' }}"
                                             class="form-control"
                                             value="{{old('remitente') ? :$entrada->remitente}}">
+                                    </div>
+                                    <div class="form-group col-md-6" id="div-cargo-remitente" style="{{ $entrada->tipo == null || $entrada->tipo === 'I' ? 'display: block' : 'display: none' }}">
+                                        <label class="control-label">Cargo del remitente</label>
+                                        <select name="cargo_de" id="select-cargo_de" class="form-control select2" required>
+                                            <option value="" selected disabled>Seleccione el cargo</option>
+                                            @php
+                                                $cargo_actual = old('cargo_de') ?: $entrada->job_de;
+                                                $opciones_cargo = collect();
+                                                if ($funcionario) {
+                                                    if (!empty($funcionario->job_description)) {
+                                                        $opciones_cargo->push($funcionario->job_description);
+                                                    }
+                                                    if (!empty($funcionario->cargo)) {
+                                                        $opciones_cargo->push($funcionario->cargo);
+                                                    }
+                                                }
+                                                $opciones_cargo = $opciones_cargo->merge($cargos_adicionales)->filter()->unique();
+                                                if ($cargo_actual && !$opciones_cargo->contains($cargo_actual)) {
+                                                    $opciones_cargo->push($cargo_actual);
+                                                }
+                                            @endphp
+                                            @foreach ($opciones_cargo as $cargo)
+                                                <option value="{{ $cargo }}" {{ $cargo_actual === $cargo ? 'selected' : '' }}>{{ $cargo }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Nro. de Hojas/Anexos <span class="voyager-info-circled" data-toggle="tooltip" data-placement="top" title="Describa el material físico que contiene la NCI/Correspondencia"></span></label>
@@ -688,6 +714,8 @@
                 $('#input-tipo').val(tipo);
                 if(tipo == 'E'){
                     $('#div-remitente').fadeOut('fast');
+                    $('#div-cargo-remitente').fadeOut('fast');
+                    $('#select-cargo_de').removeAttr('required');
                     $('#input-remitente').fadeIn('fast');
                     $('#div-detalle').fadeOut('fast');
                     $('#div-entity_id').fadeIn('fast');
@@ -712,6 +740,8 @@
                     $('.form-submit .btn-submit').removeAttr('disabled')
                 }else{
                     $('#div-remitente').fadeIn('fast');
+                    $('#div-cargo-remitente').fadeIn('fast');
+                    $('#select-cargo_de').attr('required', 'required');
                     $('#input-remitente').fadeOut('fast');
                     $('#div-detalle').fadeIn('fast');
                     $('#div-entity_id').fadeOut('fast');

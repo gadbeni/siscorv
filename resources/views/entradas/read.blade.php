@@ -136,7 +136,7 @@
                                     <h3 class="panel-title">Remitente</h3>
                                 </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    {{ $data->remitente ? strtoupper($data->remitente) : '' }}
+                                    {{ $data->remitente ? strtoupper($data->remitente). ' - ' .strtoupper($data->job_de) : '' }}
                                 </div>
                                 <hr style="margin:0;">
                             </div>

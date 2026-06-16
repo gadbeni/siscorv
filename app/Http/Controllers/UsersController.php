@@ -316,15 +316,22 @@ class UsersController extends Controller
             DB::rollback();
         }
 
+
         if ($request->user_belongstomany_role_relationship <> '') {
             $user->roles()->sync($request->user_belongstomany_role_relationship);
         }
-        return redirect()
-            ->route('voyager.users.index')
-            ->with([
-                'message' => "El usuario, se actualizo con exito.",
-                'alert-type' => 'success'
-            ]);
+        // return $request->all();
+
+        // Solo redirige al listado si el usuario tiene permiso de verlo,
+        // en caso contrario va al dashboard para evitar volver al formulario de edicion.
+        $redirect = $request->user()->can('browse_users')
+            ? redirect()->route('voyager.users.index')
+            : redirect()->route('voyager.dashboard');
+
+        return $redirect->with([
+            'message' => "El usuario, se actualizo con exito.",
+            'alert-type' => 'success'
+        ]);
     }
 
     public function ajax_list(Request $request)

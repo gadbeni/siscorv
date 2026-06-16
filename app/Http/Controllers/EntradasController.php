@@ -85,6 +85,7 @@ class EntradasController extends Controller
     {
         $entrada = new Entrada;
         $funcionario = null;
+        $cargos_adicionales = collect();
         $user_auth = Persona::where('user_id', Auth::user()->id)->first();
         if ($user_auth) {
             if ($user_auth->people_id == null) {
@@ -92,8 +93,16 @@ class EntradasController extends Controller
             } else {
                 $funcionario = $this->getPeople($user_auth->people_id);
             }
+            if ($funcionario) {
+                $cargos_adicionales = DB::table('additional_jobs')
+                    ->where('person_id', $funcionario->id_funcionario)
+                    ->where('status', 1)
+                    ->whereNull('deleted_at')
+                    ->pluck('cargo');
+            }
         }
-        return view('entradas.edit-add', compact('entrada', 'funcionario'));
+        // return $funcionario;
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'cargos_adicionales'));
     }
 
     /**
@@ -138,7 +147,7 @@ class EntradasController extends Controller
                         'fecha_registro' => $request->fecha_registro,
                         'detalles' => $request->detalles,
                         'people_id_de' => $request->funcionario_id_remitente,
-                        'job_de' => $funcionario_remitente->cargo,
+                        'job_de' => $request->tipo == 'I' && $request->cargo_de ? $request->cargo_de : $funcionario_remitente->cargo,
                         'direccion_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_direccion : null,
                         'unidad_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_unidad : null,
                         'people_id_para' => $request->funcionario_id_destino,
@@ -266,7 +275,15 @@ class EntradasController extends Controller
         } else {
             $funcionario = $this->getPeople($user_auth->people_id);
         }
-        return view('entradas.edit-add', compact('entrada', 'funcionario'));
+        $cargos_adicionales = collect();
+        if ($funcionario) {
+            $cargos_adicionales = DB::table('additional_jobs')
+                ->where('person_id', $funcionario->id_funcionario)
+                ->where('status', 1)
+                ->whereNull('deleted_at')
+                ->pluck('cargo');
+        }
+        return view('entradas.edit-add', compact('entrada', 'funcionario', 'cargos_adicionales'));
     }
 
     public function update(Request $request, Entrada $entrada)
@@ -303,6 +320,7 @@ class EntradasController extends Controller
                 'detalles' => $request->detalles,
                 // 'funcionario_id_remitente' => $request->funcionario_id_remitente,
                 'people_id_de' => $request->funcionario_id_remitente,
+                'job_de' => $tipo_entrada == 'I' && $request->cargo_de ? $request->cargo_de : $entrada->job_de,
                 'unidad_id_remitente' => $unidad_id_remitente,
                 'direccion_id_remitente' => $direccion_id_remitente,
                 // 'funcionario_id_destino' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,

@@ -75,7 +75,7 @@ class Controller extends BaseController
             ->where('c.deleted_at', null)
             ->where('p.id', $id)
             ->where('p.deleted_at', null)
-            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', 'c.job_description as job_description', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
             ->first();
 
         if ($funcionario && $funcionario->cargo_id != NULL) {
