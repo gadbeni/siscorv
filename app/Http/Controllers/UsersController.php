@@ -287,15 +287,16 @@ class UsersController extends Controller
         DB::beginTransaction();
         try {
             $user->update([
-                'role_id' => $request->role_id,
+                'role_id' => $request->input('role_id', $user->role_id),
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'status' => $request->input('status', 1),
+                'status' => $request->has('status') ? $request->input('status', 1) : $user->status,
             ]);
-            if ($request->warehouses[0]) {
-                $user->warehouses()->sync($request->warehouses);
+            if ($request->has('warehouses')) {
+                $warehouses = collect($request->input('warehouses', []))->filter()->values()->all();
+                $user->warehouses()->sync($warehouses);
             }
-            if ($request->password != '') {
+            if ($request->filled('password')) {
                 $user->password = bcrypt($request->password);
                 // Si el propio usuario cambia su contraseña, se apaga el aviso.
                 // Si la cambia un usuario ajeno, se vuelve a pedir el cambio.
