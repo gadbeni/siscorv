@@ -156,8 +156,8 @@
                                                 $cargo_actual = old('cargo_de') ?: $entrada->job_de;
                                                 $opciones_cargo = collect();
                                                 if ($funcionario) {
-                                                    if (!empty($funcionario->job_description)) {
-                                                        $opciones_cargo->push($funcionario->job_description);
+                                                    if (!empty($funcionario->name_job_alt)) {
+                                                        $opciones_cargo->push($funcionario->name_job_alt);
                                                     }
                                                     if (!empty($funcionario->cargo)) {
                                                         $opciones_cargo->push($funcionario->cargo);

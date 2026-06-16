@@ -324,7 +324,7 @@ class UsersController extends Controller
 
         // Solo redirige al listado si el usuario tiene permiso de verlo,
         // en caso contrario va al dashboard para evitar volver al formulario de edicion.
-        $redirect = $request->user()->can('browse_users')
+        $redirect = $request->user()->hasPermission('browse_users')
             ? redirect()->route('voyager.users.index')
             : redirect()->route('voyager.dashboard');
 
