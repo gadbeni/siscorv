@@ -156,14 +156,14 @@
                                                 $cargo_actual = old('cargo_de') ?: $entrada->job_de;
                                                 $opciones_cargo = collect();
                                                 if ($funcionario) {
-                                                    if (!empty($funcionario->name_job_alt)) {
-                                                        $opciones_cargo->push($funcionario->name_job_alt);
-                                                    }
                                                     if (!empty($funcionario->cargo)) {
                                                         $opciones_cargo->push($funcionario->cargo);
                                                     }
                                                 }
-                                                $opciones_cargo = $opciones_cargo->merge($cargos_adicionales)->filter()->unique();
+                                                $opciones_cargo = $opciones_cargo->merge($cargos_adicionales)->filter()->map(function ($cargo) {
+                                                    return mb_strtoupper($cargo, 'UTF-8');
+                                                })->unique();
+                                                $cargo_actual = $cargo_actual ? mb_strtoupper($cargo_actual, 'UTF-8') : $cargo_actual;
                                                 if ($cargo_actual && !$opciones_cargo->contains($cargo_actual)) {
                                                     $opciones_cargo->push($cargo_actual);
                                                 }

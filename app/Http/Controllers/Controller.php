@@ -80,7 +80,12 @@ class Controller extends BaseController
 
         if ($funcionario && $funcionario->cargo_id != NULL) {
             $cargo = DB::connection('mysqlgobe')->table('cargo')->where('id', $funcionario->cargo_id)->select('*')->first();
-            $funcionario->cargo = $cargo->Descripcion;
+            if ($cargo) {
+                $funcionario->cargo = $cargo->Descripcion;
+            }
+        }
+        if ($funcionario) {
+            $funcionario->cargo = $this->formatCargo($funcionario->name_job_alt ?? null, $funcionario->cargo ?? null);
         }
         if (!$funcionario) {
             $funcionario = PeopleExt::where('person_id', $id)
@@ -112,12 +117,17 @@ class Controller extends BaseController
             ->where('c.deleted_at', null)
             ->where('p.id', $id)
             ->where('p.deleted_at', null)
-            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
+            ->select('p.id as id_funcionario', 'p.ci as N_Carnet', 'c.cargo_id', 'c.job_id', 'j.name as cargo', 'c.name_job_alt as name_job_alt', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"), 'c.direccion_administrativa_id as id_direccion', 'd.nombre as direccion', 'c.unidad_administrativa_id as id_unidad', 'u.nombre as unidad')
             ->first();
 
         if ($funcionario && $funcionario->cargo_id != NULL) {
             $cargo = DB::connection('mysqlgobe')->table('cargo')->where('id', $funcionario->cargo_id)->select('*')->first();
-            $funcionario->cargo = $cargo->Descripcion;
+            if ($cargo) {
+                $funcionario->cargo = $cargo->Descripcion;
+            }
+        }
+        if ($funcionario) {
+            $funcionario->cargo = $this->formatCargo($funcionario->name_job_alt ?? null, $funcionario->cargo ?? null);
         }
         if (!$funcionario) {
             $funcionario = PeopleExt::where('person_id', $id)
@@ -139,6 +149,22 @@ class Controller extends BaseController
             ->select('p.id as id_funcionario', 'p.ci as N_Carnet', DB::raw("CONCAT_WS(' ', p.first_name, p.paternal_surname, p.maternal_surname) as nombre"))
             ->first();
         return $funcionario;
+    }
+
+    protected function formatCargo($denominacion, $cargo)
+    {
+        $denominacion = trim((string) $denominacion);
+        $cargo = trim((string) $cargo);
+
+        if ($denominacion === '') {
+            return mb_strtoupper($cargo, 'UTF-8');
+        }
+
+        if ($cargo === '' || strcasecmp($denominacion, $cargo) === 0) {
+            return mb_strtoupper($denominacion, 'UTF-8');
+        }
+
+        return mb_strtoupper($denominacion . ' (' . $cargo . ')', 'UTF-8');
     }
 
     public function getFile($path)
