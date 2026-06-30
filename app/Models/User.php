@@ -52,6 +52,15 @@ class User extends \TCG\Voyager\Models\User implements Auditable
         'must_change_password' => 'boolean',
     ];
 
+    public function getAvatarAttribute($value)
+    {
+        if (empty($value) || $value === config('voyager.user.default_avatar', 'users/default.png')) {
+            return asset('images/usuario.png');
+        }
+
+        return $value;
+    }
+
     public function warehouses(){
         return $this->belongsToMany(Warehouse::class);
     }

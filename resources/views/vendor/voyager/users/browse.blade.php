@@ -27,8 +27,8 @@
             <div class="col-md-12 div-phone">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        <div class="row">
-                            <div class="col-sm-9" style="margin-bottom: 0px">
+                        <div class="row" style="margin-bottom: 20px; align-items: center; display: flex; flex-wrap: wrap;">
+                            <div class="col-sm-6">
                                 <div class="dataTables_length" id="dataTable_length">
                                     <label>Mostrar <select id="select-paginate" class="form-control input-sm">
                                         <option value="10">10</option>
@@ -38,7 +38,7 @@
                                     </select> registros</label>
                                 </div>
                             </div>
-                            <div class="col-sm-3" style="margin-bottom: 0px">
+                            <div class="col-sm-6">
                                 <input type="text" id="input-search" class="form-control" placeholder="Ingrese busqueda...">
                             </div>
                         </div>

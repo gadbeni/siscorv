@@ -80,6 +80,7 @@
                                     name="people_id"
                                     id="getfuncionario"
                                     class="form-control"
+                                    @unless(isset($dataTypeContent->id)) required @endunless
                                     @if(isset($dataTypeContent->id)) disabled @endif>
                                     @if($personaUser && $personaUser->people_id)
                                         <option value="{{ $personaUser->people_id }}" selected>{{ $personaUser->full_name }}</option>
@@ -116,25 +117,6 @@
                                 <label for="phone">Celular</label>
                                 <input type="phone" class="form-control" name="phone" value="{{ old('phone', $dataTypeContent->phone ?? '') }}">
                             </div>
-
-                            @unless(isset($dataTypeContent->id))
-                                <div class="form-group">
-                                    <label class="control-label">Estado</label>
-                                    <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Active o desactive el acceso del usuario al sistema."></span>
-                                    <input type="hidden" name="status" value="0">
-                                    <input
-                                        type="checkbox"
-                                        name="status"
-                                        id="statusswitch"
-                                        value="1"
-                                        data-toggle="toggle"
-                                        data-on="Activo"
-                                        data-off="Inactivo"
-                                        data-onstyle="success"
-                                        data-offstyle="danger"
-                                        checked>
-                                </div>
-                            @endunless
 
                             @can('editRoles', $dataTypeContent)
                                 <div class="form-group">
@@ -173,6 +155,26 @@
                                     @include('voyager::formfields.relationship')
                                 </div>
                             @endcan
+
+                            @if(isset($dataTypeContent->id))
+                                <div class="form-group">
+                                    <label class="control-label">Estado</label>
+                                    <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Active o desactive el acceso del usuario al sistema."></span>
+                                    <input type="hidden" name="status" value="0">
+                                    <input
+                                        type="checkbox"
+                                        name="status"
+                                        id="statusswitch"
+                                        value="1"
+                                        data-toggle="toggle"
+                                        data-on="Activo"
+                                        data-off="Inactivo"
+                                        data-onstyle="success"
+                                        data-offstyle="danger"
+                                        {{ old('status', $dataTypeContent->status ?? 1) ? 'checked' : '' }}>
+                                </div>
+                            @endif
+
                             @php
                             if (isset($dataTypeContent->locale)) {
                                 $selected_locale = $dataTypeContent->locale;
@@ -193,6 +195,13 @@
                                     <img src="{{ filter_var($dataTypeContent->avatar, FILTER_VALIDATE_URL) ? $dataTypeContent->avatar : Voyager::image( $dataTypeContent->avatar ) }}" style="width:200px; height:auto; clear:both; display:block; padding:2px; border:1px solid #ddd; margin-bottom:10px;" />
                                 @endif
                                 <input type="file" data-name="avatar" name="avatar">
+                                @if(isset($dataTypeContent->id) && $dataTypeContent->avatar !== asset('images/usuario.png'))
+                                    <div class="checkbox" style="margin-top:10px;">
+                                        <label>
+                                            <input type="checkbox" name="remove_avatar" value="1"> Quitar foto (usar imagen por defecto)
+                                        </label>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

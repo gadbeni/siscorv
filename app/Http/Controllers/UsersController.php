@@ -212,6 +212,27 @@ class UsersController extends Controller
             'password.required' => 'El campo Contraseña es obligatorio.',
         ];
 
+        // El funcionario es obligatorio al crear.
+        if (!$request->filled('people_id')) {
+            return redirect()->back()->withInput()->with([
+                'message'    => 'Debe seleccionar un funcionario.',
+                'alert-type' => 'error',
+            ]);
+        }
+
+        // Verifica si el email ya esta registrado (incluyendo usuarios eliminados).
+        $existing = User::withTrashed()->where('email', $request->email)->first();
+        if ($existing) {
+            $aviso = $existing->trashed()
+                ? "El email '{$request->email}' pertenece a un usuario eliminado. Use otro email."
+                : "El email '{$request->email}' ya esta registrado. Use otro email.";
+
+            return redirect()->back()->withInput()->with([
+                'message'    => $aviso,
+                'alert-type' => 'error',
+            ]);
+        }
+
         $input = $request->all();
 
         $input['estado'] = 'ACTIVO';
@@ -252,6 +273,12 @@ class UsersController extends Controller
             //         ]);
             // }
             Persona::create($input);
+
+            if ($request->hasFile('avatar')) {
+                $storage = new StorageController();
+                $user->avatar = $storage->file($request->file('avatar'), 'users');
+                $user->save();
+            }
 
             if ($request->warehouses[0]) {
                 $user->warehouses()->attach($request->warehouses);
@@ -303,7 +330,13 @@ class UsersController extends Controller
                 $user->must_change_password = ($request->user()->id !== $user->id);
                 $user->save();
             }
-            if ($request->avatar != '') {
+            if ($request->boolean('remove_avatar')) {
+                $user->avatar = null;
+                $user->save();
+            } elseif ($request->hasFile('avatar')) {
+                $storage = new StorageController();
+                $user->avatar = $storage->file($request->file('avatar'), 'users');
+                $user->save();
             }
             $input['user_id'] = $user->id;
             if ($request->funcionario_id != '') {
