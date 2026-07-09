@@ -22,7 +22,7 @@
                 </small>
             </td>
             <td style="text-align: right; width:20%">
-                <small style="font-size: 11px; font-weight: 100">Impreso por: {{ Auth::user()->name }} <br> {{ date('d/M/Y H:i:s') }}</small>
+                <small style="font-size: 11px; font-weight: 100">{{ date('d/M/Y H:i:s') }}</small>
             </td>
         </tr>
     </table>
