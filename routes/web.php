@@ -123,6 +123,7 @@ Route::group(['prefix' => 'admin'], function () {
 
     //personas externas
     Route::get('people_exts/export', [PeopleExtController::class, 'export'])->name('people_exts.export');
+    Route::get('people_exts/print', [PeopleExtController::class, 'print'])->name('people_exts.print');
     Route::resource('people_exts', PeopleExtController::class);
     Route::post('people_exts/baja', [PeopleExtController::class, 'baja'])->name('people_exts.baja');
     Route::post('people_exts/activo', [PeopleExtController::class, 'activo'])->name('people_exts.activo');

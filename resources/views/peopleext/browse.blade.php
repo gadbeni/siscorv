@@ -23,6 +23,9 @@
                                 <a href="{{ route('people_exts.export') }}" class="btn btn-info">
                                     <i class="voyager-download"></i> <span>Exportar Excel</span>
                                 </a>
+                                <a type="button" data-toggle="modal" data-target="#modalImprimir" class="btn btn-danger">
+                                    <i class="voyager-file-text"></i> <span>Imprimir</span>
+                                </a>
                                 @if(auth()->user()->hasPermission('add_people_exts'))
                                     <a type="button" data-toggle="modal" data-target="#modalRegistrar" class="btn btn-success">
                                         <i class="voyager-plus"></i> <span>Crear</span>
@@ -188,6 +191,36 @@
                     </div>
                     {!! Form::close()!!}
 
+                </div>
+            </div>
+        </div>
+
+        {{-- modal Imprimir --}}
+        <div class="modal fade" role="dialog" id="modalImprimir">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header btn-danger">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title"><i class="voyager-file-text"></i> Imprimir Personas Externas</h4>
+                    </div>
+                    <form id="formImprimir" target="_blank" method="GET" action="{{ route('people_exts.print') }}">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><b>Estado:</b></span>
+                                </div>
+                                <select name="estado" class="form-control">
+                                    <option value="todos">Todos</option>
+                                    <option value="activo">Activos</option>
+                                    <option value="inactivo">Inactivos</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class="voyager-file-text"></i> Imprimir</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

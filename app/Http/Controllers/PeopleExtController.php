@@ -123,6 +123,36 @@ class PeopleExtController extends Controller
         return Excel::download(new PeopleExtExport, 'personas_externas_' . Carbon::now()->format('Y-m-d') . '.xlsx');
     }
 
+    public function print(Request $request)
+    {
+        $estado = $request->get('estado', 'todos');
+
+        $query = PeopleExt::with(['person'])->where('deleted_at', null);
+
+        if ($estado === 'activo') {
+            $query->where('status', 1);
+        } elseif ($estado === 'inactivo') {
+            $query->where('status', 0);
+        }
+
+        $data = $query->orderBy('id', 'desc')->get();
+
+        $direcciones = DB::connection('mamore')->table('direcciones')
+            ->where('deleted_at', null)
+            ->pluck('nombre', 'id');
+
+        $unidades = DB::connection('mamore')->table('unidades')
+            ->where('deleted_at', null)
+            ->pluck('nombre', 'id');
+
+        foreach ($data as $item) {
+            $item->direccion_nombre = $direcciones->get($item->direccion_id);
+            $item->unidad_nombre = $unidades->get($item->unidad_id);
+        }
+
+        return view('peopleext.print', compact('data', 'estado'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
