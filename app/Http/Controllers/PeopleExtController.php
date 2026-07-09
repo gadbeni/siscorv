@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PeopleExtExport;
 use App\Models\People;
 use App\Models\PeopleExt;
 use App\Models\Person;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use PhpParser\Node\Stmt\Return_;
 
 class PeopleExtController extends Controller
@@ -106,7 +108,19 @@ class PeopleExtController extends Controller
 
         // return $data;
 
+        $direccionesById = $direcciones->keyBy('id');
+        $unidadesById = $unidades->keyBy('id');
+        foreach ($data as $item) {
+            $item->direccion_nombre = optional($direccionesById->get($item->direccion_id))->nombre;
+            $item->unidad_nombre = optional($unidadesById->get($item->unidad_id))->nombre;
+        }
+
         return view('peopleext.browse', compact('people','data', 'direcciones', 'unidades'));
+    }
+
+    public function export()
+    {
+        return Excel::download(new PeopleExtExport, 'personas_externas_' . Carbon::now()->format('Y-m-d') . '.xlsx');
     }
 
     /**

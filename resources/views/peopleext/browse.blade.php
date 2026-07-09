@@ -19,13 +19,16 @@
                                     <p>Puede obtener el valor de cada parámetro en cualquier lugar de su sitio llamando <code>setting('group.key')</code></p>
                                 </div> --}}
                             </div>
-                            @if(auth()->user()->hasPermission('add_people_exts'))
-                                <div class="col-md-4 text-right" style="margin-top: 30px">
+                            <div class="col-md-4 text-right" style="margin-top: 30px">
+                                <a href="{{ route('people_exts.export') }}" class="btn btn-info">
+                                    <i class="voyager-download"></i> <span>Exportar Excel</span>
+                                </a>
+                                @if(auth()->user()->hasPermission('add_people_exts'))
                                     <a type="button" data-toggle="modal" data-target="#modalRegistrar" class="btn btn-success">
                                         <i class="voyager-plus"></i> <span>Crear</span>
                                     </a>
-                                </div>
-                            @endif
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -48,6 +51,8 @@
                                             <th>C.I.</th>
                                             <th>Funcionario</th>
                                             <th>Cargo</th>
+                                            <th>Direccion</th>
+                                            <th>Unidad</th>
                                             <th>Estado</th>
                                             <th></th>
                                         </tr>
@@ -57,8 +62,10 @@
                                                 <tr>
                                                     <td>{{$item->id}}</td>
                                                     <td>{{ optional($item->person)->ci }}</td>
-                                                    <td>{{ optional($item->person)->first_name }} {{ optional($item->person)->paternal_surname }} {{ optional($item->person)->maternal_surname }} {{ optional($item->person)->married_surname }}</td>
+                                                    <td>{{ optional($item->person)->first_name }} {{ optional($item->person)->middle_name }} {{ optional($item->person)->paternal_surname }} {{ optional($item->person)->maternal_surname }} {{ optional($item->person)->married_surname }}</td>
                                                     <td>{{$item->cargo}}</td>
+                                                    <td>{{$item->direccion_nombre}}</td>
+                                                    <td>{{$item->unidad_nombre}}</td>
                                                     <td>
                                                         @if ($item->status == 0)
                                                             <label class="label label-danger">Inactivo</label>

@@ -38,15 +38,15 @@ class RolesTableSeeder extends Seeder
             $role->fill(['display_name' => 'Certificados'])->save();
         }
 
-        $role = Role::firstOrNew(['name' => 'adminpersonerias']);
-        if (!$role->exists) {
-            $role->fill(['display_name' => 'Administrador SIDEPEJ'])->save();
-        }
+        // $role = Role::firstOrNew(['name' => 'adminpersonerias']);
+        // if (!$role->exists) {
+        //     $role->fill(['display_name' => 'Administrador SIDEPEJ'])->save();
+        // }
 
-        $role = Role::firstOrNew(['name' => 'enlace']);
-        if (!$role->exists) {
-            $role->fill(['display_name' => 'Enlace'])->save();
-        }
+        // $role = Role::firstOrNew(['name' => 'enlace']);
+        // if (!$role->exists) {
+        //     $role->fill(['display_name' => 'Enlace'])->save();
+        // }
 
         //Embargo
 
