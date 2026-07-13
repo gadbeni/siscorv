@@ -12,6 +12,21 @@
             text-align: left !important;
         }
     }
+    /* Estado interactivo del Nro. de cite */
+    #divcite.has-error .form-control { border-color:#d9534f; box-shadow:0 0 0 2px rgba(217,83,79,.15); }
+    #divcite.has-success .form-control { border-color:#5cb85c; box-shadow:0 0 0 2px rgba(92,184,92,.15); }
+    #icon { transition: opacity .2s ease; }
+    #icon i { vertical-align: middle; }
+    .cite-spinner { display:inline-block; width:12px; height:12px; border:2px solid #ccc; border-top-color:#3097D1; border-radius:50%; animation:citeSpin .6s linear infinite; vertical-align:middle; }
+    @keyframes citeSpin { to { transform: rotate(360deg); } }
+    @keyframes citeShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+    .cite-shake { animation: citeShake .35s ease; }
+    /* Requisitos faltantes del cite (en vivo) */
+    .cite-reqs { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:7px; opacity:0; max-height:0; overflow:hidden; transition:opacity .2s ease, max-height .25s ease; }
+    .cite-reqs.is-visible { opacity:1; max-height:44px; }
+    .cite-reqs-label { font-size:12px; color:#9aa0a6; font-weight:500; letter-spacing:.2px; }
+    .cite-chip { display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:500; color:#8a6d3b; background:#fcf8e3; border:1px solid #f5e6b8; padding:4px 12px; border-radius:999px; }
+    .cite-chip-ico { width:6px; height:6px; border-radius:50%; background:#e0a800; flex:none; box-shadow:0 0 0 3px rgba(224,168,0,.15); }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @stop
@@ -117,9 +132,8 @@
                                         <label class="control-label">Nro de cite</label>
                                         <input type="text" id="input1" maxlength="50" class="form-control input1" onkeypress="return check(event)" style="text-transform:uppercase" placeholder="DF-1/2022" value="{{ old('cite') ?? $entrada->cite }}">
                                         <input type="text" id="input2" maxlength="50" class="form-control input2" style="text-transform:uppercase" placeholder="1/2022" value="{{ old('cite') ?? $entrada->cite }}">
-                                        <span id="icon"  style="display: none; color:red">
-                                            <b>El cite  ya se encuentra registrado</b>
-                                        </span>
+                                        <span id="icon" class="help-block" style="display: none; margin-top: 4px;"></span>
+                                        <div id="cite-reqs" class="cite-reqs"></div>
                                     </div>
                                     <div class="form-group col-md-3">
                                         <label class="control-label">Fecha Registro <span class="voyager-info-circled" data-toggle="tooltip" data-placement="top" title="Si seleccionona una fecha anterior estara registrando un tramite con fecha atrasada"></span></label>
@@ -250,19 +264,19 @@
                                                         <table style="width: 100%">
                                                             <tr>
                                                                 <td><b>Solicitud</b></td>
-                                                                <td><input type="file" name="solicitud_p" id="solicitud_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
+                                                                <td><input type="file" name="solicitud_p" id="solicitud_p" class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><b>CI</b></td>
-                                                                <td><input type="file" name="carnet_p" id="carnet_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
+                                                                <td><input type="file" name="carnet_p" id="carnet_p" class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><b>Deposito bancario</b></td>
-                                                                <td><input type="file" name="deposito_p" id="deposito_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
+                                                                <td><input type="file" name="deposito_p" id="deposito_p" class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
                                                             </tr>
                                                             <tr>
                                                                 <td><b>Poder (Opcional)</b></td>
-                                                                <td><input type="file" name="poder_p" id="poder_p" class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
+                                                                <td><input type="file" name="poder_p" id="poder_p" class="form-control imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf"></td>
                                                             </tr>
                                                         </table>
                                                     </div>
@@ -342,67 +356,102 @@
         <script>
             var entrada_id = "{{ $entrada->id }}";
             var id_funcionario = "{{ $funcionario ? $funcionario->id_funcionario : '' }}";
-            input1.oninput = function() {
-                var cite ="";
-                var aux = '';
-                var i =0;
-                cite = input1.value;
-                while(i < cite.length){
-                    if(cite.charAt(i) == '/'){
-                        aux = aux + '&';   
-                    }
-                    else{
-                        aux = aux + cite.charAt(i);
-                    }
-                    i++;
-                }
-                if(!entrada_id){
-                    entrada_id=1;
-                }
-                $.get('{{route('cite.get')}}/'+entrada_id+'/'+aux, function(data){ 
-                    if(data == 1){
-                        $('#icon').fadeIn('fast');         
-                        $('#btn_save').attr('disabled', true);           
-                    }      
-                    else{
-                        $('#icon').fadeOut('fast');
-                        $('#btn_save').attr('disabled', false);
-                    }
-                });
-            };
-            input2.oninput = function() {
-                var cite ="";
-                var aux = '';
-                var i =0;
-                cite = input2.value;
+            // ===== Nro. de CITE: feedback en vivo (requisitos + disponibilidad) =====
+            var citeTimer = null;
+            var citeDup = false; // false=libre | true=duplicado | 'checking'
 
-                while(i < cite.length){
-                    if(cite.charAt(i) == '/'){
-                        aux = aux + '&';   
-                    }
-                    else
-                    {
-                        aux = aux + cite.charAt(i);
-                    }
-                    i++;
+            function citeInputActivo() {
+                return $('#input1, #input2').filter(':visible').first();
+            }
+
+            function citeReqChip(faltan, singular, plural) {
+                var palabra = faltan === 1 ? singular : plural;
+                return '<span class="cite-chip"><span class="cite-chip-ico"></span>' + faltan + ' ' + palabra + '</span>';
+            }
+
+            // Pinta los chips de Letras/Numeros al instante mientras se escribe.
+            function renderCiteReqs(valor) {
+                var $reqs = $('#cite-reqs');
+                var faltantes = [];
+                if (valor && valor.trim()) {
+                    var letras = (valor.match(/[A-Za-z]/g) || []).length;
+                    var numeros = (valor.match(/[0-9]/g) || []).length;
+                    var esInterno = $('#input-tipo').val() === 'I';
+                    if (esInterno && letras < 2) { faltantes.push(citeReqChip(2 - letras, 'letra', 'letras')); }
+                    if (numeros < 5) { faltantes.push(citeReqChip(5 - numeros, 'n&uacute;mero', 'n&uacute;meros')); }
                 }
-                if(!entrada_id)
-                {
-                    entrada_id=1;
+                if (faltantes.length === 0) {
+                    $reqs.removeClass('is-visible');
+                    setTimeout(function () { if (!$reqs.hasClass('is-visible')) { $reqs.empty(); } }, 220);
+                    return;
                 }
-                $.get('{{route('cite.get')}}/'+entrada_id+'/'+aux, function(data){ 
-                    if(data == 1)
-                    {
-                        $('#icon').fadeIn('fast');         
-                        $('#btn_save').attr('disabled', true);           
-                    }      
-                    else
-                    {
-                        $('#icon').fadeOut('fast');
-                        $('#btn_save').attr('disabled', false);
+                $reqs.html('<span class="cite-reqs-label">Falta:</span>' + faltantes.join('')).addClass('is-visible');
+            }
+
+            // Habilita Guardar solo si el formato cumple y el cite no esta duplicado.
+            function actualizarBotonCite() {
+                var valor = citeInputActivo().val() || '';
+                var ok = citeFormatoOk(valor) && citeDup === false;
+                $('#btn_save').attr('disabled', !ok);
+            }
+
+            // Linea de disponibilidad (#icon). Estados: idle | checking | taken | available
+            function setCiteState(state) {
+                var $grupo = $('#divcite');
+                var $icon = $('#icon');
+                $grupo.removeClass('has-error has-success');
+                $('#input1, #input2').removeClass('cite-shake');
+
+                if (state === 'checking') {
+                    citeDup = 'checking';
+                    $icon.stop(true, true)
+                        .html('<span class="cite-spinner"></span> Verificando disponibilidad...')
+                        .css('color', '#777').show();
+                } else if (state === 'taken') {
+                    citeDup = true;
+                    $grupo.addClass('has-error');
+                    $icon.stop(true, true)
+                        .html('<i class="voyager-warning"></i> <b>Este Nro. de cite ya esta registrado.</b> Usa uno diferente.')
+                        .css('color', '#d9534f').show();
+                    var $a = citeInputActivo();
+                    if ($a.length) { void $a[0].offsetWidth; $a.addClass('cite-shake'); }
+                } else if (state === 'available') {
+                    citeDup = false;
+                    $grupo.addClass('has-success');
+                    $icon.stop(true, true)
+                        .html('<i class="voyager-check"></i> Nro. de cite disponible.')
+                        .css('color', '#5cb85c').show();
+                } else {
+                    citeDup = false;
+                    $icon.stop(true, true).fadeOut('fast');
+                }
+                actualizarBotonCite();
+            }
+
+            function citeVerificarDuplicado(valor) {
+                var aux = (valor || '').replace(/\//g, '&');
+                if (!aux) { setCiteState('idle'); return; }
+                var id = entrada_id || 1;
+                $.get("{{ route('cite.get') }}/" + id + "/" + encodeURIComponent(aux), function (data) {
+                    if (data == 1) {
+                        setCiteState('taken');
+                    } else {
+                        setCiteState(citeFormatoOk(valor) ? 'available' : 'idle');
                     }
-                });
-            };
+                }).fail(function () { setCiteState('idle'); });
+            }
+
+            // 'input' cubre tambien el pegado. Chips al instante; duplicado con debounce.
+            $('#input1, #input2').on('input', function () {
+                var valor = this.value;
+                renderCiteReqs(valor);
+                clearTimeout(citeTimer);
+                if (!valor.trim()) { setCiteState('idle'); return; }
+                setCiteState('checking');
+                citeTimer = setTimeout(function () {
+                    citeVerificarDuplicado(valor);
+                }, 350);
+            });
 
             var okletra = true;
             var oknumero = true;
@@ -603,31 +652,90 @@
             });
 
             // Para validar los archivos Extenciones y Tamaño
-            $(document).on('change','.imageLength',function(){
-                var fileName = this.files[0].name;
-                var fileSize = this.files[0].size;
-                
-                    // recuperamos la extensión del archivo
-                    var ext = fileName.split('.').pop();
-                    
-                    // Convertimos en minúscula porque 
-                    // la extensión del archivo puede estar en mayúscula
-                    ext = ext.toLowerCase();
-                    // console.log(ext);
-                    switch (ext) {
-                        case 'jpg':
-                        case 'jpeg':
-                        case 'png': 
-                        case 'pdf': break;
-                        default:
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Oops...',
-                                text: 'El archivo no tiene la extensión adecuada!'
-                            })
-                            this.value = ''; // reset del valor
-                            this.files[0].name = '';
+            $(document).on('change', '.imageLength', function () {
+                var input = this;
+                var MAX_MB = 5;
+                var MAX_BYTES = MAX_MB * 1024 * 1024;
+                var permitidas = ['jpg', 'jpeg', 'png', 'pdf'];
+                var archivos = Array.prototype.slice.call(input.files);
+                if (!archivos.length) { return; }
+
+                function rechazar(titulo, htmlBody) {
+                    Swal.fire({ icon: 'error', title: titulo, html: htmlBody, confirmButtonText: 'Entendido', confirmButtonColor: '#3097D1' });
+                    input.value = '';
+                }
+
+                // Detecta el tipo real leyendo los primeros bytes (firma del archivo).
+                function tipoReal(file) {
+                    return new Promise(function (resolve) {
+                        var fr = new FileReader();
+                        fr.onloadend = function () {
+                            var b = new Uint8Array(fr.result);
+                            if (b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) { return resolve('pdf'); }
+                            if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) { return resolve('png'); }
+                            if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) { return resolve('jpg'); }
+                            resolve(null);
+                        };
+                        fr.onerror = function () { resolve(null); };
+                        fr.readAsArrayBuffer(file.slice(0, 8));
+                    });
+                }
+
+                (function validar(i) {
+                    if (i >= archivos.length) { return; } // todos validos
+                    var file = archivos[i];
+                    var ext = (file.name.split('.').pop() || '').toLowerCase();
+
+                    // 1) Extension permitida
+                    if (permitidas.indexOf(ext) === -1) {
+                        rechazar('Formato no permitido',
+                            'El archivo <b>' + file.name + '</b> no es una imagen ni un PDF.<br>' +
+                            'Solo se aceptan <b>JPG, PNG o PDF</b>.');
+                        return;
                     }
+
+                    // 2) Tamano maximo
+                    if (file.size > MAX_BYTES) {
+                        var mb = (file.size / 1024 / 1024).toFixed(1);
+                        var limitPct = Math.max(3, Math.min(100, (MAX_BYTES / file.size) * 100)).toFixed(0);
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Archivo muy pesado',
+                            html:
+                                '<div style="max-width:300px;margin:0 auto">' +
+                                    '<div style="display:flex;align-items:center;gap:8px;justify-content:center;color:#555;font-size:13px;margin-bottom:14px">' +
+                                        '<i class="voyager-file-text" style="color:#d9534f;font-size:16px"></i>' +
+                                        '<span style="word-break:break-all">' + file.name + '</span>' +
+                                    '</div>' +
+                                    '<div style="position:relative;height:10px;border-radius:999px;background:#f2dede;overflow:hidden">' +
+                                        '<div style="height:100%;width:' + limitPct + '%;background:#5cb85c;border-radius:999px"></div>' +
+                                    '</div>' +
+                                    '<div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:6px">' +
+                                        '<span style="color:#3c763d;font-weight:600">Permitido: ' + MAX_MB + ' MB</span>' +
+                                        '<span style="color:#a94442;font-weight:600">Tu archivo: ' + mb + ' MB</span>' +
+                                    '</div>' +
+                                    '<p style="margin:16px 0 0;color:#777;font-size:13px">Comprimi el archivo o subilo dividido en partes de menos de ' + MAX_MB + ' MB.</p>' +
+                                '</div>',
+                            confirmButtonText: 'Entendido',
+                            confirmButtonColor: '#3097D1'
+                        });
+                        input.value = '';
+                        return;
+                    }
+
+                    // 3) El contenido real (firma) debe coincidir con la extension
+                    tipoReal(file).then(function (real) {
+                        var esperado = (ext === 'jpeg') ? 'jpg' : ext;
+                        if (real === null || real !== esperado) {
+                            rechazar('Archivo no valido',
+                                'El archivo <b>' + file.name + '</b> no es un ' + ext.toUpperCase() + ' real; ' +
+                                'su contenido no coincide con la extension.<br>' +
+                                'Sube una imagen <b>JPG/PNG</b> o un <b>PDF</b> valido.');
+                            return;
+                        }
+                        validar(i + 1);
+                    });
+                })(0);
             });
 
             function check(e) {   
@@ -693,21 +801,55 @@
                 }               
             }
 
+            function citeFormatoOk(valor) {
+                var letras = (valor.match(/[A-Za-z]/g) || []).length;
+                var numeros = (valor.match(/[0-9]/g) || []).length;
+                var esInterno = $('#input-tipo').val() === 'I';
+                return (!esInterno || letras >= 2) && numeros >= 5;
+            }
+
+            function citeReqFila(ok, label, actual, req) {
+                var color = ok ? '#5cb85c' : '#d9534f';
+                var bg = ok ? 'rgba(92,184,92,.10)' : 'rgba(217,83,79,.10)';
+                var icono = ok ? '&#10003;' : '&#10007;';
+                return '<div style="display:flex;justify-content:space-between;align-items:center;' +
+                    'padding:7px 12px;margin:5px 0;border-radius:6px;background:' + bg + '">' +
+                    '<span style="color:' + color + ';font-weight:600">' + icono + ' ' + label + '</span>' +
+                    '<span style="color:#555;font-size:13px">' + actual + ' / ' + req + '</span>' +
+                    '</div>';
+            }
+
             function validarFormulario(evento) {
                 evento.preventDefault();
-                
-                if (auxl>=2 && auxn>=5) {
+
+                var valor = ($('#input1, #input2').filter(':visible').first().val() || '');
+
+                if (citeFormatoOk(valor)) {
                     this.submit();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: "El Campo Nro. CITE tiene que tener minimo 2 letras y 5 numeros.\nEjemplo: DF-1/2022",
-                    })
-                    div = document.getElementById('flotante');
-                    div.style.display = '';
                     return;
                 }
+
+                var letras = (valor.match(/[A-Za-z]/g) || []).length;
+                var numeros = (valor.match(/[0-9]/g) || []).length;
+                var esInterno = $('#input-tipo').val() === 'I';
+                var ejemplo = esInterno ? 'DF-1/2022' : '1/2022';
+
+                var filas = '';
+                if (esInterno) {
+                    filas += citeReqFila(letras >= 2, 'Letras', letras, 2);
+                }
+                filas += citeReqFila(numeros >= 5, 'N&uacute;meros', numeros, 5);
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Nro. de CITE incompleto',
+                    html:
+                        '<p style="margin:0 0 10px;color:#555">Falta completar para poder guardar:</p>' +
+                        '<div style="max-width:250px;margin:0 auto">' + filas + '</div>' +
+                        '<p style="margin:14px 0 0;color:#888;font-size:13px">Ejemplo v&aacute;lido: <b>' + ejemplo + '</b></p>',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#3097D1'
+                });
             }
 
             function cambiarTipo(tipo){

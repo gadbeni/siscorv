@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($p = \"d:\\\\garoto\\\\gadbeni\\\\siscorv\\\\resources\\\\views\\\\entradas\\\\edit-add.blade.php\"; $bytes = [System.IO.File]::ReadAllBytes\\($p\\); $hasBom = \\($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF\\); $crlf = \\($bytes -contains 13\\); \"BOM=$hasBom\"; \"CRLF=$crlf\"; \"Bytes=$\\($bytes.Length\\)\")",
+      "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -l resources/views/entradas/edit-add.blade.php)",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\cite_interactive.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\cite_modal.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\cite_live.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\cite_onlymissing.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\cite_pretty.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\file_size.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\file_modal.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\file_verify.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\d--garoto-gadbeni-siscorv\\\\49aebf57-365c-4ebe-9c74-7b70a33fcd71\\\\scratchpad\\\\controller_validate.ps1\")",
+      "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -l app/Http/Controllers/EntradasController.php)",
+      "Bash(grep -n \"validarArchivos\\\\|use Illuminate\\\\\\\\\\\\\\\\Support\\\\\\\\\\\\\\\\Facades\\\\\\\\\\\\\\\\Validator\" app/Http/Controllers/EntradasController.php)",
+      "Bash(php -l)",
+      "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -v)",
+      "Bash(C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe -r ' *)"
+    ]
+  }
+}

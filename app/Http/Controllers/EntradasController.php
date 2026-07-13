@@ -19,12 +19,29 @@ use App\Models\PjNameReservation;
 use App\Models\PjNameFile;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class EntradasController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    private function validarArchivos(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'archivos'    => 'nullable|array',
+            'archivos.*'  => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'file'        => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'solicitud_p' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'carnet_p'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'deposito_p'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'poder_p'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ], [
+            'mimes' => 'Solo se permiten archivos JPG, PNG o PDF.',
+            'max'   => 'Cada archivo debe pesar como maximo 5 MB.',
+        ]);
     }
     /**
      * Display a listing of the resource.
@@ -113,6 +130,11 @@ class EntradasController extends Controller
      */
     public function store(Request $request)
     {
+        $valArchivos = $this->validarArchivos($request);
+        if ($valArchivos->fails()) {
+            return redirect()->back()->withInput()->with(['message' => $valArchivos->errors()->first(), 'alert-type' => 'error']);
+        }
+
         // return $request->all();
         $request->merge(['cite' =>  strtoupper($request->cite)]);
 
@@ -243,6 +265,11 @@ class EntradasController extends Controller
 
     public function entradaFile(Request $request)
     {
+        $valArchivos = $this->validarArchivos($request);
+        if ($valArchivos->fails()) {
+            return redirect()->back()->withInput()->with(['message' => $valArchivos->errors()->first(), 'alert-type' => 'error']);
+        }
+
         // return $request;
         DB::beginTransaction();
         try {
@@ -288,6 +315,11 @@ class EntradasController extends Controller
 
     public function update(Request $request, Entrada $entrada)
     {
+        $valArchivos = $this->validarArchivos($request);
+        if ($valArchivos->fails()) {
+            return redirect()->back()->withInput()->with(['message' => $valArchivos->errors()->first(), 'alert-type' => 'error']);
+        }
+
         DB::beginTransaction();
         try {
 
@@ -416,6 +448,11 @@ class EntradasController extends Controller
     // Guardar Archivo
     public function store_file(Request $request)
     {
+        $valArchivos = $this->validarArchivos($request);
+        if ($valArchivos->fails()) {
+            return redirect()->back()->withInput()->with(['message' => $valArchivos->errors()->first(), 'alert-type' => 'error']);
+        }
+
         try {
             $file = $request->file('file');
             if ($file) {

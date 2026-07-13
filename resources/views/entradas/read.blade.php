@@ -66,19 +66,31 @@
                 <div class="col-md-12">
                     <div class="panel panel-bordered" style="padding-bottom:5px;">
                         <div class="row">
-                            @if (count($nci)==0)     
+                            @if (count($nci)==0)
                                 <div class="col-md-12">
                                     <form class="form-submit" action="{{route('entradas-file-nci.store')}}" method="POST" enctype="multipart/form-data">
                                         @csrf
-                                        <div class="alert alert-warning">
-                                            <h3>Advertencia</h3>
-                                            <p>Debe agregar el documento de respaldo</p>
-                                            <input type="hidden" name="id" value="{{$data->id}}" class="form-control">
-                                            <div class="form-group">
-                                                <input type="file" name="archivos[]" multiple class="form-control" accept="image/jpeg,image/jpg,image/png,application/pdf" required>
+                                        <input type="hidden" name="id" value="{{$data->id}}">
+                                        <div class="upload-respaldo">
+                                            <div class="upload-respaldo-header">
+                                                <div class="upload-respaldo-icon">
+                                                    <i class="voyager-warning"></i>
+                                                </div>
+                                                <div class="upload-respaldo-text">
+                                                    <h4>Documento de respaldo pendiente</h4>
+                                                    <p>Adjunte el documento digitalizado para continuar con el trámite. Formatos permitidos: <strong>PDF, JPG o PNG</strong>.</p>
+                                                </div>
                                             </div>
-                                            <div class="form-group text-right">
-                                                <button type="submit" class="btn btn-danger btn-submit">Subir Archivos</button>
+                                            <label class="upload-dropzone" for="input-archivos-nci">
+                                                <i class="voyager-upload"></i>
+                                                <span><strong>Haga clic para seleccionar</strong> o arrastre los archivos aquí</span>
+                                                <input type="file" id="input-archivos-nci" name="archivos[]" multiple accept="image/jpeg,image/jpg,image/png,application/pdf">
+                                            </label>
+                                            <ul class="upload-file-list" id="upload-file-list"></ul>
+                                            <div class="text-right">
+                                                <button type="submit" class="btn btn-warning btn-submit" id="btn-subir-archivos" disabled>
+                                                    <i class="voyager-upload"></i> Subir Archivos
+                                                </button>
                                             </div>
                                         </div>
                                     </form>
@@ -323,6 +335,50 @@
                                     </div>
                                 </div>
                                 @if ($data->derivaciones->count() > 0)
+                                @php
+                                    $derivColeccion = $data->derivaciones->whereNull('deleted_at');
+                                    $childrenMap = $derivColeccion
+                                        ->filter(fn($d) => $d->parent_type === 'App\Models\Derivation' && $d->parent_id)
+                                        ->groupBy('parent_id');
+                                    $idsDeriv = $derivColeccion->pluck('id');
+                                    $raices = $derivColeccion->filter(function($d) use ($data, $idsDeriv) {
+                                        if ($d->parent_type === 'App\Models\Entrada') return true;
+                                        if (!$d->parent_id || $d->parent_id == $data->id && $d->parent_type !== 'App\Models\Derivation') return true;
+                                        // huérfanas: el padre fue anulado, mostrarlas como raíz para no perderlas
+                                        return $d->parent_type === 'App\Models\Derivation' && !$idsDeriv->contains($d->parent_id);
+                                    });
+                                @endphp
+                                <div class="panel-body deriv-tree-wrapper" style="padding-top:0;">
+                                    <div class="deriv-tree">
+                                        <ul>
+                                            <li>
+                                                <div class="deriv-node deriv-node-origen">
+                                                    <span class="deriv-badge-origen"><i class="voyager-mail"></i> Origen</span>
+                                                    <strong class="deriv-node-nombre">{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</strong>
+                                                    <small class="deriv-node-unidad">Recepción de la hoja de ruta</small>
+                                                    <div class="deriv-node-meta">
+                                                        <span class="deriv-node-fecha" title="{{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}">
+                                                            {{ date('d/m/Y H:i', strtotime($data->created_at)) }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                @if ($raices->count() > 0)
+                                                    <ul>
+                                                        @foreach ($raices as $raiz)
+                                                            @include('entradas.partials.derivation-node', ['node' => $raiz, 'childrenMap' => $childrenMap])
+                                                        @endforeach
+                                                    </ul>
+                                                @endif
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="deriv-tree-leyenda text-center">
+                                        <span><span class="deriv-dot deriv-dot-actual"></span> Ubicación actual</span>
+                                        <span><span class="deriv-dot deriv-dot-via"></span> Vía</span>
+                                        <span><span class="deriv-dot deriv-dot-rechazo"></span> Devuelto</span>
+                                        <span><span class="deriv-dot deriv-dot-archivado"></span> Archivado</span>
+                                    </div>
+                                </div>
                                 <div class="panel-body" style="padding-top:0;">
                                     <table class="table table-bordered-table-hover">
                                         <thead>
@@ -565,6 +621,265 @@
                 font-size: 12px;
                 text-decoration: none
             }
+            .upload-respaldo{
+                background: #fffaf0;
+                border: 1px solid #f0ad4e;
+                border-left: 5px solid #f0ad4e;
+                border-radius: 4px;
+                padding: 20px;
+                margin: 10px 15px 15px;
+            }
+            .upload-respaldo-header{
+                display: flex;
+                align-items: flex-start;
+                margin-bottom: 15px;
+            }
+            .upload-respaldo-icon{
+                flex-shrink: 0;
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: #f0ad4e;
+                color: #fff;
+                font-size: 22px;
+                line-height: 44px;
+                text-align: center;
+                margin-right: 15px;
+            }
+            .upload-respaldo-text h4{
+                margin: 0 0 5px;
+                font-weight: 600;
+                color: #8a6d3b;
+            }
+            .upload-respaldo-text p{
+                margin: 0;
+                color: #8a6d3b;
+            }
+            .upload-dropzone{
+                display: block;
+                border: 2px dashed #f0ad4e;
+                border-radius: 4px;
+                background: #fff;
+                padding: 25px 15px;
+                text-align: center;
+                color: #8a6d3b;
+                cursor: pointer;
+                font-weight: normal;
+                margin-bottom: 10px;
+                transition: background .15s, border-color .15s;
+            }
+            .upload-dropzone:hover,
+            .upload-dropzone.dragover{
+                background: #fdf3e3;
+                border-color: #ec971f;
+            }
+            .upload-dropzone i{
+                display: block;
+                font-size: 28px;
+                margin-bottom: 5px;
+            }
+            .upload-dropzone input[type="file"]{
+                display: none;
+            }
+            .upload-file-list{
+                list-style: none;
+                padding: 0;
+                margin: 0 0 10px;
+            }
+            .upload-file-list li{
+                display: flex;
+                align-items: center;
+                background: #fff;
+                border: 1px solid #eee;
+                border-radius: 4px;
+                padding: 8px 12px;
+                margin-bottom: 5px;
+            }
+            .upload-file-list li i{
+                color: #f0ad4e;
+                margin-right: 10px;
+                font-size: 16px;
+            }
+            .upload-file-list li span{
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            .upload-file-list li small{
+                color: #999;
+                margin-left: 10px;
+            }
+            /* Árbol de derivaciones */
+            .deriv-tree-wrapper{
+                overflow-x: auto;
+            }
+            .deriv-tree ul{
+                display: flex;
+                justify-content: center;
+                padding: 20px 0 0;
+                margin: 0;
+                position: relative;
+                list-style: none;
+            }
+            .deriv-tree > ul{
+                padding-top: 16px;
+            }
+            .deriv-tree li{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 20px 8px 0;
+                position: relative;
+            }
+            .deriv-tree > ul > li{
+                padding-top: 0;
+            }
+            /* conectores */
+            .deriv-tree li::before,
+            .deriv-tree li::after{
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 50%;
+                width: 50%;
+                height: 20px;
+                border-top: 2px solid #c8c8c8;
+            }
+            .deriv-tree li::after{
+                right: auto;
+                left: 50%;
+                border-left: 2px solid #c8c8c8;
+            }
+            .deriv-tree li:only-child::before,
+            .deriv-tree li:only-child::after{
+                border-top: 0;
+            }
+            .deriv-tree li:only-child::after{
+                border-left: 2px solid #c8c8c8;
+            }
+            .deriv-tree li:first-child::before,
+            .deriv-tree li:last-child::after{
+                border-top: 0;
+            }
+            .deriv-tree li:last-child::before{
+                border-right: 2px solid #c8c8c8;
+                border-radius: 0 5px 0 0;
+            }
+            .deriv-tree li:first-child::after{
+                border-radius: 5px 0 0 0;
+            }
+            .deriv-tree > ul > li::before,
+            .deriv-tree > ul > li::after{
+                display: none;
+            }
+            .deriv-tree ul ul::before{
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                width: 0;
+                height: 20px;
+                border-left: 2px solid #c8c8c8;
+            }
+            /* nodos */
+            .deriv-node{
+                position: relative;
+                background: #fff;
+                border: 1px solid #d5d5d5;
+                border-top: 3px solid #2a9f68;
+                border-radius: 4px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+                padding: 10px 14px;
+                min-width: 190px;
+                max-width: 230px;
+                text-align: center;
+            }
+            .deriv-node-nombre{
+                display: block;
+                font-size: 12px;
+                line-height: 1.3;
+            }
+            .deriv-node-cargo,
+            .deriv-node-unidad{
+                display: block;
+                color: #777;
+                font-size: 11px;
+                line-height: 1.3;
+                margin-top: 2px;
+            }
+            .deriv-node-meta{
+                margin-top: 6px;
+                font-size: 11px;
+                color: #999;
+            }
+            .deriv-node-meta .label{
+                font-size: 10px;
+                margin: 0 2px;
+            }
+            .deriv-node-fecha{
+                display: block;
+                margin-bottom: 3px;
+            }
+            .deriv-node-origen{
+                border-top-color: #555;
+                background: #f7f7f7;
+            }
+            .deriv-node-via{
+                border-top-color: #999;
+                background: #f2f2f2;
+            }
+            .deriv-node-rechazo{
+                border-top-color: #c0392b;
+                background: #fdf3f2;
+            }
+            .deriv-node-archivado{
+                border-top-color: #337ab7;
+                background: #f2f7fb;
+            }
+            .deriv-node-actual{
+                border-color: #2a9f68;
+                border-top-width: 3px;
+                box-shadow: 0 0 0 3px rgba(42,159,104,0.25);
+            }
+            .deriv-badge-actual,
+            .deriv-badge-origen{
+                position: absolute;
+                top: -12px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #2a9f68;
+                color: #fff;
+                font-size: 10px;
+                font-weight: 600;
+                padding: 2px 8px;
+                border-radius: 10px;
+                white-space: nowrap;
+            }
+            .deriv-badge-origen{
+                background: #555;
+            }
+            /* leyenda */
+            .deriv-tree-leyenda{
+                margin-top: 15px;
+                font-size: 11px;
+                color: #777;
+            }
+            .deriv-tree-leyenda > span{
+                margin: 0 8px;
+            }
+            .deriv-dot{
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                vertical-align: middle;
+                margin-right: 4px;
+            }
+            .deriv-dot-actual{ background: #2a9f68; }
+            .deriv-dot-via{ background: #999; }
+            .deriv-dot-rechazo{ background: #c0392b; }
+            .deriv-dot-archivado{ background: #337ab7; }
         </style>
     @endsection
         
@@ -594,6 +909,54 @@
                 $('#form-derivacion input[name="id"]').val(id);
                 destinatario_id = destinoid;
             }
+
+            (function(){
+                var $input = $('#input-archivos-nci');
+                if (!$input.length) return;
+                var $list = $('#upload-file-list');
+                var $btn = $('#btn-subir-archivos');
+                var $zone = $('.upload-dropzone');
+
+                function formatSize(bytes){
+                    if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+                    if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                    return bytes + ' B';
+                }
+
+                function render(){
+                    var files = $input[0].files;
+                    $list.empty();
+                    for (var i = 0; i < files.length; i++) {
+                        var icon = files[i].type === 'application/pdf' ? 'voyager-file-text' : 'voyager-photos';
+                        $list.append(
+                            $('<li>').append(
+                                $('<i>').addClass(icon),
+                                $('<span>').text(files[i].name),
+                                $('<small>').text(formatSize(files[i].size))
+                            )
+                        );
+                    }
+                    $btn.prop('disabled', files.length === 0);
+                }
+
+                $input.on('change', render);
+
+                $zone.on('dragover dragenter', function(e){
+                    e.preventDefault();
+                    $zone.addClass('dragover');
+                }).on('dragleave dragend', function(e){
+                    e.preventDefault();
+                    $zone.removeClass('dragover');
+                }).on('drop', function(e){
+                    e.preventDefault();
+                    $zone.removeClass('dragover');
+                    var dt = e.originalEvent.dataTransfer;
+                    if (dt && dt.files.length) {
+                        $input[0].files = dt.files;
+                        render();
+                    }
+                });
+            })();
         </script>
         <script>
         $('.btn-send-message').click(function(){
