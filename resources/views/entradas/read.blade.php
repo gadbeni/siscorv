@@ -78,17 +78,21 @@
                                                 </div>
                                                 <div class="upload-respaldo-text">
                                                     <h4>Documento de respaldo pendiente</h4>
-                                                    <p>Adjunte el documento digitalizado para continuar con el trámite. Formatos permitidos: <strong>PDF, JPG o PNG</strong>.</p>
+                                                    <p>Adjunte el documento digitalizado para continuar con el trámite.</p>
                                                 </div>
                                             </div>
                                             <label class="upload-dropzone" for="input-archivos-nci">
-                                                <i class="voyager-upload"></i>
-                                                <span><strong>Haga clic para seleccionar</strong> o arrastre los archivos aquí</span>
+                                                <div class="upload-dropzone-icon"><i class="voyager-upload"></i></div>
+                                                <span class="upload-dropzone-main">Arrastre los archivos aquí</span>
+                                                <span class="upload-dropzone-sub">o</span>
+                                                <span class="btn btn-warning btn-sm upload-dropzone-btn"><i class="voyager-plus"></i> Seleccionar archivos</span>
+                                                <span class="upload-dropzone-formats">PDF, JPG o PNG</span>
                                                 <input type="file" id="input-archivos-nci" name="archivos[]" multiple accept="image/jpeg,image/jpg,image/png,application/pdf">
                                             </label>
                                             <ul class="upload-file-list" id="upload-file-list"></ul>
-                                            <div class="text-right">
-                                                <button type="submit" class="btn btn-warning btn-submit" id="btn-subir-archivos" disabled>
+                                            <div class="upload-respaldo-footer">
+                                                <span class="upload-respaldo-hint" id="upload-hint"><i class="voyager-info-circled"></i> Ningún archivo seleccionado</span>
+                                                <button type="submit" class="btn btn-warning btn-submit upload-respaldo-submit" id="btn-subir-archivos" disabled>
                                                     <i class="voyager-upload"></i> Subir Archivos
                                                 </button>
                                             </div>
@@ -348,89 +352,49 @@
                                         return $d->parent_type === 'App\Models\Derivation' && !$idsDeriv->contains($d->parent_id);
                                     });
                                 @endphp
-                                <div class="panel-body deriv-tree-wrapper" style="padding-top:0;">
-                                    <div class="deriv-tree">
-                                        <ul>
-                                            <li>
-                                                <div class="deriv-node deriv-node-origen">
-                                                    <span class="deriv-badge-origen"><i class="voyager-mail"></i> Origen</span>
-                                                    <strong class="deriv-node-nombre">{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</strong>
-                                                    <small class="deriv-node-unidad">Recepción de la hoja de ruta</small>
-                                                    <div class="deriv-node-meta">
-                                                        <span class="deriv-node-fecha" title="{{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}">
-                                                            {{ date('d/m/Y H:i', strtotime($data->created_at)) }}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                @if ($raices->count() > 0)
-                                                    <ul>
-                                                        @foreach ($raices as $raiz)
-                                                            @include('entradas.partials.derivation-node', ['node' => $raiz, 'childrenMap' => $childrenMap])
-                                                        @endforeach
-                                                    </ul>
-                                                @endif
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div class="deriv-tree-leyenda text-center">
-                                        <span><span class="deriv-dot deriv-dot-actual"></span> Ubicación actual</span>
-                                        <span><span class="deriv-dot deriv-dot-via"></span> Vía</span>
-                                        <span><span class="deriv-dot deriv-dot-rechazo"></span> Devuelto</span>
-                                        <span><span class="deriv-dot deriv-dot-archivado"></span> Archivado</span>
-                                    </div>
-                                </div>
                                 <div class="panel-body" style="padding-top:0;">
-                                    <table class="table table-bordered-table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>N&deg;</th>
-                                                <th>Dirección Administrativa</th>
-                                                <th>Funcionario</th>
-                                                <th>Observaciones</th>
-                                                <th></th>
-                                                <th>Fecha</th>
-                                                <th>Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @php
-                                                $cont = 1;
-                                            @endphp
-                                            @forelse ($data->derivaciones as $item)
-                                                <tr @if ($item->rechazo) style="background-color: rgba(192,57,43,0.3)" @endif @if ($item->via) style="background-color: rgb(224,223,223)" @endif>
-                                                    <td>{{ $cont }}</td>
-                                                    <td>{{ $item->funcionario_direccion_para }} <br> {{ Str::upper($item->funcionario_unidad_para) }}</td>
-                                                    <td>{{ $item->funcionario_nombre_para }} <br> <small>{{ $item->funcionario_cargo_para }}</small> </td>
-                                                    <td>{{ $item->observacion }}</td>
-                                                    <td>
-                                                        @if ($item->visto)
-                                                            <i class="fa-solid fa-eye" style="color: rgb(9,132,41)" data-toggle="tooltip" title="Derivación abierta"></i>
-                                                        @else
-                                                            <i class="fa-solid fa-eye-slash" data-toggle="tooltip" title="Derivación no abierta"></i>
+                                    <div class="deriv-toolbar">
+                                        <div class="deriv-toolbar-legend">
+                                            <span><span class="deriv-dot deriv-dot-actual"></span> Ubicación actual</span>
+                                            <span><span class="deriv-dot deriv-dot-via"></span> Vía</span>
+                                            <span><span class="deriv-dot deriv-dot-rechazo"></span> Devuelto</span>
+                                            <span><span class="deriv-dot deriv-dot-archivado"></span> Archivado</span>
+                                        </div>
+                                        <div class="deriv-toolbar-controls btn-group">
+                                            <button type="button" class="btn btn-default btn-sm" data-deriv-zoom="out" title="Alejar"><i class="voyager-resize-small"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" data-deriv-zoom="reset" title="Restablecer"><span class="deriv-zoom-label">100%</span></button>
+                                            <button type="button" class="btn btn-default btn-sm" data-deriv-zoom="in" title="Acercar"><i class="voyager-resize-full"></i></button>
+                                            <button type="button" class="btn btn-default btn-sm" data-deriv-zoom="fit" title="Ajustar al ancho"><i class="voyager-crop"></i> Ajustar</button>
+                                            <button type="button" class="btn btn-default btn-sm" data-deriv-zoom="locate" title="Ir a la ubicación actual"><i class="voyager-location"></i> Ubicar nota</button>
+                                        </div>
+                                    </div>
+                                    <div class="deriv-tree-viewport" id="deriv-tree-viewport">
+                                        <div class="deriv-tree-scale" id="deriv-tree-scale">
+                                            <div class="deriv-tree">
+                                                <ul>
+                                                    <li>
+                                                        <div class="deriv-node deriv-node-origen">
+                                                            <span class="deriv-badge-origen"><i class="voyager-mail"></i> Origen</span>
+                                                            <strong class="deriv-node-nombre">{{ $data->tipo.'-'.$data->gestion.'-'.$data->id }}</strong>
+                                                            <small class="deriv-node-unidad">Recepción de la hoja de ruta</small>
+                                                            <div class="deriv-node-meta">
+                                                                <span class="deriv-node-fecha" title="{{ \Carbon\Carbon::parse($data->created_at)->diffForHumans() }}">
+                                                                    {{ date('d/m/Y H:i', strtotime($data->created_at)) }}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        @if ($raices->count() > 0)
+                                                            <ul>
+                                                                @foreach ($raices as $raiz)
+                                                                    @include('entradas.partials.derivation-node', ['node' => $raiz, 'childrenMap' => $childrenMap])
+                                                                @endforeach
+                                                            </ul>
                                                         @endif
-                                                    </td>
-                                                    <td>{{ date('d/m/Y H:i:s', strtotime($item->created_at)) }} <br> <small>{{ \Carbon\Carbon::parse($item->created_at)->diffForHumans() }}</small></td>
-                                                    <td class="no-sort no-click bread-actions text-right">
-                                                        @php
-                                                            $ok = \App\Models\Derivation::where('parent_id', $item->id)->get();
-                                                        @endphp
-                                                        @if(0 == count($ok) && $item->via == 0 && $item->entrada_id != $item->parent_id && auth()->user()->hasRole('admin'))
-                                                            <button type="button" data-toggle="modal" data-target="#anular_modal" data-id="{{ $item->id }}" class="btn btn-danger btn-sm btn-anular">
-                                                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
-                                                            </button>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                                @php
-                                                    $cont++;
-                                                @endphp
-                                            @empty
-                                                <tr>
-                                                    <td colspan="8"><h5 class="text-center">No se han realizado derivaciones</h5></td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 @endif
                                  
@@ -622,61 +586,106 @@
                 text-decoration: none
             }
             .upload-respaldo{
-                background: #fffaf0;
-                border: 1px solid #f0ad4e;
-                border-left: 5px solid #f0ad4e;
-                border-radius: 4px;
-                padding: 20px;
+                position: relative;
+                background: #fff;
+                border: 1px solid #f0e0c0;
+                border-radius: 8px;
+                padding: 22px 24px 20px;
                 margin: 10px 15px 15px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                overflow: hidden;
+            }
+            .upload-respaldo::before{
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #f0ad4e, #ec971f);
             }
             .upload-respaldo-header{
                 display: flex;
-                align-items: flex-start;
-                margin-bottom: 15px;
+                align-items: center;
+                margin-bottom: 18px;
             }
             .upload-respaldo-icon{
                 flex-shrink: 0;
-                width: 44px;
-                height: 44px;
+                width: 46px;
+                height: 46px;
                 border-radius: 50%;
-                background: #f0ad4e;
-                color: #fff;
+                background: #fdf3e3;
+                color: #ec971f;
                 font-size: 22px;
-                line-height: 44px;
+                line-height: 46px;
                 text-align: center;
                 margin-right: 15px;
             }
             .upload-respaldo-text h4{
-                margin: 0 0 5px;
+                margin: 0 0 3px;
                 font-weight: 600;
-                color: #8a6d3b;
+                color: #444;
+                font-size: 17px;
             }
             .upload-respaldo-text p{
                 margin: 0;
-                color: #8a6d3b;
+                color: #999;
+                font-size: 13px;
             }
             .upload-dropzone{
-                display: block;
-                border: 2px dashed #f0ad4e;
-                border-radius: 4px;
-                background: #fff;
-                padding: 25px 15px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border: 2px dashed #e2c48f;
+                border-radius: 8px;
+                background: #fffdf8;
+                padding: 26px 15px;
                 text-align: center;
-                color: #8a6d3b;
+                color: #999;
                 cursor: pointer;
                 font-weight: normal;
-                margin-bottom: 10px;
-                transition: background .15s, border-color .15s;
+                margin: 0;
+                transition: background .15s, border-color .15s, box-shadow .15s;
             }
             .upload-dropzone:hover,
             .upload-dropzone.dragover{
                 background: #fdf3e3;
                 border-color: #ec971f;
+                box-shadow: inset 0 0 0 3px rgba(240,173,78,0.12);
             }
-            .upload-dropzone i{
-                display: block;
-                font-size: 28px;
-                margin-bottom: 5px;
+            .upload-dropzone-icon{
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: #fff;
+                border: 1px solid #f0e0c0;
+                color: #ec971f;
+                font-size: 26px;
+                line-height: 56px;
+                text-align: center;
+                margin-bottom: 10px;
+                transition: transform .15s;
+            }
+            .upload-dropzone.dragover .upload-dropzone-icon{
+                transform: translateY(-3px) scale(1.05);
+            }
+            .upload-dropzone-main{
+                font-size: 14px;
+                color: #666;
+                font-weight: 600;
+            }
+            .upload-dropzone-sub{
+                font-size: 12px;
+                color: #bbb;
+                margin: 6px 0;
+            }
+            .upload-dropzone-btn{
+                margin-bottom: 10px;
+            }
+            .upload-dropzone-formats{
+                font-size: 11px;
+                color: #b0b0b0;
+                letter-spacing: .5px;
+                text-transform: uppercase;
             }
             .upload-dropzone input[type="file"]{
                 display: none;
@@ -684,35 +693,122 @@
             .upload-file-list{
                 list-style: none;
                 padding: 0;
-                margin: 0 0 10px;
+                margin: 14px 0 0;
             }
             .upload-file-list li{
                 display: flex;
                 align-items: center;
                 background: #fff;
                 border: 1px solid #eee;
-                border-radius: 4px;
-                padding: 8px 12px;
-                margin-bottom: 5px;
+                border-radius: 6px;
+                padding: 9px 12px;
+                margin-bottom: 6px;
+                animation: uploadItemIn .15s ease-out;
             }
-            .upload-file-list li i{
-                color: #f0ad4e;
+            @keyframes uploadItemIn{
+                from{ opacity: 0; transform: translateY(-4px); }
+                to{ opacity: 1; transform: translateY(0); }
+            }
+            .upload-file-list li > i{
+                flex-shrink: 0;
+                width: 32px;
+                height: 32px;
+                border-radius: 6px;
+                background: #fdf3e3;
+                color: #ec971f;
                 margin-right: 10px;
-                font-size: 16px;
+                font-size: 15px;
+                line-height: 32px;
+                text-align: center;
             }
-            .upload-file-list li span{
+            .upload-file-list li .upload-file-name{
                 flex: 1;
+                min-width: 0;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
+                font-size: 13px;
+                color: #555;
             }
             .upload-file-list li small{
-                color: #999;
-                margin-left: 10px;
+                color: #aaa;
+                margin: 0 10px;
+                white-space: nowrap;
+                font-size: 12px;
+            }
+            .upload-file-remove{
+                flex-shrink: 0;
+                border: 0;
+                background: transparent;
+                color: #ccc;
+                font-size: 15px;
+                line-height: 1;
+                padding: 4px;
+                cursor: pointer;
+                transition: color .15s;
+            }
+            .upload-file-remove:hover{
+                color: #c0392b;
+            }
+            .upload-respaldo-footer{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin-top: 16px;
+                padding-top: 14px;
+                border-top: 1px solid #f2f2f2;
+            }
+            .upload-respaldo-hint{
+                font-size: 12px;
+                color: #aaa;
+            }
+            .upload-respaldo-hint.has-files{
+                color: #5a9e6f;
+            }
+            .upload-respaldo-hint i{
+                margin-right: 4px;
             }
             /* Árbol de derivaciones */
-            .deriv-tree-wrapper{
-                overflow-x: auto;
+            .deriv-toolbar{
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                padding: 8px 0 10px;
+            }
+            .deriv-toolbar-legend{
+                font-size: 11px;
+                color: #777;
+            }
+            .deriv-toolbar-legend > span{
+                margin-right: 10px;
+                white-space: nowrap;
+            }
+            .deriv-toolbar-controls .deriv-zoom-label{
+                display: inline-block;
+                min-width: 34px;
+                text-align: center;
+            }
+            .deriv-tree-viewport{
+                position: relative;
+                overflow: auto;
+                max-height: 620px;
+                border: 1px solid #eee;
+                border-radius: 4px;
+                background:
+                    linear-gradient(90deg, #fafafa 1px, transparent 1px) 0 0 / 22px 22px,
+                    linear-gradient(#fafafa 1px, transparent 1px) 0 0 / 22px 22px,
+                    #fff;
+            }
+            .deriv-tree-scale{
+                transform-origin: top center;
+                transition: transform .12s ease-out;
+                display: inline-block;
+                min-width: 100%;
+                padding: 20px 10px;
             }
             .deriv-tree ul{
                 display: flex;
@@ -808,10 +904,37 @@
                 line-height: 1.3;
                 margin-top: 2px;
             }
+            .deriv-node-obs{
+                margin-top: 6px;
+                padding: 5px 8px;
+                background: #f7f7f7;
+                border-radius: 3px;
+                font-size: 11px;
+                color: #555;
+                text-align: left;
+                max-height: 54px;
+                overflow: hidden;
+                display: -webkit-box;
+                -webkit-line-clamp: 3;
+                -webkit-box-orient: vertical;
+            }
+            .deriv-node-obs i{
+                color: #aaa;
+            }
             .deriv-node-meta{
                 margin-top: 6px;
                 font-size: 11px;
                 color: #999;
+            }
+            .deriv-node-anular{
+                margin-top: 8px;
+                padding: 2px 8px;
+                font-size: 10px;
+                line-height: 1.4;
+                border-radius: 3px;
+            }
+            .deriv-node-anular i{
+                font-size: 11px;
             }
             .deriv-node-meta .label{
                 font-size: 10px;
@@ -911,11 +1034,14 @@
             }
 
             (function(){
-                var $input = $('#input-archivos-nci');
-                if (!$input.length) return;
+                var input = document.getElementById('input-archivos-nci');
+                if (!input) return;
                 var $list = $('#upload-file-list');
                 var $btn = $('#btn-subir-archivos');
                 var $zone = $('.upload-dropzone');
+                var $hint = $('#upload-hint');
+                var soportaDT = (typeof DataTransfer !== 'undefined');
+                var store = soportaDT ? new DataTransfer() : null;
 
                 function formatSize(bytes){
                     if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
@@ -923,23 +1049,57 @@
                     return bytes + ' B';
                 }
 
-                function render(){
-                    var files = $input[0].files;
-                    $list.empty();
-                    for (var i = 0; i < files.length; i++) {
-                        var icon = files[i].type === 'application/pdf' ? 'voyager-file-text' : 'voyager-photos';
-                        $list.append(
-                            $('<li>').append(
-                                $('<i>').addClass(icon),
-                                $('<span>').text(files[i].name),
-                                $('<small>').text(formatSize(files[i].size))
-                            )
-                        );
-                    }
-                    $btn.prop('disabled', files.length === 0);
+                function agregar(nuevos){
+                    if (!soportaDT) return; // fallback: usa input.files nativo
+                    for (var i = 0; i < nuevos.length; i++) store.items.add(nuevos[i]);
+                    input.files = store.files;
                 }
 
-                $input.on('change', render);
+                function quitar(idx){
+                    if (!soportaDT) return;
+                    var dt = new DataTransfer();
+                    for (var i = 0; i < store.files.length; i++) {
+                        if (i !== idx) dt.items.add(store.files[i]);
+                    }
+                    store = dt;
+                    input.files = store.files;
+                    render();
+                }
+
+                function render(){
+                    var files = input.files;
+                    $list.empty();
+                    for (var i = 0; i < files.length; i++) {
+                        (function(idx, file){
+                            var icon = file.type === 'application/pdf' ? 'voyager-file-text' : 'voyager-photos';
+                            var $li = $('<li>').append(
+                                $('<i>').addClass(icon),
+                                $('<span>').addClass('upload-file-name').text(file.name),
+                                $('<small>').text(formatSize(file.size))
+                            );
+                            if (soportaDT) {
+                                $li.append(
+                                    $('<button>').attr('type', 'button').addClass('upload-file-remove')
+                                        .attr('title', 'Quitar').html('<i class="voyager-x"></i>')
+                                        .on('click', function(e){ e.preventDefault(); quitar(idx); })
+                                );
+                            }
+                            $list.append($li);
+                        })(i, files[i]);
+                    }
+                    var n = files.length;
+                    $btn.prop('disabled', n === 0);
+                    if (n === 0) {
+                        $hint.removeClass('has-files').html('<i class="voyager-info-circled"></i> Ningún archivo seleccionado');
+                    } else {
+                        $hint.addClass('has-files').html('<i class="voyager-check"></i> ' + n + (n === 1 ? ' archivo listo' : ' archivos listos') + ' para subir');
+                    }
+                }
+
+                input.addEventListener('change', function(){
+                    if (soportaDT) agregar(input.files);
+                    render();
+                });
 
                 $zone.on('dragover dragenter', function(e){
                     e.preventDefault();
@@ -952,10 +1112,60 @@
                     $zone.removeClass('dragover');
                     var dt = e.originalEvent.dataTransfer;
                     if (dt && dt.files.length) {
-                        $input[0].files = dt.files;
+                        if (soportaDT) { agregar(dt.files); }
+                        else { input.files = dt.files; }
                         render();
                     }
                 });
+            })();
+
+            // Zoom / navegación del árbol de derivaciones
+            (function(){
+                var viewport = document.getElementById('deriv-tree-viewport');
+                var scaleEl = document.getElementById('deriv-tree-scale');
+                if (!viewport || !scaleEl) return;
+                var tree = scaleEl.querySelector('.deriv-tree');
+                var $label = $('.deriv-zoom-label');
+                var MIN = 0.4, MAX = 1.5, STEP = 0.1;
+                var scale = 1;
+
+                function apply(){
+                    scale = Math.min(MAX, Math.max(MIN, scale));
+                    scaleEl.style.transform = 'scale(' + scale + ')';
+                    $label.text(Math.round(scale * 100) + '%');
+                }
+
+                function fit(){
+                    var natural = tree.offsetWidth;
+                    var avail = viewport.clientWidth - 20;
+                    scale = natural > 0 ? Math.min(1, avail / natural) : 1;
+                    apply();
+                }
+
+                function centrar(sel){
+                    var el = scaleEl.querySelector(sel);
+                    if (!el) return;
+                    var v = viewport.getBoundingClientRect();
+                    var r = el.getBoundingClientRect();
+                    viewport.scrollLeft += (r.left - v.left) - (viewport.clientWidth - r.width) / 2;
+                    viewport.scrollTop += (r.top - v.top) - (viewport.clientHeight - r.height) / 2;
+                }
+
+                $('[data-deriv-zoom]').on('click', function(){
+                    var accion = $(this).data('deriv-zoom');
+                    if (accion === 'in') { scale += STEP; apply(); }
+                    else if (accion === 'out') { scale -= STEP; apply(); }
+                    else if (accion === 'reset') { scale = 1; apply(); }
+                    else if (accion === 'fit') { fit(); }
+                    else if (accion === 'locate') { centrar('.deriv-node-actual'); }
+                });
+
+                // Si el árbol es más ancho que el contenedor, ajustar al cargar y centrar en la nota
+                $(window).on('load', function(){
+                    if (tree.offsetWidth > viewport.clientWidth) fit();
+                    centrar('.deriv-node-actual');
+                });
+                apply();
             })();
         </script>
         <script>
