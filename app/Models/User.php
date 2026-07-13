@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 use OwenIt\Auditing\Contracts\Auditable;
 
@@ -28,8 +31,42 @@ class User extends \TCG\Voyager\Models\User implements Auditable
         'role_id',
         'status',
         'register_user_id',
+        'deleteuser_id',
         'must_change_password',
     ];
+
+    protected static function booted()
+    {
+        // Al eliminar (soft delete): guarda quien elimino, cierra las
+        // sesiones del usuario y registra el evento en el historial.
+        static::deleted(function (User $user) {
+            if (method_exists($user, 'isForceDeleting') && $user->isForceDeleting()) {
+                return;
+            }
+
+            $user->deleteuser_id = auth()->id();
+            $user->setRememberToken(Str::random(60));
+            $user->saveQuietly();
+
+            try {
+                if (config('session.driver') === 'database' && Schema::hasTable('sessions')) {
+                    DB::table('sessions')->where('user_id', $user->id)->delete();
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+
+            UserHistorial::registrar($user, 'eliminado', UserHistorial::snapshot($user), null);
+        });
+
+        // Al restaurar: limpia quien elimino y registra el evento.
+        static::restored(function (User $user) {
+            $user->deleteuser_id = null;
+            $user->saveQuietly();
+
+            UserHistorial::registrar($user, 'restaurado', null, UserHistorial::snapshot($user));
+        });
+    }
 
     /**
      * The attributes that should be hidden for arrays.
@@ -67,6 +104,14 @@ class User extends \TCG\Voyager\Models\User implements Auditable
 
     public function registeredBy(){
         return $this->belongsTo(User::class, 'register_user_id');
+    }
+
+    public function deletedBy(){
+        return $this->belongsTo(User::class, 'deleteuser_id')->withTrashed();
+    }
+
+    public function historiales(){
+        return $this->hasMany(UserHistorial::class, 'user_id')->orderByDesc('created_at');
     }
 
     public function isAdmin(){

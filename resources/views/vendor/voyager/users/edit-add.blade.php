@@ -28,6 +28,11 @@
         <i class="{{ $dataType->icon }}"></i>
         {{ __('voyager::generic.'.(isset($dataTypeContent->id) ? 'edit' : 'add')).' '.$dataType->getTranslatedAttribute('display_name_singular') }}
     </h1>
+    @if (isset($dataTypeContent->id) && auth()->user()->hasPermission('browse_users'))
+        <a href="{{ route('users.historial', $dataTypeContent->id) }}" class="btn btn-primary">
+            <i class="voyager-book"></i> <span>Ver historial de cambios</span>
+        </a>
+    @endif
 @stop
 
 @section('content')

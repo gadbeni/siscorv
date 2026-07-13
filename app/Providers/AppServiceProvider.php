@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
         
         Voyager::addAction(\App\Actions\EnlaceAddFile::class);
         Voyager::addAction(\App\Actions\ToggleStatusAction::class);
+        Voyager::addAction(\App\Actions\UserHistorialAction::class);
 
 
     }

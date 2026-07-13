@@ -5,10 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Persona;
+use App\Models\UserHistorial;
 use Illuminate\Support\Facades\DB;
 
 class UsersController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     public function getFuncionariotocreate(Request $request)
     {
         $search = $request->search;
@@ -283,6 +289,9 @@ class UsersController extends Controller
             if ($request->warehouses[0]) {
                 $user->warehouses()->attach($request->warehouses);
             }
+
+            UserHistorial::registrar($user, 'creado', null, UserHistorial::snapshot($user->fresh()));
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -313,6 +322,9 @@ class UsersController extends Controller
 
         DB::beginTransaction();
         try {
+            $antes = UserHistorial::snapshot($user);
+            $passwordCambiada = $request->filled('password');
+
             $user->update([
                 'role_id' => $request->input('role_id', $user->role_id),
                 'email' => $request->email,
@@ -345,6 +357,15 @@ class UsersController extends Controller
                 $user->update();
                 Persona::update($input);
             }
+
+            // Registra el snapshot completo aunque no haya cambios.
+            $despues = UserHistorial::snapshot($user->fresh());
+            if ($passwordCambiada) {
+                $antes['Contraseña'] = '••••••••';
+                $despues['Contraseña'] = 'Actualizada';
+            }
+            UserHistorial::registrar($user, 'actualizado', $antes, $despues);
+
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollback();
@@ -395,8 +416,32 @@ class UsersController extends Controller
 
     public function toggle_status(User $user)
     {
-        $user->status = !$user->status;
-        $user->save();
+        DB::beginTransaction();
+        try {
+            $antes = UserHistorial::snapshot($user);
+
+            $user->status = !$user->status;
+            $user->save();
+
+            UserHistorial::registrar(
+                $user,
+                $user->status ? 'activado' : 'desactivado',
+                $antes,
+                UserHistorial::snapshot($user->fresh())
+            );
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+
+            return redirect()
+                ->route('voyager.users.index')
+                ->with([
+                    'message' => "No se pudo cambiar el estado del usuario.",
+                    'alert-type' => 'error'
+                ]);
+        }
 
         return redirect()
             ->route('voyager.users.index')
@@ -404,6 +449,61 @@ class UsersController extends Controller
                 'message' => $user->status
                     ? "El usuario fue activado."
                     : "El usuario fue desactivado.",
+                'alert-type' => 'success'
+            ]);
+    }
+
+    public function historial($id)
+    {
+        if (!auth()->user()->hasPermission('browse_users')) {
+            abort(403);
+        }
+
+        $user = User::withTrashed()->with('role', 'deletedBy')->findOrFail($id);
+
+        $historial = UserHistorial::with('changedBy')
+            ->where('user_id', $id)
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(8);
+
+        return view('vendor.voyager.users.historial', compact('user', 'historial'));
+    }
+
+    public function restore($id)
+    {
+        if (!auth()->user()->hasPermission('edit_users')) {
+            abort(403);
+        }
+
+        $user = User::withTrashed()->findOrFail($id);
+
+        if (!$user->trashed()) {
+            return redirect()->back()->with([
+                'message' => "El usuario no está eliminado.",
+                'alert-type' => 'error'
+            ]);
+        }
+
+        DB::beginTransaction();
+        try {
+            // El evento restored del modelo limpia deleteuser_id y registra el historial.
+            $user->restore();
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            report($e);
+
+            return redirect()->back()->with([
+                'message' => "No se pudo restaurar el usuario.",
+                'alert-type' => 'error'
+            ]);
+        }
+
+        return redirect()
+            ->route('users.historial', $user->id)
+            ->with([
+                'message' => "El usuario fue restaurado con éxito.",
                 'alert-type' => 'success'
             ]);
     }

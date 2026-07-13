@@ -40,6 +40,9 @@
                         <a href="{{ route('voyager.users.edit', $item->id) }}" title="Editar" class="btn btn-sm btn-info">
                             <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                         </a>
+                        <a href="{{ route('users.historial', $item->id) }}" title="Historial" class="btn btn-sm btn-primary">
+                            <i class="voyager-book"></i> <span class="hidden-xs hidden-sm">Historial</span>
+                        </a>
                         @if ($item->status)
                             <a href="{{ route('users.toggle-status', $item->id) }}" title="Desactivar" class="btn btn-sm btn-dark">
                                 <i class="voyager-ban"></i> <span class="hidden-xs hidden-sm">Desactivar</span>
