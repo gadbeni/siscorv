@@ -9,7 +9,8 @@
                 <div class="modal-body">
                     @csrf
                     <input type="hidden" name="id" value="{{ isset($id) ? $id : 0 }}">
-                    <input type="file" name="file" id="" accept="application/pdf">
+                    <input type="file" name="file" id="" class="imageLength" accept="image/jpeg,image/jpg,image/png,application/pdf" required
+                        oninvalid="this.setCustomValidity('Debe seleccionar un archivo para subir.')" onchange="this.setCustomValidity('')">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>

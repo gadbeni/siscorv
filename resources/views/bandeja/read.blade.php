@@ -355,6 +355,7 @@
             });
 
         </script>
+        @include('partials.file-validation-js')
     @stop
     
 @else

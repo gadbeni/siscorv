@@ -86,7 +86,7 @@
                                                 <span class="upload-dropzone-main">Arrastre los archivos aquí</span>
                                                 <span class="upload-dropzone-sub">o</span>
                                                 <span class="btn btn-warning btn-sm upload-dropzone-btn"><i class="voyager-plus"></i> Seleccionar archivos</span>
-                                                <span class="upload-dropzone-formats">PDF, JPG o PNG</span>
+                                                <span class="upload-dropzone-formats">PDF, JPG o PNG · máx. {{ file_limit_mb() }} MB</span>
                                                 <input type="file" id="input-archivos-nci" name="archivos[]" multiple accept="image/jpeg,image/jpg,image/png,application/pdf">
                                             </label>
                                             <ul class="upload-file-list" id="upload-file-list"></ul>
@@ -1049,10 +1049,23 @@
                     return bytes + ' B';
                 }
 
-                function agregar(nuevos){
-                    if (!soportaDT) return; // fallback: usa input.files nativo
-                    for (var i = 0; i < nuevos.length; i++) store.items.add(nuevos[i]);
-                    input.files = store.files;
+                function agregar(nuevos, cb){
+                    // Valida cada archivo (extensión, tamaño y firma) antes de agregarlo.
+                    var arr = Array.prototype.slice.call(nuevos);
+                    (function next(i){
+                        if (i >= arr.length){
+                            if (soportaDT) input.files = store.files;
+                            if (cb) cb();
+                            return;
+                        }
+                        var f = arr[i];
+                        var seguir = function(ok){
+                            if (ok && soportaDT) store.items.add(f);
+                            next(i + 1);
+                        };
+                        if (window.validarArchivo) { window.validarArchivo(f).then(seguir); }
+                        else { seguir(true); }
+                    })(0);
                 }
 
                 function quitar(idx){
@@ -1096,9 +1109,15 @@
                     }
                 }
 
+                function validarFallback(){
+                    if (window.validarArchivos) {
+                        window.validarArchivos(input.files).then(function(ok){ if (!ok) input.value = ''; render(); });
+                    } else { render(); }
+                }
+
                 input.addEventListener('change', function(){
-                    if (soportaDT) agregar(input.files);
-                    render();
+                    if (soportaDT) agregar(input.files, render);
+                    else validarFallback();
                 });
 
                 $zone.on('dragover dragenter', function(e){
@@ -1112,9 +1131,8 @@
                     $zone.removeClass('dragover');
                     var dt = e.originalEvent.dataTransfer;
                     if (dt && dt.files.length) {
-                        if (soportaDT) { agregar(dt.files); }
-                        else { input.files = dt.files; }
-                        render();
+                        if (soportaDT) { agregar(dt.files, render); }
+                        else { input.files = dt.files; validarFallback(); }
                     }
                 });
             })();
@@ -1192,8 +1210,9 @@
             })
         });
         </script>
+        @include('partials.file-validation-js')
     @stop
-    
+
 @else
     @section('content')
         @include('errors.403')

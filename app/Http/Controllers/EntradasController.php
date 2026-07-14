@@ -30,17 +30,21 @@ class EntradasController extends Controller
 
     private function validarArchivos(Request $request)
     {
+        $maxKb = file_limit_kb();
+        $maxMb = file_limit_mb();
+        $regla = 'file|mimes:jpg,jpeg,png,pdf|max:' . $maxKb;
+
         return Validator::make($request->all(), [
             'archivos'    => 'nullable|array',
-            'archivos.*'  => 'file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'file'        => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'solicitud_p' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'carnet_p'    => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'deposito_p'  => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'poder_p'     => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'archivos.*'  => $regla,
+            'file'        => 'nullable|' . $regla,
+            'solicitud_p' => 'nullable|' . $regla,
+            'carnet_p'    => 'nullable|' . $regla,
+            'deposito_p'  => 'nullable|' . $regla,
+            'poder_p'     => 'nullable|' . $regla,
         ], [
             'mimes' => 'Solo se permiten archivos JPG, PNG o PDF.',
-            'max'   => 'Cada archivo debe pesar como maximo 5 MB.',
+            'max'   => 'Cada archivo debe pesar como maximo ' . $maxMb . ' MB.',
         ]);
     }
     /**

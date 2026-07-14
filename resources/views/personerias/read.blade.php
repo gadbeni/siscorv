@@ -210,6 +210,7 @@
                 // $('#select-destinatario').select2({ dropdownParent: "#derivar-modal" });
             });
         </script>
+        @include('partials.file-validation-js')
     @stop
     
 @else

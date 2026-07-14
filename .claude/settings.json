@@ -16,7 +16,16 @@
       "Bash(grep -n \"validarArchivos\\\\|use Illuminate\\\\\\\\\\\\\\\\Support\\\\\\\\\\\\\\\\Facades\\\\\\\\\\\\\\\\Validator\" app/Http/Controllers/EntradasController.php)",
       "Bash(php -l)",
       "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -v)",
-      "Bash(C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe -r ' *)"
+      "Bash(C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe -r ' *)",
+      "Bash(GIT_AUTHOR_DATE='2026-07-13 18:30:00 -0400' GIT_COMMITTER_DATE='2026-07-13 18:30:00 -0400' git commit -m '@ *)",
+      "Bash(GIT_COMMITTER_DATE=\"2026-07-13 18:30:00 -0400\" git commit --amend --date=\"2026-07-13 18:30:00 -0400\" -F -)",
+      "Bash(git reset *)",
+      "Bash(git restore *)",
+      "Bash(GIT_COMMITTER_DATE=\"2026-07-13 18:30:00 -0400\" git commit --date=\"2026-07-13 18:30:00 -0400\" -F -)",
+      "Bash(GIT_COMMITTER_DATE=\"2026-07-13 18:30:00 -0400\" git commit --amend --no-edit --date=\"2026-07-13 18:30:00 -0400\")",
+      "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" C:/laragon/bin/composer/composer.phar dump-autoload -o)",
+      "Bash(\"C:/laragon/bin/php/php-8.3.30-Win32-vs16-x64/php.exe\" -l app/Helpers/helpers.php)",
+      "Bash(grep -oE \"z-index:\\\\s*[0-9]{4,}\" public/assets/css/app.css)"
     ]
   }
 }

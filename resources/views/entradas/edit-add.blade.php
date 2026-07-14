@@ -651,94 +651,7 @@
                 document.getElementById("formulario").addEventListener('submit', validarFormulario); 
             });
 
-            // Para validar los archivos Extenciones y Tamaño
-            $(document).on('change', '.imageLength', function () {
-                var input = this;
-                var MAX_MB = 5;
-                var MAX_BYTES = MAX_MB * 1024 * 1024;
-                var permitidas = ['jpg', 'jpeg', 'png', 'pdf'];
-                var archivos = Array.prototype.slice.call(input.files);
-                if (!archivos.length) { return; }
-
-                function rechazar(titulo, htmlBody) {
-                    Swal.fire({ icon: 'error', title: titulo, html: htmlBody, confirmButtonText: 'Entendido', confirmButtonColor: '#3097D1' });
-                    input.value = '';
-                }
-
-                // Detecta el tipo real leyendo los primeros bytes (firma del archivo).
-                function tipoReal(file) {
-                    return new Promise(function (resolve) {
-                        var fr = new FileReader();
-                        fr.onloadend = function () {
-                            var b = new Uint8Array(fr.result);
-                            if (b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46) { return resolve('pdf'); }
-                            if (b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4E && b[3] === 0x47) { return resolve('png'); }
-                            if (b[0] === 0xFF && b[1] === 0xD8 && b[2] === 0xFF) { return resolve('jpg'); }
-                            resolve(null);
-                        };
-                        fr.onerror = function () { resolve(null); };
-                        fr.readAsArrayBuffer(file.slice(0, 8));
-                    });
-                }
-
-                (function validar(i) {
-                    if (i >= archivos.length) { return; } // todos validos
-                    var file = archivos[i];
-                    var ext = (file.name.split('.').pop() || '').toLowerCase();
-
-                    // 1) Extension permitida
-                    if (permitidas.indexOf(ext) === -1) {
-                        rechazar('Formato no permitido',
-                            'El archivo <b>' + file.name + '</b> no es una imagen ni un PDF.<br>' +
-                            'Solo se aceptan <b>JPG, PNG o PDF</b>.');
-                        return;
-                    }
-
-                    // 2) Tamano maximo
-                    if (file.size > MAX_BYTES) {
-                        var mb = (file.size / 1024 / 1024).toFixed(1);
-                        var limitPct = Math.max(3, Math.min(100, (MAX_BYTES / file.size) * 100)).toFixed(0);
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Archivo muy pesado',
-                            html:
-                                '<div style="max-width:300px;margin:0 auto">' +
-                                    '<div style="display:flex;align-items:center;gap:8px;justify-content:center;color:#555;font-size:13px;margin-bottom:14px">' +
-                                        '<i class="voyager-file-text" style="color:#d9534f;font-size:16px"></i>' +
-                                        '<span style="word-break:break-all">' + file.name + '</span>' +
-                                    '</div>' +
-                                    '<div style="position:relative;height:10px;border-radius:999px;background:#f2dede;overflow:hidden">' +
-                                        '<div style="height:100%;width:' + limitPct + '%;background:#5cb85c;border-radius:999px"></div>' +
-                                    '</div>' +
-                                    '<div style="display:flex;justify-content:space-between;font-size:11.5px;margin-top:6px">' +
-                                        '<span style="color:#3c763d;font-weight:600">Permitido: ' + MAX_MB + ' MB</span>' +
-                                        '<span style="color:#a94442;font-weight:600">Tu archivo: ' + mb + ' MB</span>' +
-                                    '</div>' +
-                                    '<p style="margin:16px 0 0;color:#777;font-size:13px">Comprimi el archivo o subilo dividido en partes de menos de ' + MAX_MB + ' MB.</p>' +
-                                '</div>',
-                            confirmButtonText: 'Entendido',
-                            confirmButtonColor: '#3097D1'
-                        });
-                        input.value = '';
-                        return;
-                    }
-
-                    // 3) El contenido real (firma) debe coincidir con la extension
-                    tipoReal(file).then(function (real) {
-                        var esperado = (ext === 'jpeg') ? 'jpg' : ext;
-                        if (real === null || real !== esperado) {
-                            rechazar('Archivo no valido',
-                                'El archivo <b>' + file.name + '</b> no es un ' + ext.toUpperCase() + ' real; ' +
-                                'su contenido no coincide con la extension.<br>' +
-                                'Sube una imagen <b>JPG/PNG</b> o un <b>PDF</b> valido.');
-                            return;
-                        }
-                        validar(i + 1);
-                    });
-                })(0);
-            });
-
-            function check(e) {   
+            function check(e) {
                 tecla = (document.all) ? e.keyCode : e.which;
                 //Tecla de retroceso para borrar, siempre la permite
                 if (tecla == 8) {
@@ -914,8 +827,9 @@
                 }
             }
         </script>
+        @include('partials.file-validation-js')
     @stop
-    
+
 @else
     @section('content')
         @include('errors.403')
