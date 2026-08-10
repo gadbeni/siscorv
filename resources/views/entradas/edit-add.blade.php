@@ -588,7 +588,9 @@
 
                 var additionalConfig = {
                     selector: 'textarea.richTextBox[name="detalles"]',
-                    toolbar: 'bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link',
+                    toolbar: 'fontfamily fontsize | bold italic underline | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link',
+                    font_family_formats: 'Arial=arial,helvetica,sans-serif; Arial Narrow=arial narrow,arial,sans-serif; Calibri=calibri,candara,segoe ui,sans-serif; Cambria=cambria,georgia,serif; Courier New=courier new,courier,monospace; Georgia=georgia,palatino,serif; Tahoma=tahoma,arial,sans-serif; Times New Roman=times new roman,times,serif; Trebuchet MS=trebuchet ms,geneva,sans-serif; Verdana=verdana,geneva,sans-serif',
+                    font_size_formats: '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 24pt 30pt 36pt',
                     setup: function (editor) {
                         editor.on('paste', function (e) {
                             e.preventDefault();
