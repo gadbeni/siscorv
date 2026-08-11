@@ -43,14 +43,19 @@
                         <a href="{{ route('users.historial', $item->id) }}" title="Historial" class="btn btn-sm btn-primary">
                             <i class="voyager-book"></i> <span class="hidden-xs hidden-sm">Historial</span>
                         </a>
-                        @if ($item->status)
-                            <a href="{{ route('users.toggle-status', $item->id) }}" title="Desactivar" class="btn btn-sm btn-dark">
-                                <i class="voyager-ban"></i> <span class="hidden-xs hidden-sm">Desactivar</span>
-                            </a>
-                        @else
-                            <a href="{{ route('users.toggle-status', $item->id) }}" title="Activar" class="btn btn-sm btn-success">
-                                <i class="voyager-check"></i> <span class="hidden-xs hidden-sm">Activar</span>
-                            </a>
+                        {{-- Activar/desactivar es exclusivo de admin, igual que el campo
+                             "Estado" del formulario de edicion. toggle_status() lo verifica
+                             tambien del lado del servidor. --}}
+                        @if (auth()->user()->hasRole('admin'))
+                            @if ($item->status)
+                                <a href="{{ route('users.toggle-status', $item->id) }}" title="Desactivar" class="btn btn-sm btn-dark">
+                                    <i class="voyager-ban"></i> <span class="hidden-xs hidden-sm">Desactivar</span>
+                                </a>
+                            @else
+                                <a href="{{ route('users.toggle-status', $item->id) }}" title="Activar" class="btn btn-sm btn-success">
+                                    <i class="voyager-check"></i> <span class="hidden-xs hidden-sm">Activar</span>
+                                </a>
+                            @endif
                         @endif
                         <button title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('{{ url('admin/users/' . $item->id) }}')">
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>

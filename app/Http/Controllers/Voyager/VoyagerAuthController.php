@@ -27,6 +27,23 @@ class VoyagerAuthController extends BaseVoyagerAuthController
     }
 
     /**
+     * Ignora por completo la opción "Recordarme".
+     *
+     * El checkbox se retiró de la vista de login, pero el parámetro todavía
+     * podría llegar en una petición armada a mano. Al quitarlo del request,
+     * el attempt() del padre recibe remember=false y nunca se emite la cookie
+     * persistente remember_web_* (576000 min ≈ 400 días), que permitía entrar
+     * al sistema sin credenciales al día siguiente.
+     */
+    public function postLogin(Request $request)
+    {
+        $request->request->remove('remember');
+        $request->query->remove('remember');
+
+        return parent::postLogin($request);
+    }
+
+    /**
      * Runs after a successful login. Reset the password-change suggestion
      * flag so the modal shows once per login (session()->regenerate keeps
      * old session data, which otherwise would suppress it forever).
@@ -34,6 +51,7 @@ class VoyagerAuthController extends BaseVoyagerAuthController
     protected function authenticated(Request $request, $user)
     {
         $request->session()->forget('pwd_suggest_shown');
+        $request->session()->forget('aviso_seguridad_shown');
     }
 
     public function redirectTo(){

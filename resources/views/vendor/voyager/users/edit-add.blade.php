@@ -61,19 +61,24 @@
                         @endif
 
                         <div class="panel-body">
-                            <div class="form-group">
-                                <label class="control-label">INTERNO</label>
-                                <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title=" Seleccione no si el funcionario es externo."></span>
-                                <input 
-                                    type="checkbox" 
-                                    name="tipo"
-                                    id="toggleswitch" 
-                                    data-toggle="toggle" 
-                                    data-on="Sí" 
-                                    data-off="No"
-                                    checked 
-                                    >
-                            </div>
+                            {{-- Elegir entre funcionario interno y externo es exclusivo de admin.
+                                 Para los demas roles el toggle no se dibuja y la busqueda queda
+                                 fija en internos, que es el valor por defecto de tipouser. --}}
+                            @if(auth()->user()->hasRole('admin'))
+                                <div class="form-group">
+                                    <label class="control-label">INTERNO</label>
+                                    <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title=" Seleccione no si el funcionario es externo."></span>
+                                    <input
+                                        type="checkbox"
+                                        name="tipo"
+                                        id="toggleswitch"
+                                        data-toggle="toggle"
+                                        data-on="Sí"
+                                        data-off="No"
+                                        checked
+                                        >
+                                </div>
+                            @endif
                             @php
                                 $personaUser = isset($dataTypeContent->id)
                                     ? \App\Models\Persona::where('user_id', $dataTypeContent->id)->where('tipo', 'user')->first()
@@ -161,7 +166,10 @@
                                 </div>
                             @endcan
 
-                            @if(isset($dataTypeContent->id))
+                            {{-- Solo un admin puede activar o desactivar usuarios. Para el
+                                 resto el campo no se dibuja, y update_user() ignora el valor
+                                 aunque llegue en el request. --}}
+                            @if(isset($dataTypeContent->id) && auth()->user()->hasRole('admin'))
                                 <div class="form-group">
                                     <label class="control-label">Estado</label>
                                     <span class="voyager-question text-info pull-left" data-toggle="tooltip" data-placement="left" title="Active o desactive el acceso del usuario al sistema."></span>

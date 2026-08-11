@@ -34,6 +34,57 @@ class Derivation extends Model implements Auditable
 
 
 
+    /**
+     * Resumen de la bandeja de un funcionario.
+     *
+     * Los contadores replican EXACTAMENTE lo que lista cada pestana de la
+     * bandeja en EntradasController::derivacion_list(), para que el tablero y
+     * el aviso de inicio de sesion no puedan mostrar una cifra distinta a la
+     * que el funcionario encuentra al abrir su bandeja:
+     *
+     *   pendientes -> pestana "Pendientes" (ok = 'NO' y entrada NO urgente)
+     *   urgentes   -> pestana "Urgentes"   (ok = 'NO' y entrada urgente)
+     *   total      -> todas las derivaciones vigentes del mismo universo
+     *
+     * Universo comun a las tres: derivaciones no transferidas, sobre entradas
+     * que no son de personeria (esas viven en su propio modulo) y cuyo estado
+     * no es 4 ni 6 (tramites cerrados).
+     *
+     * Ojo con dos detalles, ambos fuente de errores anteriores:
+     *  - "Pendientes" EXCLUYE los urgentes; son pestanas separadas y sumarlos
+     *    en ambos lados los contaba dos veces.
+     *  - NO se filtra por 'visto'. Un tramite abierto pero todavia sin derivar
+     *    sigue estando en la bandeja, asi que debe seguir contando.
+     *
+     * @param  int|null  $funcionarioId  people_id del funcionario.
+     * @return object  {total, pendientes, urgentes}
+     */
+    public static function resumenPara($funcionarioId)
+    {
+        $vacio = (object) ['total' => 0, 'pendientes' => 0, 'urgentes' => 0];
+
+        if (is_null($funcionarioId)) {
+            return $vacio;
+        }
+
+        // El join no filtra entradas borradas a proposito: la relacion entrada()
+        // usa withTrashed(), y la bandeja consulta a traves de ella.
+        $resumen = static::join('entradas', 'derivations.entrada_id', '=', 'entradas.id')
+            ->where('derivations.people_id_para', $funcionarioId)
+            ->where('derivations.transferred', 0)
+            ->whereNull('derivations.deleted_at')
+            ->where('entradas.personeria', 0)
+            ->whereNotIn('entradas.estado_id', [4, 6])
+            ->selectRaw("
+                    COUNT(*) as total,
+                    COUNT(CASE WHEN derivations.ok = 'NO' AND entradas.urgent = 0 THEN 1 END) as pendientes,
+                    COUNT(CASE WHEN derivations.ok = 'NO' AND entradas.urgent = 1 THEN 1 END) as urgentes
+            ")
+            ->first();
+
+        return $resumen ?: $vacio;
+    }
+
     function entrada(){
         return $this->belongsTo(Entrada::class, 'entrada_id')->withTrashed();
     }

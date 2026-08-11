@@ -31,9 +31,12 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 120),
+    'lifetime' => env('SESSION_LIFETIME', 300),
 
-    'expire_on_close' => false,
+    // Al cerrar el navegador la cookie de sesion se descarta. Como apagar el
+    // equipo cierra el navegador, el sistema vuelve a pedir credenciales al dia
+    // siguiente aunque no se haya agotado el tiempo de inactividad.
+    'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', true),
 
     /*
     |--------------------------------------------------------------------------

@@ -66,6 +66,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loggin'], function () {
     Route::get('/', [BaseController::class, 'admin'])->name('voyager.dashboard');
     // Route::get('', ['uses' => 'BaseController@admin', 'as' => 'admin']);
 
+    // El modal de tramites pendientes avisa por aca que ya se mostro, para que
+    // no se consuma si el usuario navega antes de verlo.
+    Route::post('avisos/pendientes-visto', [BaseController::class, 'marcarAvisoPendientesVisto'])
+        ->middleware('auth')
+        ->name('avisos.pendientes-visto');
+
     // entidades
     Route::get('entities', [EntidadController::class, 'index'])->name('voyager.entities.index');
     Route::get('entities/ajax/list/{search?}', [EntidadController::class, 'list']);

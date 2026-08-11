@@ -63,11 +63,11 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group" id="rememberMeGroup">
-                <div class="controls">
-                    <input type="checkbox" name="remember" id="remember" value="1"><label for="remember" class="remember-me-text">{{ __('voyager::generic.remember_me') }}</label>
-                </div>
-            </div>
+            {{-- El checkbox "Recordarme" se retiró a propósito: emitía una cookie de sesión
+                 persistente (remember_web_*) de 400 días que permitía entrar al sistema sin
+                 credenciales al día siguiente, incluso tras apagar el equipo. En equipos de
+                 oficina compartidos eso rompe la trazabilidad de los trámites.
+                 Ver docs/sesiones/08-2026/2026-08-11.md --}}
 
             <button type="submit" class="btn btn-block login-button">
                 <span class="signingin hidden"><span class="voyager-refresh"></span> {{ __('voyager::login.loggingin') }}...</span>

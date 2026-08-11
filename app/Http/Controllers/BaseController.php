@@ -16,26 +16,26 @@ class BaseController extends Controller
     {
         $funcionarioId = Persona::where('user_id', Auth::user()->id)->value('people_id');
 
-        if (is_null($funcionarioId)) {
-            $stats = (object) [
-                'total' => 0,
-                'pendientes' => 0,
-                'urgentes' => 0,
-            ];
-            return Voyager::view('voyager::index', compact('stats'));
-        }
-
-        $stats = Derivation::join('entradas', 'derivations.entrada_id', '=', 'entradas.id')
-            ->where('derivations.people_id_para', $funcionarioId) // Especificamos la tabla aquí
-            ->whereNotIn('entradas.estado_id', [4, 6])
-            ->whereNull('derivations.deleted_at') // Importante para no contar datos borrados
-            ->selectRaw("
-                    COUNT(*) as total,
-                    COUNT(CASE WHEN derivations.visto IS NULL AND derivations.ok = 'NO' THEN 1 END) as pendientes,
-                    COUNT(CASE WHEN derivations.visto IS NULL AND derivations.ok = 'NO' AND entradas.urgent = 1 THEN 1 END) as urgentes
-            ")
-            ->first();
+        // La consulta vive en el modelo porque el aviso de inicio de sesion
+        // (partials.modal-aviso-seguridad) necesita los mismos numeros.
+        $stats = Derivation::resumenPara($funcionarioId);
 
         return Voyager::view('voyager::index', compact('stats'));
+    }
+
+    /**
+     * Marca como visto el aviso de tramites pendientes del inicio de sesion.
+     *
+     * El flag no se puede fijar al incluir el modal en la vista: si el usuario
+     * navega antes de que llegue a mostrarse -por ejemplo cuando desde el modal
+     * de cambio de contrasena elige "Cambiar ahora"- el aviso quedaria consumido
+     * sin haberse visto nunca. Por eso lo marca el propio partial: al abrirse el
+     * modal, o de inmediato cuando no hay pendientes y no hay nada que mostrar.
+     */
+    public function marcarAvisoPendientesVisto(Request $request)
+    {
+        $request->session()->put('aviso_seguridad_shown', true);
+
+        return response()->noContent();
     }
 }

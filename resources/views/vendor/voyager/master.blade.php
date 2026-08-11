@@ -148,9 +148,31 @@
     </div>
 
     @auth
+        @php
+            // Pantallas donde el aviso de tramites no debe interrumpir: si el usuario
+            // eligio "Cambiar ahora" en el modal de contrasena, primero que termine
+            // esa tarea. El aviso lo espera y aparece al salir de estas vistas.
+            $sinAvisoPendientes = in_array(
+                optional(request()->route())->getName(),
+                ['voyager.profile', 'voyager.users.edit'],
+                true
+            );
+        @endphp
+
+        {{-- Ambos avisos se muestran una sola vez por inicio de sesion. Si los dos
+             corresponden se incluyen juntos, sin apilarse: el de contrasena abre
+             primero y el de tramites pendientes se encadena por JS, mostrandose
+             recien cuando el anterior se cierra (la logica esta en el partial). --}}
         @if(auth()->user()->must_change_password && !session('pwd_suggest_shown'))
             @include('partials.modal-change-password')
             @php session(['pwd_suggest_shown' => true]); @endphp
+        @endif
+
+        {{-- El flag NO se marca aca: lo marca el propio partial cuando el modal se
+             abre de verdad (ruta avisos.pendientes-visto). Si se marcara al incluir,
+             bastaba con que el usuario navegara antes de verlo para perderlo. --}}
+        @if(!session('aviso_seguridad_shown') && !$sinAvisoPendientes)
+            @include('partials.modal-aviso-seguridad')
         @endif
     @endauth
 

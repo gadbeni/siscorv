@@ -320,6 +320,11 @@ class UsersController extends Controller
 
         $input = $request->all();
 
+        // Activar o desactivar un usuario es exclusivo de admin. El campo "Estado"
+        // ni siquiera se dibuja para los demas roles, pero se valida igual aca por
+        // si el request viene armado a mano.
+        $puedeCambiarEstado = $request->user()->hasRole('admin');
+
         DB::beginTransaction();
         try {
             $antes = UserHistorial::snapshot($user);
@@ -329,7 +334,9 @@ class UsersController extends Controller
                 'role_id' => $request->input('role_id', $user->role_id),
                 'email' => $request->email,
                 'phone' => $request->phone,
-                'status' => $request->has('status') ? $request->input('status', 1) : $user->status,
+                'status' => $puedeCambiarEstado
+                    ? $request->input('status', $user->status)
+                    : $user->status,
             ]);
             if ($request->has('warehouses')) {
                 $warehouses = collect($request->input('warehouses', []))->filter()->values()->all();
@@ -416,6 +423,12 @@ class UsersController extends Controller
 
     public function toggle_status(User $user)
     {
+        // Solo admin puede activar o desactivar usuarios. La ruta es un GET, asi
+        // que sin esta verificacion bastaba conocer la URL para cambiar el estado.
+        if (!auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+
         DB::beginTransaction();
         try {
             $antes = UserHistorial::snapshot($user);
