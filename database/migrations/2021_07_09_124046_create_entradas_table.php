@@ -63,10 +63,10 @@ class CreateEntradasTable extends Migration
                   ->onDelete('cascade');
             
                   // FK status
-            $table->foreignId('tipo_id')
-                    ->nullable()
-                    ->constrained()
-                    ->onDelete('cascade');
+            // $table->foreignId('tipo_id')
+            //         ->nullable()
+            //         ->constrained()
+            //         ->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

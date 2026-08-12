@@ -25,9 +25,9 @@ class Entrada extends Model implements Auditable
 
     protected $fillable = [
         'gestion', 'tipo', 'remitente', 'cite', 'referencia', 'nro_hojas', 'funcionario_id_remitente','deadline', 
-        'unidad_id_remitente', 'direccion_id_remitente', 'funcionario_id_destino', 'funcionario_id_responsable', 
+        'funcionario_id_destino', 'funcionario_id_responsable',
         'registrado_por', 'registrado_por_id_direccion', 'registrado_por_id_unidad', 'actualizado_por', 
-        'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id', 'tipo_id','details',
+        'fecha_actualizacion','fecha_registro','observacion_rechazo', 'detalles', 'entity_id', 'estado_id','details',
         'urgent','category_id', 'created_at',
         'people_id_de', 'job_de', 'people_id_para', 'job_para', 'personeria', 'user_id'
     ];
@@ -76,13 +76,8 @@ class Entrada extends Model implements Auditable
         return $this->morphMany(Derivation::class, 'parent');
     }
 
-    // public function direccionRemitente()
-    // {
-    //     return $this->belongsTo(\App\Models\Direccion::class, 'direccion_id_remitente');
-    // }
-
-    // public function unidadRemitente()
-    // {
-    //     return $this->belongsTo(\App\Models\Unidad::class, 'unidad_id_remitente');
-    // }
+    // La direccion y la unidad de la nota se leen de registrado_por_id_direccion
+    // y registrado_por_id_unidad. No hay relacion Eloquent porque el catalogo de
+    // direcciones vive en la conexion 'mamore'; se resuelve con
+    // Controller::getIdDireccionInfo() y getIdUnidadInfo().
 }

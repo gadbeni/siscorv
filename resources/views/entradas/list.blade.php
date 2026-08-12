@@ -40,13 +40,16 @@
                         @else
                             @php
                                 $origen = '';
-                                $direccion = App\Http\Controllers\EntradasController::getIdDireccionInfo($item->direccion_id_remitente);
-                                $unidad = App\Http\Controllers\EntradasController::getIdUnidadInfo($item->unidad_id_remitente);
+                                $direccion = App\Http\Controllers\EntradasController::getIdDireccionInfo($item->registrado_por_id_direccion);
+                                $unidad = App\Http\Controllers\EntradasController::getIdUnidadInfo($item->registrado_por_id_unidad);
+                                // En mamore la columna es 'nombre' en minusculas, tanto en
+                                // direcciones como en unidades. La unidad pisa a la direccion
+                                // por ser el dato mas especifico.
                                 if($direccion){
-                                    $origen = $direccion->NOMBRE;
+                                    $origen = $direccion->nombre;
                                 }
                                 if ($unidad) {
-                                    $origen = $unidad->Nombre;
+                                    $origen = $unidad->nombre;
                                 }
                             @endphp
                             {{ $origen }}

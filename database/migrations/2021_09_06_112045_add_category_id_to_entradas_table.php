@@ -14,10 +14,10 @@ class AddCategoryIdToEntradasTable extends Migration
     public function up()
     {
         Schema::table('entradas', function (Blueprint $table) {
-            $table->foreignId('category_id')
-                  ->nullable()
-                  ->after('tipo_id')
-                  ->constrained();
+            // $table->foreignId('category_id')
+            //       ->nullable()
+            //       ->after('tipo_id')
+            //       ->constrained();
         });
     }
 

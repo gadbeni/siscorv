@@ -80,7 +80,11 @@ class EntradasController extends Controller
                 'entity_id',
                 'created_at',
                 'people_id_para',
-                'personeria'
+                'personeria',
+                // La columna "origen" de la lista resuelve el nombre de la
+                // direccion/unidad con estas dos; sin traerlas salia siempre vacia.
+                'registrado_por_id_direccion',
+                'registrado_por_id_unidad'
             ])
             ->when(!auth()->user()->isAdmin(), function ($query) use ($funcionario) {
                 $query->where('people_id_de', $funcionario ? $funcionario->people_id : 0);
@@ -174,8 +178,6 @@ class EntradasController extends Controller
                         'detalles' => $request->detalles,
                         'people_id_de' => $request->funcionario_id_remitente,
                         'job_de' => $request->tipo == 'I' && $request->cargo_de ? $request->cargo_de : $funcionario_remitente->cargo,
-                        'direccion_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_direccion : null,
-                        'unidad_id_remitente' => $request->tipo == 'I' ? $funcionario_remitente->id_unidad : null,
                         'people_id_para' => $request->funcionario_id_destino,
                         'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
                         'registrado_por' => Auth::user()->email,
@@ -331,16 +333,7 @@ class EntradasController extends Controller
             $request->merge(['cite' =>  strtoupper($request->cite)]);
             $persona = Persona::where('user_id', Auth::user()->id)->first();
 
-            $unidad_id_remitente = NULL;
-            $direccion_id_remitente = null;
-            $funcionario_remitente = NULL;
-            // Si el trámite es interno se debe obtener la unidad y la dirección de del remitente (funcionario_id)
-            //dd($request->tipo);
             $tipo_entrada = $request->tipo;
-            if ($tipo_entrada == 'I') {
-                $unidad_id_remitente = $entrada->unidad_id_remitente;
-                $direccion_id_remitente = $entrada->direccion_id_remitente;
-            }
 
             $date = Carbon::now();
 
@@ -357,8 +350,6 @@ class EntradasController extends Controller
                 // 'funcionario_id_remitente' => $request->funcionario_id_remitente,
                 'people_id_de' => $request->funcionario_id_remitente,
                 'job_de' => $tipo_entrada == 'I' && $request->cargo_de ? $request->cargo_de : $entrada->job_de,
-                'unidad_id_remitente' => $unidad_id_remitente,
-                'direccion_id_remitente' => $direccion_id_remitente,
                 // 'funcionario_id_destino' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
                 'people_id_para' => $request->funcionario_id_destino ? $request->funcionario_id_destino : $entrada->people_id_para,
                 'job_para' => $this->getPeople($request->funcionario_id_destino)->cargo,
@@ -647,8 +638,10 @@ class EntradasController extends Controller
             $origen = '';
             $destino = NULL;
             if ($data->tipo == 'I') {
-                $direccion = $this->getIdDireccionInfo($data->direccion_id_remitente);
-                $unidad = $this->getIdUnidadInfo($data->unidad_id_remitente);
+                // El origen sale de la direccion/unidad que registro la nota: en las
+                // internas es la del remitente, y es la unica poblada al 100%.
+                $direccion = $this->getIdDireccionInfo($data->registrado_por_id_direccion);
+                $unidad = $this->getIdUnidadInfo($data->registrado_por_id_unidad);
                 if ($direccion) {
                     $origen = $direccion->nombre;
                 }

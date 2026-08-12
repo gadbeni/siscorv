@@ -129,6 +129,15 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loggin'], function () {
     Route::get('report/bandeja', [ReportController::class, 'view_report_bandeja'])->name('view.report.bandeja');
     Route::post('report/print/bandeja', [ReportController::class, 'printf_report_bandeja'])->name('print.report.bandeja');
 
+    // Resumen por direccion: entradas (pendientes/enviadas) y bandeja
+    // (pendientes/urgentes/derivadas/archivadas/rechazadas) en un rango de fechas.
+    Route::get('report/direcciones', [ReportController::class, 'view_report_direcciones'])->name('view.report.direcciones');
+    Route::post('report/print/direcciones', [ReportController::class, 'printf_report_direcciones'])->name('print.report.direcciones');
+    // Detalle de una celda del resumen: los registros que hay detras del numero.
+    Route::post('report/direcciones/detalle', [ReportController::class, 'detalle_report_direcciones'])->name('detalle.report.direcciones');
+    // Unidades de una direccion, para el select dependiente del filtro.
+    Route::get('report/direcciones/{direccion}/unidades', [ReportController::class, 'unidades_de_direccion'])->name('report.direcciones.unidades');
+
 
 
     //personas externas
