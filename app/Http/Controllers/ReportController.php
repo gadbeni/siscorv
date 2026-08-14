@@ -17,6 +17,11 @@ use App\Models\Derivation;
 
 class ReportController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function rde_index()
     {
         $categoria = Category::where('deleted_at', null)->get();
@@ -118,6 +123,7 @@ class ReportController extends Controller
      */
     public function view_report_direcciones()
     {
+        $this->custom_authorize('browse_reportdirecciones');
         $direcciones = DB::connection('mamore')->table('direcciones')
             ->select('id', 'nombre', 'sigla')
             ->orderBy('nombre')

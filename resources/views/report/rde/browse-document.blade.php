@@ -1,7 +1,7 @@
 @extends('voyager::master')
 
 @section('page_title', 'Documentos')
-@if(auth()->user()->hasPermission('browse_report_list-document'))
+@if(auth()->user()->hasPermission('browse_reportrde-documents'))
 @section('page_header')
 
     <div class="container-fluid">

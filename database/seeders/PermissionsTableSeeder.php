@@ -58,15 +58,16 @@ class PermissionsTableSeeder extends Seeder
 
 
         $keys = [
-            'browse_report_list-document',
-            'browse_report'
-            // 'browse_report'
+            'browse_reportrde-documents',
+            'browse_reportrde',
+            'browse_reportdirecciones',
         ];
+
 
         foreach ($keys as $key) {
             Permission::firstOrCreate([
                 'key'        => $key,
-                'table_name' => 'report_rde',
+                'table_name' => 'report',
             ]);
         }
 

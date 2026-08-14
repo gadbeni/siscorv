@@ -29,8 +29,8 @@ class PermissionRoleTableSeeder extends Seeder
                                                 table_name = "entradas" or
                                                 table_name = "entities" or
                                                 
-                                                `key` = "browse_report" or
-                                                `key` = "browse_report_list-document" or
+                                                `key` = "browse_reportrde" or
+                                                `key` = "browse_reportrde-documents" or
                                                 
                                                 `key` = "browse_directorio_telefonico" or
                                                 `key` = "browse_clear-cache"')->get();

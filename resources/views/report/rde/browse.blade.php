@@ -1,7 +1,7 @@
 @extends('voyager::master')
 
 @section('page_title', 'Ingresos a RDE')
-@if(auth()->user()->hasPermission('browse_report'))
+@if(auth()->user()->hasPermission('browse_reportrde'))
 @section('page_header')
 
     <div class="container-fluid">
