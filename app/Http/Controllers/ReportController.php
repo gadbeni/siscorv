@@ -634,7 +634,7 @@ class ReportController extends Controller
      * Derivaciones recibidas por direccion.
      *
      * Los estados replican las pestanas de la bandeja, con los mismos filtros que
-     * usa EntradasController::derivacion_list(): sin transferidas, sin personerias
+     * usa BandejaController::list(): sin transferidas, sin personerias
      * y sin tramites cerrados (estado 4 y 6).
      *
      * @return \Illuminate\Support\Collection

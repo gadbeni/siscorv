@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EntradasController;
+use App\Http\Controllers\BandejaController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\AjaxController;
 use App\Http\Livewire\CertificateController;
@@ -98,12 +99,12 @@ Route::group(['prefix' => 'admin', 'middleware' => 'loggin'], function () {
 
 
     // Bandeja
-    Route::get('bandeja', [EntradasController::class, 'derivacion_index'])->name('bandeja.index');
-    Route::get('bandeja/list/{funcionario_id}/{type}', [EntradasController::class, 'derivacion_list']);
-    Route::get('bandeja/{id}', [EntradasController::class, 'derivacion_show'])->name('bandeja.show');
-    Route::post('bandeja/delete/derivacion', [EntradasController::class, 'bandejaDerivationDelete'])->name('bandeja-derivation.delete');
-    Route::post('bandeja/{id}/rechazar', [EntradasController::class, 'derivacion_rechazar'])->name('bandeja.rechazar');
-    Route::post('bandeja/{id}/archivar', [EntradasController::class, 'derivacion_archivar'])->name('bandeja.archivar');
+    Route::get('bandeja', [BandejaController::class, 'index'])->name('bandeja.index');
+    Route::get('bandeja/list/{funcionario_id}/{type}', [BandejaController::class, 'list']);
+    Route::get('bandeja/{id}', [BandejaController::class, 'show'])->name('bandeja.show');
+    Route::post('bandeja/delete/derivacion', [BandejaController::class, 'deleteDerivacion'])->name('bandeja-derivation.delete');
+    Route::post('bandeja/{id}/rechazar', [BandejaController::class, 'rechazar'])->name('bandeja.rechazar');
+    Route::post('bandeja/{id}/archivar', [BandejaController::class, 'archivar'])->name('bandeja.archivar');
 
     Route::get('treejs/{id?}', [EntradasController::class, 'treeAjax'])->name('tree-ajax');
 

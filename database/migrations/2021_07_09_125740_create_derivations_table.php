@@ -18,7 +18,6 @@ class CreateDerivationsTable extends Migration
             $table->string('funcionario_id_de', 10)->nullable();
             $table->string('funcionario_id_para', 10)->nullable();
             $table->string('funcionario_nombre_para', 100)->nullable();
-            $table->string('funcionario_cargo_id_para', 10)->nullable();
             $table->string('funcionario_cargo_para', 150)->nullable();
             $table->string('funcionario_direccion_id_para', 10)->nullable();
             $table->string('funcionario_direccion_para', 150)->nullable();

@@ -57,7 +57,6 @@ class ExchangeController extends Controller
 
                     $ok = Derivation::create([
                         'funcionario_nombre_para'=>$funcionario->nombre,
-                        'funcionario_cargo_id_para'=>$aux->funcionario_cargo_id_para,
                         'funcionario_cargo_para'=>$funcionario->cargo,
                         'funcionario_direccion_id_para'=>$funcionario->id_direccion? $funcionario->id_direccion:'',
                         'funcionario_direccion_para'=>$funcionario->direccion? $funcionario->direccion:'',
