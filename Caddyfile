@@ -1,0 +1,32 @@
+# FrankenPHP (Caddy + PHP en un solo proceso) — configuración de SisCor.
+#
+# Reemplaza a unit.json (NGINX Unit, archivado en octubre de 2025 y sin
+# parches). Hace lo mismo que hacía Unit:
+#
+#   - Escucha en :8000 por http: el HTTPS lo termina el proxy de adelante.
+#     `auto_https off` para que Caddy no intente sacar certificados.
+#   - Lo que exista como archivo en public/ se sirve directo; el resto cae en
+#     index.php (`php_server`).
+#   - Confía en X-Forwarded-For solo desde rangos privados (la red de Docker),
+#     nunca desde internet, para registrar la IP real del cliente.
+#   - Log de accesos a stdout.
+{
+	admin off
+	auto_https off
+
+	servers {
+		trusted_proxies static private_ranges
+		client_ip_headers X-Forwarded-For
+	}
+}
+
+:8000 {
+	root * /var/www/siscor/public
+	encode zstd br gzip
+
+	log {
+		output stdout
+	}
+
+	php_server
+}
