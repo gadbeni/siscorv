@@ -2,7 +2,9 @@
 {
 	frankenphp
 	auto_https off
-	admin off
+	# La imagen base trae HEALTHCHECK contra localhost:2019/metrics.
+	# Con "admin off" el contenedor queda unhealthy y Traefik (Coolify) no lo enruta.
+	admin localhost:2019
 }
 
 :8000 {
