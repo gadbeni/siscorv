@@ -1,18 +1,22 @@
-FROM unit:1.33.0-php8.2
+# PHP 8.3.36 sobre FrankenPHP (Caddy con PHP integrado).
+# Antes: NGINX Unit + PHP 8.2. Unit está archivado y sin parches; PHP 8.3.36
+# corrige CVE-2026-109618 y CVE-2026-109619 (RCE sin autenticación).
+# Para tomar un parche nuevo de PHP basta con cambiar este tag.
+FROM dunglas/frankenphp:1.13.3-php8.3.36
 
-RUN apt update && apt install -y \
-    curl unzip git libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libssl-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) pcntl opcache pdo pdo_mysql intl zip gd exif ftp bcmath \
-    && pecl install redis \
-    && docker-php-ext-enable redis
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip git \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN echo "opcache.enable=1" > /usr/local/etc/php/conf.d/custom.ini \
-    && echo "opcache.jit=tracing" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "opcache.jit_buffer_size=256M" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "memory_limit=512M" > /usr/local/etc/php/conf.d/custom.ini \
-    && echo "upload_max_filesize=64M" >> /usr/local/etc/php/conf.d/custom.ini \
-    && echo "post_max_size=64M" >> /usr/local/etc/php/conf.d/custom.ini
+RUN install-php-extensions pcntl opcache pdo_mysql intl zip gd exif ftp bcmath redis
+
+RUN { \
+        echo "opcache.enable=1"; \
+        echo "opcache.jit=tracing"; \
+        echo "opcache.jit_buffer_size=256M"; \
+        echo "memory_limit=512M"; \
+        echo "upload_max_filesize=64M"; \
+        echo "post_max_size=64M"; \
+    } > /usr/local/etc/php/conf.d/custom.ini
 
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
@@ -24,14 +28,14 @@ COPY . .
 
 RUN composer install --prefer-dist --optimize-autoloader --no-interaction
 
-RUN chown -R unit:unit /var/www/siscor/storage /var/www/siscor/bootstrap/cache \
+RUN chown -R www-data:www-data /var/www/siscor/storage /var/www/siscor/bootstrap/cache \
     && chmod -R 775 /var/www/siscor/storage /var/www/siscor/bootstrap/cache
 
-COPY unit.json /docker-entrypoint.d/unit.json
+COPY Caddyfile /etc/frankenphp/Caddyfile
 
 COPY .env.example .env
 RUN php artisan key:generate
 
 EXPOSE 8000
 
-CMD ["unitd", "--no-daemon"]
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]

@@ -1,0 +1,12 @@
+# Reemplaza unit.json (NGINX Unit). Escucha en :8000 igual que antes.
+{
+	frankenphp
+	auto_https off
+	admin off
+}
+
+:8000 {
+	root * /var/www/siscor/public
+	encode zstd br gzip
+	php_server
+}
